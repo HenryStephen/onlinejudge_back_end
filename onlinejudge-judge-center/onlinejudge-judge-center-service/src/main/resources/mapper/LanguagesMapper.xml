@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nciae.onlinejudge.judge.mapper.LanguagesMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.judge.domain.Languages">
+            <id property="languageId" column="language_id" jdbcType="INTEGER"/>
+            <result property="languageSlug" column="language_slug" jdbcType="VARCHAR"/>
+            <result property="languageName" column="language_name" jdbcType="VARCHAR"/>
+            <result property="languageCompileId" column="language_compile_id" jdbcType="INTEGER"/>
+            <result property="languageRunId" column="language_run_id" jdbcType="INTEGER"/>
+            <result property="languageSuffix" column="language_suffix" jdbcType="VARCHAR"/>
+            <result property="languageDescription" column="language_description" jdbcType="VARCHAR"/>
+            <result property="isSpj" column="is_spj" jdbcType="BOOLEAN"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        language_id,language_slug,language_name,
+        language_compile_id,language_run_id,language_suffix,
+        language_description,is_spj,is_deleted
+    </sql>
+
+    <select id="getLanguageNameByLanguageId" resultType="java.lang.String">
+        select language_name
+        from `languages`
+        where language_id = #{languageId}
+    </select>
+</mapper>

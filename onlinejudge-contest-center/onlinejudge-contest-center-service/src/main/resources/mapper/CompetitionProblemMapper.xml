@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nciae.onlinejudge.contest.mapper.CompetitionProblemMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.contest.domain.CompetitionProblem">
+            <id property="competitionProblemId" column="competition_problem_id" jdbcType="BIGINT"/>
+            <result property="competitionId" column="competition_id" jdbcType="BIGINT"/>
+            <result property="problemId" column="problem_id" jdbcType="BIGINT"/>
+            <result property="problemDisplayId" column="problem_display_id" jdbcType="BIGINT"/>
+            <result property="problemScore" column="problem_score" jdbcType="BIGINT"/>
+            <result property="submitNumber" column="submit_number" jdbcType="INTEGER"/>
+            <result property="solvedNumber" column="solved_number" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="CompetitionProblemViewResultMap" type="cn.edu.nciae.onlinejudge.contest.vo.CompetitionProblemDTO">
+        <id property="competitionProblemId" column="competition_problem_id" jdbcType="BIGINT"/>
+        <result property="competitionId" column="competition_id" jdbcType="BIGINT"/>
+        <result property="problemId" column="problem_id" jdbcType="BIGINT"/>
+        <result property="problemDisplayId" column="problem_display_id" jdbcType="BIGINT"/>
+        <result property="problemScore" column="problem_score" jdbcType="BIGINT"/>
+        <result property="submitNumber" column="submit_number" jdbcType="INTEGER"/>
+        <result property="solvedNumber" column="solved_number" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        competition_problem_id,competition_id,problem_id,
+        problem_display_id,problem_score,submit_number,
+        solved_number
+    </sql>
+
+    <select id="selectListById" parameterType="java.lang.Long" resultMap="CompetitionProblemViewResultMap">
+        select *
+        from competition_problem
+        where competition_id = #{competitionId}
+    </select>
+</mapper>

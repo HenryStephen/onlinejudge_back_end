@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nciae.onlinejudge.judge.mapper.CompileMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.judge.domain.Compile">
+            <id property="compile_id" column="compile_id" jdbcType="INTEGER"/>
+            <result property="config_name" column="config_name" jdbcType="VARCHAR"/>
+            <result property="src_name" column="src_name" jdbcType="VARCHAR"/>
+            <result property="exe_name" column="exe_name" jdbcType="VARCHAR"/>
+            <result property="max_cpu_time" column="max_cpu_time" jdbcType="BIGINT"/>
+            <result property="max_real_time" column="max_real_time" jdbcType="BIGINT"/>
+            <result property="max_memory" column="max_memory" jdbcType="BIGINT"/>
+            <result property="compile_command" column="compile_command" jdbcType="VARCHAR"/>
+            <result property="env" column="env" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        compile_id,config_name,src_name,
+        exe_name,max_cpu_time,max_real_time,
+        max_memory,compile_command,env
+    </sql>
+
+    <select id="selectByCompileId" resultMap="BaseResultMap">
+        select *
+        from `compile`
+        where compile_id = #{compileId}
+    </select>
+</mapper>

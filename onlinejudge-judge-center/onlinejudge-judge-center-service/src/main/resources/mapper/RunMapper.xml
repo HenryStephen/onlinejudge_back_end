@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nciae.onlinejudge.judge.mapper.RunMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.judge.domain.Run">
+            <id property="run_id" column="run_id" jdbcType="INTEGER"/>
+            <result property="config_name" column="config_name" jdbcType="VARCHAR"/>
+            <result property="command" column="command" jdbcType="VARCHAR"/>
+            <result property="seccomp_rule" column="seccomp_rule" jdbcType="VARCHAR"/>
+            <result property="exe_name" column="exe_name" jdbcType="VARCHAR"/>
+            <result property="env" column="env" jdbcType="VARCHAR"/>
+            <result property="memory_limit_check_only" column="memory_limit_check_only" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        run_id,config_name,command,
+        seccomp_rule,exe_name,env,
+        memory_limit_check_only
+    </sql>
+
+    <select id="selectByRunId" resultMap="BaseResultMap">
+        select *
+        from `run`
+        where run_id = #{runId}
+    </select>
+</mapper>

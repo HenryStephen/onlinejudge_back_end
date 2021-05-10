@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nciae.onlinejudge.content.mapper.AnnouncementMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.content.domain.Announcement">
+            <id property="announcementId" column="announcement_id" jdbcType="BIGINT"/>
+            <result property="competitionId" column="competition_id" jdbcType="BIGINT"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="announcementName" column="announcement_name" jdbcType="VARCHAR"/>
+            <result property="announcementContent" column="announcement_content" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="lastUpdateTime" column="last_update_time" jdbcType="TIMESTAMP"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        announcement_id,competition_id,nickname,
+        announcement_name,announcement_content,create_time,
+        last_update_time,is_deleted
+    </sql>
+</mapper>

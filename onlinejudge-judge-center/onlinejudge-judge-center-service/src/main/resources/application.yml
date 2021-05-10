@@ -1,0 +1,49 @@
+base:
+  config:
+    db:
+      dbtype: mysql
+      dbname: onlinejudge_judgecenter
+      hostname: localhost
+      port: 3306
+    nacos:
+      hostname: localhost
+      port: 8848
+
+spring:
+  application:
+    name: onlinejudge-judge-center-service
+  main:
+    allow-bean-definition-overriding: true
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
+    url: jdbc:${base.config.db.dbtype}://${base.config.db.hostname}:${base.config.db.port}/${base.config.db.dbname}?useUnicode=true&characterEncoding=utf-8&serverTimezone=Hongkong&useSSL=false
+    hikari:
+      minimum-idle: 5
+      idle-timeout: 600000
+      maximum-pool-size: 10
+      auto-commit: true
+      pool-name: MyHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: is_deleted  # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
+      logic-delete-value: 1 # 逻辑已删除值(默认为 1)
+      logic-not-delete-value: 0 # 逻辑未删除值(默认为 0)
+
+dubbo:
+  scan:
+    base-packages: cn.edu.nciae.onlinejudge.judge.serviceapi
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: nacos://${base.config.nacos.hostname}
+    port: ${base.config.nacos.port}
+

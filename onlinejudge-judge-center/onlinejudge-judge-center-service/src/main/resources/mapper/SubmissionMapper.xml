@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nciae.onlinejudge.judge.mapper.SubmissionMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.judge.domain.Submission">
+            <id property="submissionId" column="submission_id" jdbcType="BIGINT"/>
+            <result property="submissionUserId" column="submission_user_id" jdbcType="BIGINT"/>
+            <result property="submissionProblemId" column="submission_problem_id" jdbcType="BIGINT"/>
+            <result property="submissionContestId" column="submission_contest_id" jdbcType="BIGINT"/>
+            <result property="submissionLanguageId" column="submission_language_id" jdbcType="INTEGER"/>
+            <result property="submissionSourceCode" column="submission_source_code" jdbcType="VARCHAR"/>
+            <result property="submissionCommitTime" column="submission_commit_time" jdbcType="TIMESTAMP"/>
+            <result property="submissionStatus" column="submission_status" jdbcType="INTEGER"/>
+            <result property="submissionUsedTime" column="submission_used_time" jdbcType="INTEGER"/>
+            <result property="submissionUsedMemory" column="submission_used_memory" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <resultMap id="SubmissionViewResultMap" type="cn.edu.nciae.onlinejudge.judge.vo.SubmissionDTO">
+        <id property="submissionId" column="submission_id" jdbcType="BIGINT"/>
+        <result property="submissionUserId" column="submission_user_id" jdbcType="BIGINT"/>
+        <result property="submissionProblemId" column="submission_problem_id" jdbcType="BIGINT"/>
+        <result property="submissionContestId" column="submission_contest_id" jdbcType="BIGINT"/>
+        <result property="submissionLanguageId" column="submission_language_id" jdbcType="INTEGER"/>
+        <result property="submissionSourceCode" column="submission_source_code" jdbcType="VARCHAR"/>
+        <result property="submissionCommitTime" column="submission_commit_time" jdbcType="TIMESTAMP"/>
+        <result property="submissionStatus" column="submission_status" jdbcType="INTEGER"/>
+        <result property="submissionUsedTime" column="submission_used_time" jdbcType="INTEGER"/>
+        <result property="submissionUsedMemory" column="submission_used_memory" jdbcType="INTEGER"/>
+        <association column="submission_language_id" property="language" javaType="java.lang.String" select="cn.edu.nciae.onlinejudge.judge.mapper.LanguagesMapper.getLanguageNameByLanguageId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        submission_id,submission_user_id,submission_problem_id,
+        submission_contest_id,submission_language_id,submission_source_code,
+        submission_commit_time,submission_status,submission_used_time,
+        submission_used_memory
+    </sql>
+
+    <select id="selectBySubmissionId" resultMap="BaseResultMap" useCache="false">
+        SELECT *
+        FROM submission
+        where submission_id = #{submissionId}
+    </select>
+
+    <select id="selectSubmissionVOListPage" resultMap="SubmissionViewResultMap">
+        select s.* from submission as s
+        <where>
+            <if test="submissionKeyword.result != null">
+                and s.submission_status = #{submissionKeyword.result}
+            </if>
+            <if test="submissionKeyword.contest_id != null">
+                and s.submission_contest_id = #{submissionKeyword.contest_id}
+            </if>
+            <if test="submissionKeyword.problem_id != null">
+                and s.submission_problem_id = #{submissionKeyword.problem_id}
+            </if>
+            <choose>
+                <when test="submissionKeyword.userId != null">
+                    and s.submission_user_id = #{submissionKeyword.userId}
+                </when>
+                <when test="submissionKeyword.userList != null">
+                    and s.submission_user_id in
+                    <foreach collection="list" item="submissionKeyword.userList" open="(" separator="," close=")">
+                        #{submissionKeyword.userList}
+                    </foreach>
+                </when>
+            </choose>
+        </where>
+    </select>
+</mapper>

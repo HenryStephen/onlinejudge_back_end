@@ -1,0 +1,19 @@
+# Project exclude paths
+/onlinejudge-commons/onlinejudge-commons-utils/target/
+/onlinejudge-content-center/onlinejudge-content-center-api/target/
+/onlinejudge-content-center/onlinejudge-content-center-business/target/
+/onlinejudge-content-center/onlinejudge-content-center-service/target/
+/onlinejudge-contest-center/onlinejudge-contest-center-api/target/
+/onlinejudge-contest-center/onlinejudge-contest-center-business/target/
+/onlinejudge-contest-center/onlinejudge-contest-center-service/target/
+/onlinejudge-gateway/target/
+/onlinejudge-judge-center/onlinejudge-judge-center-api/target/
+/onlinejudge-judge-center/onlinejudge-judge-center-business/target/
+/onlinejudge-judge-center/onlinejudge-judge-center-service/target/
+/onlinejudge-oauth2/target/
+/onlinejudge-statistic-center/onlinejudge-statistic-center-api/target/
+/onlinejudge-statistic-center/onlinejudge-statistic-center-business/target/
+/onlinejudge-statistic-center/onlinejudge-statistic-center-service/target/
+/onlinejudge-user-center/onlinejudge-user-center-api/target/
+/onlinejudge-user-center/onlinejudge-user-center-business/target/
+/onlinejudge-user-center/onlinejudge-user-center-service/target/

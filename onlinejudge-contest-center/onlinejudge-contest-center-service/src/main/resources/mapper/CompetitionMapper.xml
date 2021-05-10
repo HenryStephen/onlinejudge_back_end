@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nciae.onlinejudge.contest.mapper.CompetitionMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.contest.domain.Competition">
+            <id property="competitionId" column="competition_id" jdbcType="BIGINT"/>
+            <result property="competitionCreateUser" column="competition_create_user" jdbcType="BIGINT"/>
+            <result property="competitionTitle" column="competition_title" jdbcType="VARCHAR"/>
+            <result property="competitionDescription" column="competition_description" jdbcType="VARCHAR"/>
+            <result property="competitionRuleType" column="competition_rule_type" jdbcType="VARCHAR"/>
+            <result property="competitionType" column="competition_type" jdbcType="VARCHAR"/>
+            <result property="competitionPassword" column="competition_password" jdbcType="VARCHAR"/>
+            <result property="competitionRealTimeRank" column="competition_real_time_rank" jdbcType="BOOLEAN"/>
+            <result property="competitionCreateTime" column="competition_create_time" jdbcType="TIMESTAMP"/>
+            <result property="competitionStartTime" column="competition_start_time" jdbcType="TIMESTAMP"/>
+            <result property="competitionEndTime" column="competition_end_time" jdbcType="TIMESTAMP"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <resultMap id="CompetitionViewResultMap" type="cn.edu.nciae.onlinejudge.contest.vo.CompetitionDTO">
+        <id property="competitionId" column="competition_id" jdbcType="BIGINT"/>
+        <result property="competitionCreateUser" column="competition_create_user" jdbcType="BIGINT"/>
+        <result property="competitionTitle" column="competition_title" jdbcType="VARCHAR"/>
+        <result property="competitionDescription" column="competition_description" jdbcType="VARCHAR"/>
+        <result property="competitionRuleType" column="competition_rule_type" jdbcType="VARCHAR"/>
+        <result property="competitionType" column="competition_type" jdbcType="VARCHAR"/>
+        <result property="competitionPassword" column="competition_password" jdbcType="VARCHAR"/>
+        <result property="competitionRealTimeRank" column="competition_real_time_rank" jdbcType="BOOLEAN"/>
+        <result property="competitionCreateTime" column="competition_create_time" jdbcType="TIMESTAMP"/>
+        <result property="competitionStartTime" column="competition_start_time" jdbcType="TIMESTAMP"/>
+        <result property="competitionEndTime" column="competition_end_time" jdbcType="TIMESTAMP"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        competition_id,competition_create_user,competition_title,
+        competition_description,competition_rule_type,competition_type,
+        competition_password,competition_real_time_rank,competition_create_time,
+        competition_start_time,competition_end_time,is_deleted
+    </sql>
+
+    <select id="selectCompetitionVOListPage" resultMap="CompetitionViewResultMap">
+        select c.*
+        from competition as c
+        <where>
+            <if test="competitionParam.rule_type != null">
+                and c.competition_rule_type like #{competitionParam.rule_type}
+            </if>
+<!--            <if test="competitionParam.status != null">-->
+<!--                and c.competition_status = #{competitionParam.status}-->
+<!--            </if>-->
+            <if test="competitionParam.keyword != null">
+                and (
+                c.competition_title like CONCAT('%',#{competitionParam.keyword},'%') or
+                c.competition_description like CONCAT('%',#{competitionParam.keyword},'%')
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="selectCompetitionVOById" parameterType="java.lang.Long" resultMap="CompetitionViewResultMap">
+        select * from competition where competition.competition_id = #{competitionId}
+    </select>
+</mapper>

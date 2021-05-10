@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nciae.onlinejudge.user.mapper.UserInfoMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.user.domain.UserInfo">
+            <id property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+            <result property="userRealName" column="user_real_name" jdbcType="VARCHAR"/>
+            <result property="userPassword" column="user_password" jdbcType="VARCHAR"/>
+            <result property="userEmail" column="user_email" jdbcType="VARCHAR"/>
+            <result property="userRegtime" column="user_regtime" jdbcType="TIMESTAMP"/>
+            <result property="userSolveNumber" column="user_solve_number" jdbcType="INTEGER"/>
+            <result property="userSubmissionNumber" column="user_submission_number" jdbcType="INTEGER"/>
+            <result property="userTotalScore" column="user_total_score" jdbcType="INTEGER"/>
+            <result property="userLanguage" column="user_language" jdbcType="VARCHAR"/>
+            <result property="userSchool" column="user_school" jdbcType="VARCHAR"/>
+            <result property="userMood" column="user_mood" jdbcType="VARCHAR"/>
+            <result property="userBlog" column="user_blog" jdbcType="VARCHAR"/>
+            <result property="userAvatar" column="user_avatar" jdbcType="VARCHAR"/>
+            <result property="userAvatarUrl" column="user_avatar_url" jdbcType="VARCHAR"/>
+            <result property="userGithub" column="user_github" jdbcType="VARCHAR"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        user_id,user_name,user_real_name,
+        user_password,user_email,user_regtime,
+        user_solve_number,user_submission_number,user_total_score,
+        user_language,user_school,user_mood,
+        user_blog,user_avatar,user_avatar_url,
+        user_github,is_deleted
+    </sql>
+</mapper>

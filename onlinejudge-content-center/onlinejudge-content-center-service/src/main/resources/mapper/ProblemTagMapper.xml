@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nciae.onlinejudge.content.mapper.ProblemTagMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.content.domain.ProblemTag">
+            <id property="problemTagId" column="problem_tag_id" jdbcType="BIGINT"/>
+            <result property="problemId" column="problem_id" jdbcType="BIGINT"/>
+            <result property="tagId" column="tag_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        problem_tag_id,problem_id,tag_id
+    </sql>
+</mapper>

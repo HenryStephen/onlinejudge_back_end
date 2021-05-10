@@ -1,0 +1,64 @@
+base:
+  config:
+    nacos:
+      hostname: localhost
+      port: 8848
+    oauth:
+      hostname: localhost
+      port: 9001
+    rocketmq:
+      hostname: 192.168.0.13
+      port: 9876
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  application:
+    name: onlinejudge-statistic-center-business
+  cloud:
+    # 使用 Naoos 作为服务注册发现
+    nacos:
+      discovery:
+        server-addr: ${base.config.nacos.hostname}:${base.config.nacos.port}
+
+security:
+  oauth2:
+    client:
+      client-id: client
+      client-secret: secret
+      access-token-uri: http://${base.config.oauth.hostname}:${base.config.oauth.port}/oauth/token
+      user-authorization-uri: http://${base.config.oauth.hostname}:${base.config.oauth.port}/oauth/authorize
+    resource:
+      token-info-uri: http://${base.config.oauth.hostname}:${base.config.oauth.port}/oauth/check_token
+
+server:
+  port: 9006
+
+dubbo:
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: nacos://${base.config.nacos.hostname}
+    port: ${base.config.nacos.port}
+  scan:
+    basePackages: cn.edu.nciae.onlinejudge.statistic.controller
+
+
+endpoints:
+  dubbo:
+    enabled: true
+
+management:
+  health:
+    dubbo:
+      status:
+        defaults: memory
+        extras: threadpool
+  endpoints:
+    web:
+      exposure:
+        include: "*"
