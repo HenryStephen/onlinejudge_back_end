@@ -17,7 +17,7 @@ public interface SubmissionMapper extends BaseMapper<Submission> {
      * @param submissionId
      * @return
      */
-    Submission selectBySubmissionId(Long submissionId);
+    Submission selectBySubmissionId(String submissionId);
 
     /**
      * 查询状态信息分页列表

@@ -44,4 +44,14 @@ public class UserProblemServiceApiImpl extends UserProblemServiceImpl implements
     public List<Long> getSolvedProblemIdList(Long userId) {
         return userProblemMapper.selectSolvedProblem(userId);
     }
+
+    /**
+     * 添加或者修改userproblem
+     * @param userProblem
+     * @return
+     */
+    @Override
+    public boolean saveOrUpdate(UserProblem userProblem){
+        return super.saveOrUpdate(userProblem);
+    }
 }

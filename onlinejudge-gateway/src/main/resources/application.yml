@@ -1,7 +1,7 @@
 base:
   config:
     nacos:
-      hostname: localhost
+      hostname: 39.103.218.148
       port: 8848
 
 spring:
@@ -73,7 +73,7 @@ spring:
             - StripPrefix=1
 
 server:
-  port: 9000
+  port: 20000
 
 # 配置日志级别，方别调试
 logging:

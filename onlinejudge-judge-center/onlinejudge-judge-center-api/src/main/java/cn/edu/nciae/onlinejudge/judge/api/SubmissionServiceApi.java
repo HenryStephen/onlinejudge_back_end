@@ -24,7 +24,7 @@ public interface SubmissionServiceApi {
      * @param submissionId
      * @return
      */
-    Submission getById(Long submissionId);
+    Submission getById(String submissionId);
 
     /**
      * 根据参数查询submissionList

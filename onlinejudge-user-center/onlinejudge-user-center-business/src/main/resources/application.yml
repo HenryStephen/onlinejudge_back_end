@@ -1,11 +1,11 @@
 base:
   config:
     nacos:
-      hostname: localhost
+      hostname: 39.103.218.148
       port: 8848
     oauth:
       hostname: localhost
-      port: 9001
+      port: 20001
 
 spring:
   main:
@@ -32,7 +32,7 @@ security:
       token-info-uri: http://${base.config.oauth.hostname}:${base.config.oauth.port}/oauth/check_token
 
 server:
-  port: 9002
+  port: 20002
 
 dubbo:
   protocol:

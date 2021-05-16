@@ -113,6 +113,17 @@
         </dependency>
         <dependency>
             <groupId>cn.edu.nciae</groupId>
+            <artifactId>onlinejudge-statistic-center-api</artifactId>
+            <version>${project.parent.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>cn.edu.nciae</groupId>
             <artifactId>onlinejudge-user-center-api</artifactId>
             <version>${project.parent.version}</version>
             <exclusions>

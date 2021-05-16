@@ -2,12 +2,9 @@ package cn.edu.nciae.onlinejudge.user.serviceapi;
 
 import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
 import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
-import cn.edu.nciae.onlinejudge.user.mapper.UserInfoMapper;
-import cn.edu.nciae.onlinejudge.user.service.UserInfoService;
 import cn.edu.nciae.onlinejudge.user.service.impl.UserInfoServiceImpl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -92,5 +89,16 @@ public class UserInfoServiceApiImpl extends UserInfoServiceImpl implements UserI
         UserInfo userInfo = new UserInfo();
         userInfo.setUserEmail(newEmail);
         return super.update(userInfo, new UpdateWrapper<UserInfo>().eq("user_name",userName));
+    }
+
+    /**
+     * 根据用户id更新用户信息
+     *
+     * @param userInfo
+     * @param userId
+     */
+    @Override
+    public boolean update(UserInfo userInfo, Long userId) {
+        return super.update(userInfo, new UpdateWrapper<UserInfo>().eq("user_id", userId));
     }
 }

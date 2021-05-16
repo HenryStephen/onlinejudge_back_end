@@ -1,17 +1,17 @@
 base:
   config:
     nacos:
-      hostname: localhost
+      hostname: 39.103.218.148
       port: 8848
     oauth:
       hostname: localhost
-      port: 9001
+      port: 20001
     rocketmq:
-      hostname: 192.168.0.13
+      hostname: 39.103.218.148
       port: 9876
     judge:
-      address: 192.168.0.13
-      judge_port: 8000
+      address: localhost
+      judge_port: 8080
       judge_token: 9cb52e974da95ae0b5fa6a0aa232ca470a21f616289656b95fb1289f7c6e8203
       url_judge_core: http://${base.config.judge.address}:${base.config.judge.judge_port}/judge
 
@@ -50,7 +50,7 @@ security:
       token-info-uri: http://${base.config.oauth.hostname}:${base.config.oauth.port}/oauth/check_token
 
 server:
-  port: 9004
+  port: 20004
 
 dubbo:
   protocol:

@@ -55,4 +55,11 @@ public interface UserInfoServiceApi {
      * @return
      */
     boolean updateEmail(String newEmail, String userName);
+
+    /**
+     * 根据用户id更新用户信息
+     * @param userInfo
+     * @param userId
+     */
+    boolean update(UserInfo userInfo, Long userId);
 }

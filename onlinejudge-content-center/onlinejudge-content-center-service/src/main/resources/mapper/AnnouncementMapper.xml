@@ -12,12 +12,12 @@
             <result property="announcementContent" column="announcement_content" jdbcType="VARCHAR"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
             <result property="lastUpdateTime" column="last_update_time" jdbcType="TIMESTAMP"/>
-            <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+            <result property="visible" column="visible" jdbcType="BOOLEAN"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         announcement_id,competition_id,nickname,
         announcement_name,announcement_content,create_time,
-        last_update_time,is_deleted
+        last_update_time,visible
     </sql>
 </mapper>

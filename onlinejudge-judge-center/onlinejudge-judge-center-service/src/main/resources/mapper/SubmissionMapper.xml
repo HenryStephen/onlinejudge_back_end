@@ -41,7 +41,7 @@
     <select id="selectBySubmissionId" resultMap="BaseResultMap" useCache="false">
         SELECT *
         FROM submission
-        where submission_id = #{submissionId}
+        where submission_id like #{submissionId}
     </select>
 
     <select id="selectSubmissionVOListPage" resultMap="SubmissionViewResultMap">

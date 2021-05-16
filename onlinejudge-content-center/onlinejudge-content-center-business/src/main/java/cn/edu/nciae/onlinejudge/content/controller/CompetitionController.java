@@ -30,7 +30,21 @@ public class CompetitionController {
      */
     @GetMapping("/{competitionId}/announcement")
     public ResponseResult<List<Announcement>> getCompetitionAnnouncementList(@PathVariable("competitionId") Long competitionId){
-        List<Announcement> announcements = announcementServiceApi.list(competitionId);
+        List<Announcement> announcements = announcementServiceApi.list(competitionId, false);
+        return ResponseResult.<List<Announcement>>builder()
+                .code(BusinessStatus.OK.getCode())
+                .message("查询竞赛公告列表成功")
+                .data(announcements)
+                .build();
+    }
+
+    /**
+     * 获取竞赛公告列表(管理员)
+     * @return
+     */
+    @GetMapping("/{competitionId}/announcement/admin")
+    public ResponseResult<List<Announcement>> getCompetitionAnnouncementListAdmin(@PathVariable("competitionId") Long competitionId){
+        List<Announcement> announcements = announcementServiceApi.list(competitionId, true);
         return ResponseResult.<List<Announcement>>builder()
                 .code(BusinessStatus.OK.getCode())
                 .message("查询竞赛公告列表成功")

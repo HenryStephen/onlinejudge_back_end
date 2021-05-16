@@ -17,9 +17,9 @@ public class AnnouncementParam implements Serializable {
     private Long competitionId;
 
     /**
-     * 创建人用户名
+     * 公告id
      */
-    private String nickname;
+    private Long announcementId;
 
     /**
      * 公告标题
@@ -30,4 +30,9 @@ public class AnnouncementParam implements Serializable {
      * 公告内容
      */
     private String announcementContent;
+
+    /**
+     * 是否可见
+     */
+    private Boolean visible;
 }

@@ -6,10 +6,10 @@ base:
       hostname: localhost
       port: 3306
     nacos:
-      hostname: localhost
+      hostname: 39.103.218.148
       port: 8848
     redis:
-      hostname: localhost
+      hostname: 39.103.218.148
       port: 6379
 
 
@@ -68,7 +68,7 @@ feign:
     enabled: false
 
 server:
-  port: 9001
+  port: 20001
 
 management:
   endpoints:

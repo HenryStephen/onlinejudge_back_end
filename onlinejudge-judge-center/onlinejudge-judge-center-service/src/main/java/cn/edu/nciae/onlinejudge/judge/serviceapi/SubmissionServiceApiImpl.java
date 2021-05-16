@@ -28,6 +28,7 @@ public class SubmissionServiceApiImpl extends SubmissionServiceImpl implements S
      * @param submission
      * @return
      */
+    @Override
     public boolean save(Submission submission){
         return super.save(submission);
     }
@@ -39,7 +40,7 @@ public class SubmissionServiceApiImpl extends SubmissionServiceImpl implements S
      * @return
      */
     @Override
-    public Submission getById(Long submissionId) {
+    public Submission getById(String submissionId) {
         return submissionMapper.selectBySubmissionId(submissionId);
     }
 

@@ -26,4 +26,10 @@ public interface UserProblemServiceApi {
      * @return
      */
     List<Long> getSolvedProblemIdList(Long userId);
+
+    /**
+     * 添加或者修改userproblem
+     * @param userProblem
+     */
+    boolean saveOrUpdate(UserProblem userProblem);
 }

@@ -4,14 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -67,8 +64,8 @@ public class Announcement implements Serializable {
     /**
      * 是否删除
      */
-    @TableField(value = "is_deleted")
-    private Boolean isDeleted;
+    @TableField(value = "visible")
+    private Boolean visible;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 2698839643451231403L;
@@ -93,7 +90,7 @@ public class Announcement implements Serializable {
             && (this.getAnnouncementContent() == null ? other.getAnnouncementContent() == null : this.getAnnouncementContent().equals(other.getAnnouncementContent()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))
             && (this.getLastUpdateTime() == null ? other.getLastUpdateTime() == null : this.getLastUpdateTime().equals(other.getLastUpdateTime()))
-            && (this.getIsDeleted() == null ? other.getIsDeleted() == null : this.getIsDeleted().equals(other.getIsDeleted()));
+            && (this.getVisible() == null ? other.getVisible() == null : this.getVisible().equals(other.getVisible()));
     }
 
     @Override
@@ -107,7 +104,7 @@ public class Announcement implements Serializable {
         result = prime * result + ((getAnnouncementContent() == null) ? 0 : getAnnouncementContent().hashCode());
         result = prime * result + ((getCreateTime() == null) ? 0 : getCreateTime().hashCode());
         result = prime * result + ((getLastUpdateTime() == null) ? 0 : getLastUpdateTime().hashCode());
-        result = prime * result + ((getIsDeleted() == null) ? 0 : getIsDeleted().hashCode());
+        result = prime * result + ((getVisible() == null) ? 0 : getVisible().hashCode());
         return result;
     }
 
@@ -124,7 +121,7 @@ public class Announcement implements Serializable {
         sb.append(", announcementContent=").append(announcementContent);
         sb.append(", createTime=").append(createTime);
         sb.append(", lastUpdateTime=").append(lastUpdateTime);
-        sb.append(", isDeleted=").append(isDeleted);
+        sb.append(", visible=").append(visible);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

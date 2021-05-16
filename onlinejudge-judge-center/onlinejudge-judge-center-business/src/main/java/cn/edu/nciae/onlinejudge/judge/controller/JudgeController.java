@@ -71,6 +71,7 @@ public class JudgeController {
      */
     @PostMapping("/heartbeat")
     public MessageDTO<String> heartBeat(@RequestBody HeartBeatParam heartBeatParam){
+//        System.out.println(heartBeatParam.toString());
         return MessageDTO.<String>builder()
                 .data("success")
                 .err(null)
@@ -87,7 +88,7 @@ public class JudgeController {
         // 获取submissionId
         SnowflakeUtil snowflakeUtil = new SnowflakeUtil(1L,1L);
         // 构造submissionId
-        Long submissionId = snowflakeUtil.nextId();
+        String submissionId = snowflakeUtil.nextId().toString();
         // 获取认证信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // 获取用户名
@@ -137,7 +138,7 @@ public class JudgeController {
                                             .languageId(language.getLanguageId())
                                             .build());
         return ResponseResult.<String>builder()
-                            .data(submissionId.toString())
+                            .data(submissionId)
                             .code(BusinessStatus.OK.getCode())
                             .message("提交成功")
                             .build();
@@ -149,7 +150,7 @@ public class JudgeController {
      * @return
      */
     @GetMapping("/submission/{submissionId}")
-    public ResponseResult<Submission> getSubmission(@PathVariable("submissionId") Long submissionId){
+    public ResponseResult<Submission> getSubmission(@PathVariable("submissionId") String submissionId){
         Submission submission = submissionServiceApi.getById(submissionId);
         return ResponseResult.<Submission>builder()
                     .code(BusinessStatus.OK.getCode())

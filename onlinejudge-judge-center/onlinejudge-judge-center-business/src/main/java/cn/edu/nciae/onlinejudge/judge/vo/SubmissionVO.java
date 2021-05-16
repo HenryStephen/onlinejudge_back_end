@@ -26,7 +26,7 @@ public class SubmissionVO implements Serializable {
     /**
      * submissionId
      */
-    private Long submissionId;
+    private String submissionId;
 
     /**
      * 用户id

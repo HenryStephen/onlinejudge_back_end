@@ -16,16 +16,18 @@ public interface AnnouncementServiceApi {
     /**
      * 获取公共公告分页列表
      * @param page
+     * @param isAdmin
      * @return
      */
-    IPage<Announcement> getAnnouncementListPage(Page page);
+    IPage<Announcement> getAnnouncementListPage(Page page, Boolean isAdmin);
 
     /**
      * 获取竞赛公告列表
      * @param competitionId
+     * @param isAdmin
      * @return
      */
-    List<Announcement> list(Long competitionId);
+    List<Announcement> list(Long competitionId, Boolean isAdmin);
 
     /**
      * 根据公告id获取公告信息

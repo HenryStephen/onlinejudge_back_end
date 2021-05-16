@@ -26,7 +26,7 @@ import javax.annotation.Resource;
 @RequestMapping("/userInfo/account")
 public class AccountController {
 
-    @Reference(version = "1.0.0")
+    @Reference(version = "1.0.0",check = false)
     private UserInfoServiceApi userInfoServiceApi;
 
     @Resource

@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dubbo.config.annotation.Service;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -29,8 +28,12 @@ public class AnnouncementServiceApiImpl extends AnnouncementServiceImpl implemen
      * @return
      */
     @Override
-    public IPage<Announcement> getAnnouncementListPage(Page page) {
-        return super.page(page, new QueryWrapper<Announcement>().eq("competition_id",0L));
+    public IPage<Announcement> getAnnouncementListPage(Page page, Boolean isAdmin) {
+        if(isAdmin){
+            return super.page(page, new QueryWrapper<Announcement>().eq("competition_id",0L));
+        }else{
+            return super.page(page,new QueryWrapper<Announcement>().eq("competition_id",0L).eq("visible",1));
+        }
     }
 
     /**
@@ -40,8 +43,12 @@ public class AnnouncementServiceApiImpl extends AnnouncementServiceImpl implemen
      * @return
      */
     @Override
-    public List<Announcement> list(Long competitionId) {
-        return super.list(new QueryWrapper<Announcement>().eq("competition_id", competitionId));
+    public List<Announcement> list(Long competitionId, Boolean isAdmin) {
+        if(isAdmin){
+            return super.list(new QueryWrapper<Announcement>().eq("competition_id", competitionId));
+        }else{
+            return super.list(new QueryWrapper<Announcement>().eq("competition_id", competitionId).eq("visible",1));
+        }
     }
 
     /**
@@ -99,8 +106,8 @@ public class AnnouncementServiceApiImpl extends AnnouncementServiceImpl implemen
             announcement.setCompetitionId(0L);
         }
         // 初始化状态
-        if (announcement.getIsDeleted() == null) {
-            announcement.setIsDeleted(false);
+        if (announcement.getVisible() == null) {
+            announcement.setVisible(true);
         }
     }
 

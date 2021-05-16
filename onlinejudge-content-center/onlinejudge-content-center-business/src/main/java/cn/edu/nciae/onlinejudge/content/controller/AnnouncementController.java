@@ -10,6 +10,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,11 +35,33 @@ public class AnnouncementController {
     public ResponseResult<AnnouncementListVO> getAnnouncementList(@RequestParam("pageNum") Integer pageNum,
                                                                   @RequestParam("limit") Integer limit){
         Page page = new Page<Announcement>(pageNum, limit);
-        IPage<Announcement> announcements = announcementServiceApi.getAnnouncementListPage(page);
+        IPage<Announcement> announcements = announcementServiceApi.getAnnouncementListPage(page,false);
         AnnouncementListVO announcementListVO = AnnouncementListVO.builder()
                                                     .results(announcements.getRecords())
                                                     .total(announcements.getTotal())
                                                     .build();
+        return ResponseResult.<AnnouncementListVO>builder()
+                .code(BusinessStatus.OK.getCode())
+                .message("查询公共公告列表成功")
+                .data(announcementListVO)
+                .build();
+    }
+
+    /**
+     * 获得公共公告列表(管理员)
+     * @param pageNum
+     * @param limit
+     * @return
+     */
+    @GetMapping("/admin")
+    public ResponseResult<AnnouncementListVO> getAnnouncementListAdmin(@RequestParam("pageNum") Integer pageNum,
+                                                                       @RequestParam("limit") Integer limit){
+        Page page = new Page<Announcement>(pageNum, limit);
+        IPage<Announcement> announcements = announcementServiceApi.getAnnouncementListPage(page,true);
+        AnnouncementListVO announcementListVO = AnnouncementListVO.builder()
+                .results(announcements.getRecords())
+                .total(announcements.getTotal())
+                .build();
         return ResponseResult.<AnnouncementListVO>builder()
                 .code(BusinessStatus.OK.getCode())
                 .message("查询公共公告列表成功")
@@ -65,10 +89,17 @@ public class AnnouncementController {
      * @param announcementParam
      * @return
      */
-    @PostMapping
+    @PostMapping("/admin")
     public ResponseResult<Void> addAnnouncement(@RequestBody AnnouncementParam announcementParam){
         Announcement announcement = new Announcement();
         BeanUtils.copyProperties(announcementParam,announcement);
+        // 获取当前用户的用户名
+        // 获取认证信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //获取用户名
+        String userName = authentication.getName();
+        // 设置公告作者
+        announcement.setNickname(userName);
         boolean result = announcementServiceApi.save(announcement);
         if(result){
             return ResponseResult.<Void>builder()
@@ -88,7 +119,7 @@ public class AnnouncementController {
      * @param announcementId
      * @return
      */
-    @DeleteMapping("/{announcementId}")
+    @DeleteMapping("/admin/{announcementId}")
     public ResponseResult<Void> deleteAnnouncement(@PathVariable("announcementId") Long announcementId){
         boolean result = announcementServiceApi.removeById(announcementId);
         if(result){
@@ -106,15 +137,14 @@ public class AnnouncementController {
 
     /**
      * 修改公告(公共+竞赛)
-     * @param announcementId
      * @param announcementParam
      * @return
      */
-    @PutMapping("/{announcementId}")
-    public ResponseResult<Void> updateAnnouncement(@PathVariable("announcementId") Long announcementId,@RequestBody AnnouncementParam announcementParam){
+    @PutMapping("/admin")
+    public ResponseResult<Void> updateAnnouncement(@RequestBody AnnouncementParam announcementParam){
         Announcement announcement = new Announcement();
         BeanUtils.copyProperties(announcementParam,announcement);
-        boolean result = announcementServiceApi.update(announcement, announcementId);
+        boolean result = announcementServiceApi.update(announcement, announcementParam.getAnnouncementId());
         if(result){
             return ResponseResult.<Void>builder()
                     .code(BusinessStatus.OK.getCode())
