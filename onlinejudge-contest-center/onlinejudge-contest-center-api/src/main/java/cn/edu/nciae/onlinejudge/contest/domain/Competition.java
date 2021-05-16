@@ -4,12 +4,11 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -70,28 +69,28 @@ public class Competition implements Serializable {
      * 竞赛创建时间
      */
     @TableField(value = "competition_create_time")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
     private Date competitionCreateTime;
 
     /**
      * 竞赛开始时间
      */
     @TableField(value = "competition_start_time")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
     private Date competitionStartTime;
 
     /**
      * 竞赛结束时间
      */
     @TableField(value = "competition_end_time")
-    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
     private Date competitionEndTime;
 
     /**
-     * 是否删除
+     * 是否可见
      */
-    @TableField(value = "is_deleted")
-    private Boolean isDeleted;
+    @TableField(value = "visible")
+    private Boolean visible;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -119,7 +118,7 @@ public class Competition implements Serializable {
             && (this.getCompetitionCreateTime() == null ? other.getCompetitionCreateTime() == null : this.getCompetitionCreateTime().equals(other.getCompetitionCreateTime()))
             && (this.getCompetitionStartTime() == null ? other.getCompetitionStartTime() == null : this.getCompetitionStartTime().equals(other.getCompetitionStartTime()))
             && (this.getCompetitionEndTime() == null ? other.getCompetitionEndTime() == null : this.getCompetitionEndTime().equals(other.getCompetitionEndTime()))
-            && (this.getIsDeleted() == null ? other.getIsDeleted() == null : this.getIsDeleted().equals(other.getIsDeleted()));
+            && (this.getVisible() == null ? other.getVisible() == null : this.getVisible().equals(other.getVisible()));
     }
 
     @Override
@@ -137,7 +136,7 @@ public class Competition implements Serializable {
         result = prime * result + ((getCompetitionCreateTime() == null) ? 0 : getCompetitionCreateTime().hashCode());
         result = prime * result + ((getCompetitionStartTime() == null) ? 0 : getCompetitionStartTime().hashCode());
         result = prime * result + ((getCompetitionEndTime() == null) ? 0 : getCompetitionEndTime().hashCode());
-        result = prime * result + ((getIsDeleted() == null) ? 0 : getIsDeleted().hashCode());
+        result = prime * result + ((getVisible() == null) ? 0 : getVisible().hashCode());
         return result;
     }
 
@@ -158,7 +157,7 @@ public class Competition implements Serializable {
         sb.append(", competitionCreateTime=").append(competitionCreateTime);
         sb.append(", competitionStartTime=").append(competitionStartTime);
         sb.append(", competitionEndTime=").append(competitionEndTime);
-        sb.append(", isDeleted=").append(isDeleted);
+        sb.append(", visible=").append(visible);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

@@ -16,7 +16,7 @@
             <result property="competitionCreateTime" column="competition_create_time" jdbcType="TIMESTAMP"/>
             <result property="competitionStartTime" column="competition_start_time" jdbcType="TIMESTAMP"/>
             <result property="competitionEndTime" column="competition_end_time" jdbcType="TIMESTAMP"/>
-            <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+            <result property="visible" column="visible" jdbcType="BOOLEAN"/>
     </resultMap>
 
     <resultMap id="CompetitionViewResultMap" type="cn.edu.nciae.onlinejudge.contest.vo.CompetitionDTO">
@@ -31,14 +31,14 @@
         <result property="competitionCreateTime" column="competition_create_time" jdbcType="TIMESTAMP"/>
         <result property="competitionStartTime" column="competition_start_time" jdbcType="TIMESTAMP"/>
         <result property="competitionEndTime" column="competition_end_time" jdbcType="TIMESTAMP"/>
-        <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+        <result property="visible" column="visible" jdbcType="BOOLEAN"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         competition_id,competition_create_user,competition_title,
         competition_description,competition_rule_type,competition_type,
         competition_password,competition_real_time_rank,competition_create_time,
-        competition_start_time,competition_end_time,is_deleted
+        competition_start_time,competition_end_time,visible
     </sql>
 
     <select id="selectCompetitionVOListPage" resultMap="CompetitionViewResultMap">
@@ -56,6 +56,9 @@
                 c.competition_title like CONCAT('%',#{competitionParam.keyword},'%') or
                 c.competition_description like CONCAT('%',#{competitionParam.keyword},'%')
                 )
+            </if>
+            <if test="competitionParam.isAdmin != null and competitionParam.isAdmin == false">
+                c.visible = 1
             </if>
         </where>
     </select>

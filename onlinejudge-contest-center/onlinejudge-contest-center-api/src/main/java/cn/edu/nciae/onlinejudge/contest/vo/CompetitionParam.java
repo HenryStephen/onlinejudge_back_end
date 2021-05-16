@@ -35,4 +35,9 @@ public class CompetitionParam implements Serializable {
      * 页数
      */
     private Integer page;
+
+    /**
+     * 是否管理员
+     */
+    private Boolean isAdmin;
 }

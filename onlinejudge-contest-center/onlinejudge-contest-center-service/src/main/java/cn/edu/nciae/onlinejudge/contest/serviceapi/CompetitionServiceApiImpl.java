@@ -1,14 +1,18 @@
 package cn.edu.nciae.onlinejudge.contest.serviceapi;
 
 import cn.edu.nciae.onlinejudge.contest.api.CompetitionServiceApi;
+import cn.edu.nciae.onlinejudge.contest.domain.Competition;
 import cn.edu.nciae.onlinejudge.contest.mapper.CompetitionMapper;
 import cn.edu.nciae.onlinejudge.contest.service.impl.CompetitionServiceImpl;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionDTO;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionParam;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Date;
 
 /**
  * @author zhanghonglin
@@ -43,5 +47,45 @@ public class CompetitionServiceApiImpl extends CompetitionServiceImpl implements
     @Override
     public CompetitionDTO getCompetitionVOById(Long competitionId) {
         return competitionMapper.selectCompetitionVOById(competitionId);
+    }
+
+    /**
+     * 更改竞赛信息
+     *
+     * @param competition
+     * @param competitionId
+     * @return
+     */
+    @Override
+    public boolean update(Competition competition, Long competitionId) {
+        return super.update(competition, new UpdateWrapper<Competition>().eq("competition_id", competitionId));
+    }
+
+    /**
+     * 添加竞赛
+     * @param competition
+     * @return
+     */
+    @Override
+    public boolean save(Competition competition){
+        initAdd(competition);
+        return super.save(competition);
+    }
+
+    /**
+     * 添加竞赛时初始化的信息
+     * @param competition
+     */
+    private void initAdd(Competition competition){
+        competition.setCompetitionCreateTime(new Date());
+        if(competition.getCompetitionPassword() == null){
+            competition.setCompetitionType("Public");
+        }else{
+            competition.setCompetitionType("Password Protected");
+        }
+        // 初始化状态
+        if (competition.getVisible() == null) {
+            competition.setVisible(true);
+        }
     }
 }

@@ -2,22 +2,24 @@ package cn.edu.nciae.onlinejudge.contest.controller;
 
 import cn.edu.nciae.onlinejudge.commons.business.BusinessStatus;
 import cn.edu.nciae.onlinejudge.commons.dto.ResponseResult;
-import cn.edu.nciae.onlinejudge.content.api.ProblemServiceApi;
-import cn.edu.nciae.onlinejudge.content.domain.Problem;
-import cn.edu.nciae.onlinejudge.contest.api.CompetitionProblemServiceApi;
 import cn.edu.nciae.onlinejudge.contest.api.CompetitionServiceApi;
-import cn.edu.nciae.onlinejudge.contest.vo.*;
+import cn.edu.nciae.onlinejudge.contest.domain.Competition;
+import cn.edu.nciae.onlinejudge.contest.vo.CompetitionDTO;
+import cn.edu.nciae.onlinejudge.contest.vo.CompetitionListVO;
+import cn.edu.nciae.onlinejudge.contest.vo.CompetitionParam;
+import cn.edu.nciae.onlinejudge.contest.vo.CompetitionPassword;
 import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
 import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author zhanghonglin
@@ -96,6 +98,59 @@ public class CompetitionController {
     }
 
     /**
+     * 修改竞赛信息
+     * @param competition
+     * @return
+     */
+    @PutMapping
+    public ResponseResult<Void> updateCompetition(@RequestBody Competition competition){
+        boolean result = competitionServiceApi.update(competition, competition.getCompetitionId());
+        if(result){
+            return ResponseResult.<Void>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("修改竞赛信息成功")
+                    .build();
+        }else{
+            return ResponseResult.<Void>builder()
+                    .code(BusinessStatus.FAIL.getCode())
+                    .message("修改竞赛信息失败")
+                    .build();
+        }
+    }
+
+    /**
+     * 添加竞赛
+     * @param competition
+     * @return
+     */
+    @PostMapping
+    public ResponseResult<Void> addCompetition(@RequestBody Competition competition){
+        // 获取认证信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //获取用户名
+        String userName = authentication.getName();
+        UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
+//        设置创建竞赛人id
+        competition.setCompetitionCreateUser(userInfo.getUserId());
+        // 对密码加密
+        if(competition.getCompetitionPassword() != null){
+            competition.setCompetitionPassword(passwordEncoder.encode(competition.getCompetitionPassword()));
+        }
+        boolean result = competitionServiceApi.save(competition);
+        if(result){
+            return ResponseResult.<Void>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("添加竞赛成功")
+                    .build();
+        }else{
+            return ResponseResult.<Void>builder()
+                    .code(BusinessStatus.FAIL.getCode())
+                    .message("添加竞赛失败")
+                    .build();
+        }
+    }
+
+    /**
      * 验证竞赛密码
      * @param competitionPassword
      * @return
@@ -103,8 +158,6 @@ public class CompetitionController {
     @PostMapping("/password")
     public ResponseResult<Void> checkCompetitionPassword(@RequestBody CompetitionPassword competitionPassword){
         CompetitionDTO competitionDTO = competitionServiceApi.getCompetitionVOById(competitionPassword.getCompetitionId());
-        System.out.println(competitionPassword.toString());
-        System.out.println(competitionDTO);
         if(competitionDTO == null || !passwordEncoder.matches(competitionPassword.getPassword(), competitionDTO.getCompetitionPassword())){
             return ResponseResult.<Void>builder()
                                 .code(BusinessStatus.FAIL.getCode())

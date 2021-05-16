@@ -1,5 +1,6 @@
 package cn.edu.nciae.onlinejudge.contest.api;
 
+import cn.edu.nciae.onlinejudge.contest.domain.Competition;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionDTO;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionParam;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -26,4 +27,19 @@ public interface CompetitionServiceApi {
      * @return
      */
     CompetitionDTO getCompetitionVOById(Long competitionId);
+
+	/**
+	 * 更改竞赛信息
+	 * @param competition
+	 * @param competitionId
+	 * @return
+	 */
+	boolean update(Competition competition, Long competitionId);
+
+	/**
+	 * 添加竞赛
+	 * @param competition
+	 * @return
+	 */
+	boolean save(Competition competition);
 }
