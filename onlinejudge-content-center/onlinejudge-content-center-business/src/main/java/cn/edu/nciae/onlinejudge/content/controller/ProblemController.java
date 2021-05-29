@@ -2,11 +2,11 @@ package cn.edu.nciae.onlinejudge.content.controller;
 
 import cn.edu.nciae.onlinejudge.commons.business.BusinessStatus;
 import cn.edu.nciae.onlinejudge.commons.dto.ResponseResult;
-import cn.edu.nciae.onlinejudge.content.api.ProblemServiceApi;
-import cn.edu.nciae.onlinejudge.content.api.SampleServiceApi;
-import cn.edu.nciae.onlinejudge.content.domain.Checkpoint;
+import cn.edu.nciae.onlinejudge.content.api.*;
 import cn.edu.nciae.onlinejudge.content.domain.Problem;
-import cn.edu.nciae.onlinejudge.content.message.provider.CheckpointProvider;
+import cn.edu.nciae.onlinejudge.content.domain.ProblemLanguage;
+import cn.edu.nciae.onlinejudge.content.domain.ProblemTag;
+import cn.edu.nciae.onlinejudge.content.domain.Tag;
 import cn.edu.nciae.onlinejudge.content.utils.FPSUtils;
 import cn.edu.nciae.onlinejudge.content.vo.ProblemDTO;
 import cn.edu.nciae.onlinejudge.content.vo.ProblemListVO;
@@ -27,7 +27,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,9 +57,14 @@ public class ProblemController {
     @Reference(version = "1.0.0", check = false)
     private CompetitionProblemServiceApi competitionProblemServiceApi;
 
-    @Resource
-    private CheckpointProvider checkpointProvider;
+    @Reference(version = "1.0.0", check = false)
+    private ProblemLanguageServiceApi problemLanguageServiceApi;
 
+    @Reference(version = "1.0.0", check = false)
+    private TagServiceApi tagServiceApi;
+
+    @Reference(version = "1.0.0", check = false)
+    private ProblemTagServiceApi problemTagServiceApi;
 
     /**
      * 查询公共题目分页列表
@@ -197,12 +201,6 @@ public class ProblemController {
         for (ProblemDTO problemDTO : problemDTOList) {
             //重新接收，获得problemId
             problemDTO = problemServiceApi.insertOneProblemVO(problemDTO);
-            //增加测试用例
-            for (Checkpoint checkpoint : problemDTO.getCheckpoints()) {
-                checkpoint.setProblemId(problemDTO.getProblemId());
-            }
-            //异步发送消息
-            checkpointProvider.addCheckpointList(problemDTO.getCheckpoints());
         }
         return ResponseResult.<ProblemListVO>builder()
                 .message("添加FPS成功")
@@ -220,7 +218,49 @@ public class ProblemController {
      */
     @PostMapping
     public ResponseResult<ProblemDTO> addProblem(@RequestBody ProblemDTO problemDTO){
+//        添加题目、样例、标签等信息
         problemDTO = problemServiceApi.insertOneProblemVO(problemDTO);
+        // 添加problem_language
+        List<String> languageList = problemDTO.getLanguages();
+        for(String s : languageList){
+            Languages language = languagesServiceApi.getLanguageByLanguageName(s, false);
+            ProblemLanguage problemLanguage = new ProblemLanguage();
+            problemLanguage.setLanguageId(language.getLanguageId());
+            problemLanguage.setProblemId(problemDTO.getProblemId());
+            problemLanguageServiceApi.save(problemLanguage);
+        }
+        // 添加到competition_problem中
+        CompetitionProblem competitionProblem = new CompetitionProblem();
+        if(problemDTO.getContestId() != null){
+            competitionProblem.setCompetitionId(problemDTO.getContestId());
+        }else{
+            competitionProblem.setCompetitionId(0L);
+        }
+        competitionProblem.setProblemId(problemDTO.getProblemId());
+        competitionProblem.setProblemDisplayId(problemDTO.getProblemDisplayId());
+        competitionProblem.setSubmitNumber(0);
+        competitionProblem.setSolvedNumber(0);
+        competitionProblemServiceApi.save(competitionProblem);
+        // 添加tag 和 problem_tag
+        List<Tag> tagList = problemDTO.getTags();
+        // 查出是否有该tag
+        for(Tag tag : tagList){
+            ProblemTag problemTag = new ProblemTag();
+            problemTag.setProblemId(problemDTO.getProblemId());
+            //根据标签名查找是否有标签
+            Tag tagTemp = tagServiceApi.getTagByTagName(tag.getTagName());
+            // 说明没有该标签
+            if(tagTemp == null){
+                tag.setTagDescription(tag.getTagName());
+                // 添加新标签
+                tagServiceApi.save(tag);
+                problemTag.setTagId(tag.getTagId());
+            }else{
+                problemTag.setTagId(tagTemp.getTagId());
+            }
+            // 保存problemTag
+            problemTagServiceApi.save(problemTag);
+        }
         return ResponseResult.<ProblemDTO>builder()
                 .message("添加题目成功")
                 .code(BusinessStatus.OK.getCode())

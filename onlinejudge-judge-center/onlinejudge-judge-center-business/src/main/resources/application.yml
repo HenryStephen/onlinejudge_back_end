@@ -39,7 +39,6 @@ spring:
       bindings:
         create-submission-output: {destination: createSubmission, content-type: application/json}
         create-submission-input: {destination: createSubmission, content-type: text/plain, group: submission-group, consumer.maxAttempts: 1}
-        add-checkpoint-input: {destination: addcheckpoint, content-type: text/plain, group: checkpoint-group, consumer.maxAttempts: 1}
 
 security:
   oauth2:

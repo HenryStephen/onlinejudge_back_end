@@ -17,4 +17,18 @@ public interface TagServiceApi {
      * @return
      */
     List<Tag> list(TagParam tagParam);
+
+    /**
+     * 根据标签名称查找标签
+     * @param tagName
+     * @return
+     */
+    Tag getTagByTagName(String tagName);
+
+    /**
+     * 添加标签
+     * @param tag
+     * @return
+     */
+    boolean save(Tag tag);
 }

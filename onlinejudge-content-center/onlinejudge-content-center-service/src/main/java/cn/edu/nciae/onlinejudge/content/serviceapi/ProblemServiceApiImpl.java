@@ -72,8 +72,10 @@ public class ProblemServiceApiImpl extends ProblemServiceImpl implements Problem
      */
     @Override
     public ProblemDTO insertOneProblemVO(ProblemDTO problemDTO) {
+//        首先转换成Problem
         Problem problem = problemDTO.unzipProblemVO();
         problemMapper.insert(problem);
+//        添加sample
         for (Sample sample : problemDTO.getSamples()) {
             sample.setProblemId(problem.getProblemId());
             sampleMapper.insert(sample);

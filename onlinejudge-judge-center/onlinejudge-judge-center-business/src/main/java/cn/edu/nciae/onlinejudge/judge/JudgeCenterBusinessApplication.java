@@ -1,6 +1,5 @@
 package cn.edu.nciae.onlinejudge.judge;
 
-import cn.edu.nciae.onlinejudge.judge.message.sink.CheckpointSink;
 import cn.edu.nciae.onlinejudge.judge.message.sink.SubmissionSink;
 import cn.edu.nciae.onlinejudge.judge.message.source.SubmissionSource;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +14,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
  */
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableBinding({CheckpointSink.class, SubmissionSink.class, SubmissionSource.class})
+@EnableBinding({SubmissionSink.class, SubmissionSource.class})
 public class JudgeCenterBusinessApplication {
     public static void main(String[] args) {
         SpringApplication.run(JudgeCenterBusinessApplication.class, args);

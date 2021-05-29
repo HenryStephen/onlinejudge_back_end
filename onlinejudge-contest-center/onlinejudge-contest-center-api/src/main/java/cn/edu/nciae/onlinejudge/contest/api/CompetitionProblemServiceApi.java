@@ -33,4 +33,11 @@ public interface CompetitionProblemServiceApi {
 	 * @return
 	 */
 	CompetitionProblem getByCompetitionIdAndProblemId(Long competitionId, Long problemId);
+
+	/**
+	 * 添加竞赛题目关系
+	 * @param competitionProblem
+	 * @return
+	 */
+	boolean save(CompetitionProblem competitionProblem);
 }

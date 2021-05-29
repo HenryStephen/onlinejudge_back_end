@@ -27,4 +27,24 @@ public class TagServiceApiImpl extends TagServiceImpl implements TagServiceApi {
     public List<Tag> list(TagParam tagParam) {
         return super.list(new QueryWrapper<Tag>().like("tag_name",tagParam.getKeyword()));
     }
+
+    /**
+     * 根据标签名称查找标签
+     * @param tagName
+     * @return
+     */
+    @Override
+    public Tag getTagByTagName(String tagName) {
+        return super.getOne(new QueryWrapper<Tag>().eq("tag_name",tagName));
+    }
+
+    /**
+     * 添加标签
+     * @param tag
+     * @return
+     */
+    @Override
+    public boolean save(Tag tag){
+        return super.save(tag);
+    }
 }

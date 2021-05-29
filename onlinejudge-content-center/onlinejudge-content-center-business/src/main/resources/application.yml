@@ -27,8 +27,6 @@ spring:
       rocketmq:
         binder:
           name-server: ${base.config.rocketmq.hostname}:${base.config.rocketmq.port}
-      bindings:
-        add-checkpoint-output: {destination: addcheckpoint, content-type: application/json}
 
 security:
   oauth2:
