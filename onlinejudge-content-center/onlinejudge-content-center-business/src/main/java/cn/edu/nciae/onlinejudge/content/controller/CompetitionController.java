@@ -51,4 +51,5 @@ public class CompetitionController {
                 .data(announcements)
                 .build();
     }
+
 }

@@ -3,17 +3,13 @@ package cn.edu.nciae.onlinejudge.judge.message.consumer;
 import cn.edu.nciae.onlinejudge.commons.utils.MapperUtils;
 import cn.edu.nciae.onlinejudge.commons.utils.OkHttpClientUtil;
 import cn.edu.nciae.onlinejudge.content.api.ProblemServiceApi;
-import cn.edu.nciae.onlinejudge.content.domain.Problem;
-import cn.edu.nciae.onlinejudge.content.vo.ProblemDTO;
 import cn.edu.nciae.onlinejudge.judge.api.SubmissionServiceApi;
 import cn.edu.nciae.onlinejudge.judge.domain.Submission;
 import cn.edu.nciae.onlinejudge.judge.vo.JudgeResponse;
 import cn.edu.nciae.onlinejudge.judge.vo.JudgeResult;
 import cn.edu.nciae.onlinejudge.judge.vo.SubmissionVO;
 import cn.edu.nciae.onlinejudge.statistic.api.UserProblemServiceApi;
-import cn.edu.nciae.onlinejudge.statistic.domain.UserProblem;
 import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
-import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
 import org.apache.dubbo.config.annotation.Reference;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Value;
@@ -102,51 +98,51 @@ public class SubmissionConsumer {
         // 保存submission
         submissionServiceApi.save(submission);
         //未处在竞赛中时
-        if(submissionVO.getContestId() == null){
-            // 更新题目的解决人数和提交数量
-            ProblemDTO problemDTO = problemServiceApi.getProblemVOByPid(submissionVO.getProblemId());
-            Integer problemSolvedNumber = problemDTO.getProblemSolvedNumber();
-            Integer problemSubmitNumber = problemDTO.getProblemSubmitNumber();
-            Problem problem = new Problem();
-            //提交问题的数量加一
-            problem.setProblemSubmitNumber(problemSubmitNumber+1);
-            if(status.equals(JudgeResult.SUCCESS.getCode())){
-                //解决问题数量加一
-                problem.setProblemSolvedNumber(problemSolvedNumber+1);
-            }
-            problemServiceApi.update(problem, submissionVO.getProblemId());
-            //更新userInfo
-            UserInfo userInfo = userInfoServiceApi.getByUserId(submissionVO.getUserId());
-            Integer userSubmissionNumber = userInfo.getUserSubmissionNumber();
-            Integer userSolveNumber = userInfo.getUserSolveNumber();
-            userInfo = new UserInfo();
-            userInfo.setUserSubmissionNumber(userSubmissionNumber+1);
-            // 更新userProblem
-            UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(submissionVO.getUserId(), submissionVO.getProblemId());
-            if(userProblem != null){
-                // 如果状态不为 success,则修改
-                if(!userProblem.getStatus().equals(JudgeResult.SUCCESS.getCode())){
-                    // 如果此次的状态为success
-                    if(status.equals(JudgeResult.SUCCESS.getCode())){
-                        userProblem.setStatus(status);
-                        userInfo.setUserSolveNumber(userSolveNumber+1);
-                    }else{
-                        userProblem.setStatus(Math.max(userProblem.getStatus(),status));
-                    }
-                }
-            }else{
-                // 如果不存在信息
-                userProblem = new UserProblem();
-                userProblem.setUserId(submissionVO.getUserId());
-                userProblem.setProblemId(submissionVO.getProblemId());
-                userProblem.setStatus(status);
-                if(status.equals(JudgeResult.SUCCESS.getCode())){
-                    userInfo.setUserSolveNumber(userSolveNumber+1);
-                }
-            }
-            userInfoServiceApi.update(userInfo, submissionVO.getUserId());
-            userProblemServiceApi.saveOrUpdate(userProblem);
-        }
+//        if(submissionVO.getContestId() == null){
+//            // 更新题目的解决人数和提交数量
+//            ProblemDTO problemDTO = problemServiceApi.getProblemVOByPid(submissionVO.getProblemId());
+//            Integer problemSolvedNumber = problemDTO.getProblemSolvedNumber();
+//            Integer problemSubmitNumber = problemDTO.getProblemSubmitNumber();
+//            Problem problem = new Problem();
+//            //提交问题的数量加一
+//            problem.setProblemSubmitNumber(problemSubmitNumber+1);
+//            if(status.equals(JudgeResult.SUCCESS.getCode())){
+//                //解决问题数量加一
+//                problem.setProblemSolvedNumber(problemSolvedNumber+1);
+//            }
+//            problemServiceApi.update(problem, submissionVO.getProblemId());
+//            //更新userInfo
+//            UserInfo userInfo = userInfoServiceApi.getByUserId(submissionVO.getUserId());
+//            Integer userSubmissionNumber = userInfo.getUserSubmissionNumber();
+//            Integer userSolveNumber = userInfo.getUserSolveNumber();
+//            userInfo = new UserInfo();
+//            userInfo.setUserSubmissionNumber(userSubmissionNumber+1);
+//            // 更新userProblem
+//            UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(submissionVO.getUserId(), submissionVO.getProblemId());
+//            if(userProblem != null){
+//                // 如果状态不为 success,则修改
+//                if(!userProblem.getStatus().equals(JudgeResult.SUCCESS.getCode())){
+//                    // 如果此次的状态为success
+//                    if(status.equals(JudgeResult.SUCCESS.getCode())){
+//                        userProblem.setStatus(status);
+//                        userInfo.setUserSolveNumber(userSolveNumber+1);
+//                    }else{
+//                        userProblem.setStatus(Math.max(userProblem.getStatus(),status));
+//                    }
+//                }
+//            }else{
+//                // 如果不存在信息
+//                userProblem = new UserProblem();
+//                userProblem.setUserId(submissionVO.getUserId());
+//                userProblem.setProblemId(submissionVO.getProblemId());
+//                userProblem.setStatus(status);
+//                if(status.equals(JudgeResult.SUCCESS.getCode())){
+//                    userInfo.setUserSolveNumber(userSolveNumber+1);
+//                }
+//            }
+//            userInfoServiceApi.update(userInfo, submissionVO.getUserId());
+//            userProblemServiceApi.saveOrUpdate(userProblem);
+//        }
 
     }
 

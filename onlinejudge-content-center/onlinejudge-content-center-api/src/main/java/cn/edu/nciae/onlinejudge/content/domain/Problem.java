@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 /**
- *
+ * 
  * @TableName problem
  */
 @TableName(value ="problem")
@@ -63,28 +66,10 @@ public class Problem implements Serializable {
     private Integer problemMemoryLimit;
 
     /**
-     * 提交次数
-     */
-    @TableField(value = "problem_submit_number")
-    private Integer problemSubmitNumber;
-
-    /**
-     * 解决人数
-     */
-    @TableField(value = "problem_solved_number")
-    private Integer problemSolvedNumber;
-
-    /**
      * 题目作者
      */
     @TableField(value = "problem_author")
     private String problemAuthor;
-
-    /**
-     * 特殊判题默认否0 是1
-     */
-    @TableField(value = "problem_special_judge")
-    private Boolean problemSpecialJudge;
 
     /**
      * 提示
@@ -105,16 +90,17 @@ public class Problem implements Serializable {
     private String problemDifficulty;
 
     /**
-     * 状态0 public，1 private
-     */
-    @TableField(value = "problem_status")
-    private Integer problemStatus;
-
-    /**
      * 测试用例id
      */
     @TableField(value = "problem_testcase_id")
     private String problemTestcaseId;
+
+    /**
+     * 题目创建时间
+     */
+    @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+    @TableField(value = "problem_create_time")
+    private LocalDateTime problemCreateTime;
 
     /**
      * 是否为特殊判题
@@ -125,8 +111,8 @@ public class Problem implements Serializable {
     /**
      * 是否删除
      */
-    @TableField(value = "is_deleted")
-    private Boolean isDeleted;
+    @TableField(value = "visible")
+    private Boolean visible;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -151,17 +137,14 @@ public class Problem implements Serializable {
             && (this.getProblemOutputFormation() == null ? other.getProblemOutputFormation() == null : this.getProblemOutputFormation().equals(other.getProblemOutputFormation()))
             && (this.getProblemTimeLimit() == null ? other.getProblemTimeLimit() == null : this.getProblemTimeLimit().equals(other.getProblemTimeLimit()))
             && (this.getProblemMemoryLimit() == null ? other.getProblemMemoryLimit() == null : this.getProblemMemoryLimit().equals(other.getProblemMemoryLimit()))
-            && (this.getProblemSubmitNumber() == null ? other.getProblemSubmitNumber() == null : this.getProblemSubmitNumber().equals(other.getProblemSubmitNumber()))
-            && (this.getProblemSolvedNumber() == null ? other.getProblemSolvedNumber() == null : this.getProblemSolvedNumber().equals(other.getProblemSolvedNumber()))
             && (this.getProblemAuthor() == null ? other.getProblemAuthor() == null : this.getProblemAuthor().equals(other.getProblemAuthor()))
-            && (this.getProblemSpecialJudge() == null ? other.getProblemSpecialJudge() == null : this.getProblemSpecialJudge().equals(other.getProblemSpecialJudge()))
             && (this.getProblemReminder() == null ? other.getProblemReminder() == null : this.getProblemReminder().equals(other.getProblemReminder()))
             && (this.getProblemSource() == null ? other.getProblemSource() == null : this.getProblemSource().equals(other.getProblemSource()))
             && (this.getProblemDifficulty() == null ? other.getProblemDifficulty() == null : this.getProblemDifficulty().equals(other.getProblemDifficulty()))
-            && (this.getProblemStatus() == null ? other.getProblemStatus() == null : this.getProblemStatus().equals(other.getProblemStatus()))
             && (this.getProblemTestcaseId() == null ? other.getProblemTestcaseId() == null : this.getProblemTestcaseId().equals(other.getProblemTestcaseId()))
+            && (this.getProblemCreateTime() == null ? other.getProblemCreateTime() == null : this.getProblemCreateTime().equals(other.getProblemCreateTime()))
             && (this.getIsSpj() == null ? other.getIsSpj() == null : this.getIsSpj().equals(other.getIsSpj()))
-            && (this.getIsDeleted() == null ? other.getIsDeleted() == null : this.getIsDeleted().equals(other.getIsDeleted()));
+            && (this.getVisible() == null ? other.getVisible() == null : this.getVisible().equals(other.getVisible()));
     }
 
     @Override
@@ -176,17 +159,14 @@ public class Problem implements Serializable {
         result = prime * result + ((getProblemOutputFormation() == null) ? 0 : getProblemOutputFormation().hashCode());
         result = prime * result + ((getProblemTimeLimit() == null) ? 0 : getProblemTimeLimit().hashCode());
         result = prime * result + ((getProblemMemoryLimit() == null) ? 0 : getProblemMemoryLimit().hashCode());
-        result = prime * result + ((getProblemSubmitNumber() == null) ? 0 : getProblemSubmitNumber().hashCode());
-        result = prime * result + ((getProblemSolvedNumber() == null) ? 0 : getProblemSolvedNumber().hashCode());
         result = prime * result + ((getProblemAuthor() == null) ? 0 : getProblemAuthor().hashCode());
-        result = prime * result + ((getProblemSpecialJudge() == null) ? 0 : getProblemSpecialJudge().hashCode());
         result = prime * result + ((getProblemReminder() == null) ? 0 : getProblemReminder().hashCode());
         result = prime * result + ((getProblemSource() == null) ? 0 : getProblemSource().hashCode());
         result = prime * result + ((getProblemDifficulty() == null) ? 0 : getProblemDifficulty().hashCode());
-        result = prime * result + ((getProblemStatus() == null) ? 0 : getProblemStatus().hashCode());
         result = prime * result + ((getProblemTestcaseId() == null) ? 0 : getProblemTestcaseId().hashCode());
+        result = prime * result + ((getProblemCreateTime() == null) ? 0 : getProblemCreateTime().hashCode());
         result = prime * result + ((getIsSpj() == null) ? 0 : getIsSpj().hashCode());
-        result = prime * result + ((getIsDeleted() == null) ? 0 : getIsDeleted().hashCode());
+        result = prime * result + ((getVisible() == null) ? 0 : getVisible().hashCode());
         return result;
     }
 
@@ -204,17 +184,14 @@ public class Problem implements Serializable {
         sb.append(", problemOutputFormation=").append(problemOutputFormation);
         sb.append(", problemTimeLimit=").append(problemTimeLimit);
         sb.append(", problemMemoryLimit=").append(problemMemoryLimit);
-        sb.append(", problemSubmitNumber=").append(problemSubmitNumber);
-        sb.append(", problemSolvedNumber=").append(problemSolvedNumber);
         sb.append(", problemAuthor=").append(problemAuthor);
-        sb.append(", problemSpecialJudge=").append(problemSpecialJudge);
         sb.append(", problemReminder=").append(problemReminder);
         sb.append(", problemSource=").append(problemSource);
         sb.append(", problemDifficulty=").append(problemDifficulty);
-        sb.append(", problemStatus=").append(problemStatus);
         sb.append(", problemTestcaseId=").append(problemTestcaseId);
+        sb.append(", problemCreateTime=").append(problemCreateTime);
         sb.append(", isSpj=").append(isSpj);
-        sb.append(", isDeleted=").append(isDeleted);
+        sb.append(", visible=").append(visible);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

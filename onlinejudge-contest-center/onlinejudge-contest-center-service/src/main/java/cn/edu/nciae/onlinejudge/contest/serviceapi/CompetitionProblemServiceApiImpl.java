@@ -45,4 +45,16 @@ public class CompetitionProblemServiceApiImpl extends CompetitionProblemServiceI
     public CompetitionProblem getByCompetitionIdAndDisplayId(Long competitionId, Long problemDisplayId) {
         return super.getOne(new QueryWrapper<CompetitionProblem>().eq("competition_id",competitionId).eq("problem_display_id",problemDisplayId));
     }
+
+    /**
+     * 根据题目id查看CompetitionProblem
+     *
+     * @param competitionId
+     * @param problemId
+     * @return
+     */
+    @Override
+    public CompetitionProblem getByCompetitionIdAndProblemId(Long competitionId, Long problemId) {
+        return super.getOne(new QueryWrapper<CompetitionProblem>().eq("competition_id",competitionId).eq("problem_id", problemId));
+    }
 }

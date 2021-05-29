@@ -6,11 +6,14 @@ import cn.edu.nciae.onlinejudge.content.api.ProblemServiceApi;
 import cn.edu.nciae.onlinejudge.content.api.SampleServiceApi;
 import cn.edu.nciae.onlinejudge.content.domain.Checkpoint;
 import cn.edu.nciae.onlinejudge.content.domain.Problem;
-import cn.edu.nciae.onlinejudge.content.vo.ProblemParam;
-import cn.edu.nciae.onlinejudge.content.vo.ProblemListVO;
-import cn.edu.nciae.onlinejudge.content.vo.ProblemDTO;
 import cn.edu.nciae.onlinejudge.content.message.provider.CheckpointProvider;
 import cn.edu.nciae.onlinejudge.content.utils.FPSUtils;
+import cn.edu.nciae.onlinejudge.content.vo.ProblemDTO;
+import cn.edu.nciae.onlinejudge.content.vo.ProblemListVO;
+import cn.edu.nciae.onlinejudge.content.vo.ProblemParam;
+import cn.edu.nciae.onlinejudge.contest.api.CompetitionProblemServiceApi;
+import cn.edu.nciae.onlinejudge.contest.domain.CompetitionProblem;
+import cn.edu.nciae.onlinejudge.contest.vo.CompetitionProblemDTO;
 import cn.edu.nciae.onlinejudge.judge.api.LanguagesServiceApi;
 import cn.edu.nciae.onlinejudge.judge.domain.Languages;
 import cn.edu.nciae.onlinejudge.statistic.api.UserProblemServiceApi;
@@ -52,46 +55,69 @@ public class ProblemController {
     @Reference(version = "1.0.0", check = false)
     private UserInfoServiceApi userInfoServiceApi;
 
+    @Reference(version = "1.0.0", check = false)
+    private CompetitionProblemServiceApi competitionProblemServiceApi;
+
     @Resource
     private CheckpointProvider checkpointProvider;
 
 
     /**
-     * 查询题目分页列表
-     * @param paging
+     * 查询公共题目分页列表
      * @param offset
      * @param limit
      * @param problemParam
      * @return
      */
     @GetMapping
-    public ResponseResult<ProblemListVO> getProblemList(@RequestParam("paging") Boolean paging,
-                                                        @RequestParam("offset") Integer offset,
+    public ResponseResult<ProblemListVO> getProblemList(@RequestParam("offset") Integer offset,
                                                         @RequestParam("limit") Integer limit,
                                                         ProblemParam problemParam) {
-        if (paging) {
-            Page page;
-            if (problemParam.getPage() != null){
-                page = new Page<ProblemDTO>(problemParam.getPage(), limit);
-            } else {
-                page = new Page<ProblemDTO>(1, limit);
-            }
-            IPage<ProblemDTO> problems = problemServiceApi.getProblemListPage(page, problemParam);
-            // 获取认证信息
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            //获取用户名
-            String userName = authentication.getName();
-//            如果不是匿名用户，已认证时
-            if(!"anonymousUser".equals(userName)){
-                //获取用户信息
-                UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
-                for(ProblemDTO problemDTO : problems.getRecords()){
-                    UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemDTO.getProblemId());
-                    if(userProblem != null){
-                        problemDTO.setMyStatus(userProblem.getStatus());
+        //首先找到公共竞赛包含的所有题目
+        List<CompetitionProblemDTO> competitionProblemDTOS = competitionProblemServiceApi.list(0L);
+        //将所有题目的id放到一个List中
+        List<Long> problemIdList = new ArrayList<>();
+        for(CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
+            problemIdList.add(competitionProblemDTO.getProblemId());
+        }
+        problemParam.setProblemIdList(problemIdList);
+        Page page;
+        if (problemParam.getPage() != null){
+            page = new Page<ProblemDTO>(problemParam.getPage(), limit);
+        } else {
+            page = new Page<ProblemDTO>(1, limit);
+        }
+        IPage<ProblemDTO> problems = problemServiceApi.getProblemListPage(page, problemParam);
+        // 设置题目的相关信息
+        if(problems != null){
+            for(ProblemDTO problemDTO : problems.getRecords()){
+                for(CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
+                    if(problemDTO.getProblemId().equals(competitionProblemDTO.getProblemId())){
+                        problemDTO.setProblemDisplayId(competitionProblemDTO.getProblemDisplayId());
+                        problemDTO.setProblemScore(competitionProblemDTO.getProblemScore());
+                        problemDTO.setSolvedNumber(competitionProblemDTO.getSolvedNumber());
+                        problemDTO.setSubmitNumber(competitionProblemDTO.getSubmitNumber());
                     }
                 }
             }
+        }
+        // 获取认证信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //获取用户名
+        String userName = authentication.getName();
+//            如果不是匿名用户，已认证时
+        if(!"anonymousUser".equals(userName)){
+            //获取用户信息
+            UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
+//                设置用户解决的问题
+            for(ProblemDTO problemDTO : problems.getRecords()){
+                UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemDTO.getProblemId());
+                if(userProblem != null){
+                    problemDTO.setMyStatus(userProblem.getStatus());
+                }
+            }
+        }
+        if(problems != null && problems.getRecords() != null){
             return ResponseResult.<ProblemListVO>builder()
                     .code(BusinessStatus.OK.getCode())
                     .message("查询题目分页列表成功")
@@ -100,12 +126,13 @@ public class ProblemController {
                             .total(problems.getTotal())
                             .build())
                     .build();
+        }else{
+            return ResponseResult.<ProblemListVO>builder()
+                    .code(BusinessStatus.FAIL.getCode())
+                    .message("查询题目分页列表失败")
+                    .data(null)
+                    .build();
         }
-        return ResponseResult.<ProblemListVO>builder()
-                .code(BusinessStatus.FAIL.getCode())
-                .message("查询题目分页列表失败")
-                .data(null)
-                .build();
     }
 
     /**
@@ -116,6 +143,7 @@ public class ProblemController {
     @GetMapping("/{problemId}")
     public ResponseResult<ProblemDTO> getProblem(@PathVariable("problemId") Long problemId){
         ProblemDTO problemDTO = problemServiceApi.getProblemVOByPid(problemId);
+//        找到题目支持的语言id列表
         List<Integer> languageIdList = problemServiceApi.getLanguageIdListByProblemId(problemId);
         List<String> languageNameList = new ArrayList<String>();
         if(languageIdList != null){
@@ -124,9 +152,15 @@ public class ProblemController {
                 languageNameList.add(languages.getLanguageName());
             }
         }
+//        设置题目支持的编程语言
         if(languageIdList.size() != 0) {
             problemDTO.setLanguages(languageNameList);
         }
+        CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndProblemId(0L, problemId);
+        problemDTO.setProblemDisplayId(competitionProblem.getProblemDisplayId());
+        problemDTO.setSolvedNumber(competitionProblem.getSolvedNumber());
+        problemDTO.setSubmitNumber(competitionProblem.getSubmitNumber());
+        problemDTO.setProblemScore(competitionProblem.getProblemScore());
         // 获取认证信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //获取用户名
@@ -134,6 +168,7 @@ public class ProblemController {
         //获取用户信息
         UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
         UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemId);
+//        设置mystatus
         if(userProblem != null){
             problemDTO.setMyStatus(userProblem.getStatus());
         }

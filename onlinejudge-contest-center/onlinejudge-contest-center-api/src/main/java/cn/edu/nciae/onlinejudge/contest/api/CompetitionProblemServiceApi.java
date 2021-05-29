@@ -26,4 +26,11 @@ public interface CompetitionProblemServiceApi {
      * @return
      */
     CompetitionProblem getByCompetitionIdAndDisplayId(Long competitionId, Long problemDisplayId);
+
+	/**
+	 * 根据题目id查看CompetitionProblem
+	 * @param problemId
+	 * @return
+	 */
+	CompetitionProblem getByCompetitionIdAndProblemId(Long competitionId, Long problemId);
 }

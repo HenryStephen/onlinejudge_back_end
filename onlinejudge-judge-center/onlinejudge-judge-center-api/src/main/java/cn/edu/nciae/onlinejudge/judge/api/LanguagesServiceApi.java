@@ -32,4 +32,16 @@ public interface LanguagesServiceApi {
      * @return
      */
     Languages getLanguageById(Integer languageId);
+
+    /**
+     * 查找出不是特殊判题的编程语言
+     * @return
+     */
+	List<Languages> listByNoSpj();
+
+    /**
+     * 查找出特殊判题的编程语言
+     * @return
+     */
+    List<Languages> listBySpj();
 }

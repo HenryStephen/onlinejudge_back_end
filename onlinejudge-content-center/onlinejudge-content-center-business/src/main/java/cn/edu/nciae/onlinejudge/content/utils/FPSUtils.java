@@ -102,8 +102,8 @@ public class FPSUtils {
                 problemDTO.setProblemAuthor(value);
             }
         }
-        problemDTO.setProblemSubmitNumber(0);
-        problemDTO.setProblemSolvedNumber(0);
+        problemDTO.setSubmitNumber(0);
+        problemDTO.setSolvedNumber(0);
         problemDTO.setSamples(sampleList);
         problemDTO.setCheckpoints(checkpointList);
         return problemDTO;

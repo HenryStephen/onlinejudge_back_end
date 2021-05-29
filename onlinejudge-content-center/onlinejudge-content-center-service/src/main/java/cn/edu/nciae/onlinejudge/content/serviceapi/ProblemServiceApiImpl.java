@@ -4,15 +4,13 @@ import cn.edu.nciae.onlinejudge.content.api.ProblemServiceApi;
 import cn.edu.nciae.onlinejudge.content.domain.Problem;
 import cn.edu.nciae.onlinejudge.content.domain.Sample;
 import cn.edu.nciae.onlinejudge.content.mapper.ProblemMapper;
-import cn.edu.nciae.onlinejudge.content.service.ProblemService;
+import cn.edu.nciae.onlinejudge.content.mapper.SampleMapper;
 import cn.edu.nciae.onlinejudge.content.service.impl.ProblemServiceImpl;
 import cn.edu.nciae.onlinejudge.content.vo.ProblemDTO;
-import cn.edu.nciae.onlinejudge.content.mapper.SampleMapper;
 import cn.edu.nciae.onlinejudge.content.vo.ProblemParam;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,7 +30,6 @@ public class ProblemServiceApiImpl extends ProblemServiceImpl implements Problem
 
     @Autowired
     private SampleMapper sampleMapper;
-
 
     /**
      * 查询题目分页列表

@@ -3,6 +3,8 @@ package cn.edu.nciae.onlinejudge.judge.controller;
 import cn.edu.nciae.onlinejudge.commons.business.BusinessStatus;
 import cn.edu.nciae.onlinejudge.commons.dto.MessageDTO;
 import cn.edu.nciae.onlinejudge.commons.dto.ResponseResult;
+import cn.edu.nciae.onlinejudge.commons.utils.MapperUtils;
+import cn.edu.nciae.onlinejudge.commons.utils.OkHttpClientUtil;
 import cn.edu.nciae.onlinejudge.commons.utils.SnowflakeUtil;
 import cn.edu.nciae.onlinejudge.content.api.ProblemServiceApi;
 import cn.edu.nciae.onlinejudge.content.vo.ProblemDTO;
@@ -22,14 +24,21 @@ import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
 import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import okhttp3.Response;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhanghonglin
@@ -39,6 +48,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/judge")
 public class JudgeController {
+
+    @Value("${base.config.judge.url_testcase_core}")
+    private String url_testcase_core;
 
     @Reference(version = "1.0.0",check = false)
     private LanguagesServiceApi languagesServiceApi;
@@ -74,8 +86,28 @@ public class JudgeController {
 //        System.out.println(heartBeatParam.toString());
         return MessageDTO.<String>builder()
                 .data("success")
-                .err(null)
+                .error(null)
                 .build();
+    }
+
+    /**
+     * 上传测试用例
+     * @param spj
+     * @param multipartFile
+     * @return
+     */
+    @PostMapping("/testcase")
+    public String uploadTestcase(Boolean spj, @RequestParam("file") MultipartFile multipartFile) throws Exception {
+        // 请求参数
+        Map<String, Object> paramsMap = new HashMap<String, Object>();
+        paramsMap.put("file",transferToFile(multipartFile));
+        paramsMap.put("spj", spj);
+        // 返回Response
+        Response response = OkHttpClientUtil.getInstance().uploadFile(url_testcase_core, paramsMap);
+        String jsonString = response.body().string();
+        // 获取error
+        String error = MapperUtils.json2pojoByTree(jsonString,"error", String.class);
+        return jsonString;
     }
 
     /**
@@ -261,6 +293,28 @@ public class JudgeController {
                     .memory_limit_check_only(run.getMemory_limit_check_only())
                     .build();
         }
+    }
+
+    /**
+     * MultipartFile 转换成 File
+     * @param multipartFile
+     * @return
+     */
+    private File transferToFile(MultipartFile multipartFile) {
+//        选择用缓冲区来实现这个转换即使用java 创建的临时文件 使用 MultipartFile.transferto()方法 。
+        File file = null;
+        try {
+            String originalFilename = multipartFile.getOriginalFilename();
+            int pointIndex =  originalFilename.lastIndexOf(".");//点号的位置
+            String fileSuffix = originalFilename.substring(pointIndex);//截取文件后缀
+            String fileNewName = String.valueOf(System.currentTimeMillis()); //新文件名,时间戳形式yyyyMMddHHmmssSSS
+            file=File.createTempFile(fileNewName, fileSuffix);
+            multipartFile.transferTo(file);
+            file.deleteOnExit();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return file;
     }
 
 }

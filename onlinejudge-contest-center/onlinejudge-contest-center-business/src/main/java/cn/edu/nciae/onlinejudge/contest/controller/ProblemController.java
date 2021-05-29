@@ -5,19 +5,17 @@ import cn.edu.nciae.onlinejudge.commons.dto.ResponseResult;
 import cn.edu.nciae.onlinejudge.content.api.ProblemServiceApi;
 import cn.edu.nciae.onlinejudge.content.domain.Problem;
 import cn.edu.nciae.onlinejudge.content.vo.ProblemDTO;
+import cn.edu.nciae.onlinejudge.content.vo.ProblemListVO;
+import cn.edu.nciae.onlinejudge.content.vo.ProblemParam;
 import cn.edu.nciae.onlinejudge.contest.api.CompetitionProblemServiceApi;
 import cn.edu.nciae.onlinejudge.contest.domain.CompetitionProblem;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionProblemDTO;
 import cn.edu.nciae.onlinejudge.judge.api.LanguagesServiceApi;
 import cn.edu.nciae.onlinejudge.judge.domain.Languages;
-import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dubbo.config.annotation.Reference;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,6 +60,63 @@ public class ProblemController {
     }
 
     /**
+     * 获取竞赛题目列表(管理员)
+     * @param offset
+     * @param limit
+     * @param problemParam
+     * @return
+     */
+    @GetMapping("/competition/problem/admin")
+    public ResponseResult<ProblemListVO> getCompetitionProblemListAdmin(@RequestParam("offset") Integer offset,
+                                                                        @RequestParam("limit") Integer limit,
+                                                                        ProblemParam problemParam){
+        //首先找到公共竞赛包含的所有题目
+        List<CompetitionProblemDTO> competitionProblemDTOS = competitionProblemServiceApi.list(problemParam.getContestId());
+        //将所有题目的id放到一个List中
+        List<Long> problemIdList = new ArrayList<>();
+        for(CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
+            problemIdList.add(competitionProblemDTO.getProblemId());
+        }
+        problemParam.setProblemIdList(problemIdList);
+        Page page;
+        if (problemParam.getPage() != null){
+            page = new Page<ProblemDTO>(problemParam.getPage(), limit);
+        } else {
+            page = new Page<ProblemDTO>(1, limit);
+        }
+        IPage<ProblemDTO> problems = problemServiceApi.getProblemListPage(page, problemParam);
+        // 设置题目的相关信息
+        if(problems != null){
+            for(ProblemDTO problemDTO : problems.getRecords()){
+                for(CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
+                    if(problemDTO.getProblemId().equals(competitionProblemDTO.getProblemId())){
+                        problemDTO.setProblemDisplayId(competitionProblemDTO.getProblemDisplayId());
+                        problemDTO.setProblemScore(competitionProblemDTO.getProblemScore());
+                        problemDTO.setSolvedNumber(competitionProblemDTO.getSolvedNumber());
+                        problemDTO.setSubmitNumber(competitionProblemDTO.getSubmitNumber());
+                    }
+                }
+            }
+        }
+        if(problems != null && problems.getRecords() != null){
+            return ResponseResult.<ProblemListVO>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("查询题目分页列表成功")
+                    .data(ProblemListVO.builder()
+                            .results(problems.getRecords())
+                            .total(problems.getTotal())
+                            .build())
+                    .build();
+        }else{
+            return ResponseResult.<ProblemListVO>builder()
+                    .code(BusinessStatus.FAIL.getCode())
+                    .message("查询题目分页列表失败")
+                    .data(null)
+                    .build();
+        }
+    }
+
+    /**
      * 查询具体竞赛题目
      * @param competitionId
      * @param problemDisplayId
@@ -85,17 +140,6 @@ public class ProblemController {
         if(languageIdList.size() != 0) {
             problemDTO.setLanguages(languageNameList);
         }
-//        获取mystatus
-
-//        // 获取认证信息
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        //获取用户名
-//        String userName = authentication.getName();
-//        //获取用户信息
-//        UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
-//        UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemId);
-//        problemDTO.setMyStatus(userProblem.getStatus());
-
         if (problemDTO != null) {
             return ResponseResult.<ProblemDTO>builder()
                     .code(BusinessStatus.OK.getCode())

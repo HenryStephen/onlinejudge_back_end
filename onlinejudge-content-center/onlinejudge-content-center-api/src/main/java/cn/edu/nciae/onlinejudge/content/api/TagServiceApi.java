@@ -1,6 +1,7 @@
 package cn.edu.nciae.onlinejudge.content.api;
 
 import cn.edu.nciae.onlinejudge.content.domain.Tag;
+import cn.edu.nciae.onlinejudge.content.vo.TagParam;
 
 import java.util.List;
 
@@ -12,8 +13,8 @@ import java.util.List;
 public interface TagServiceApi {
 
     /**
-     * 查询标签列表
+     * 根据参数查询标签列表
      * @return
      */
-    List<Tag> list();
+    List<Tag> list(TagParam tagParam);
 }

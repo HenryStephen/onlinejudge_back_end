@@ -18,7 +18,7 @@ public class MessageDTO<T> {
     /**
      * Status
      */
-    private String err;
+    private String error;
 
     /**
      * Message Body

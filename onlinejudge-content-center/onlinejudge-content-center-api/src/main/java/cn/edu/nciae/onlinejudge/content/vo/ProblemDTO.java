@@ -25,6 +25,26 @@ import java.util.List;
 public class ProblemDTO extends Problem {
 
     /**
+     * 展示id
+     */
+    private Long problemDisplayId;
+
+    /**
+     * 题目所占分数
+     */
+    private Long problemScore;
+
+    /**
+     * 提交人数
+     */
+    private Integer submitNumber;
+
+    /**
+     * 通过人数
+     */
+    private Integer solvedNumber;
+
+    /**
      * Sample input and output
      */
     private List<Sample> samples;

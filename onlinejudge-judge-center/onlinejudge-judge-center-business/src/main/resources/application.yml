@@ -10,10 +10,12 @@ base:
       hostname: 39.103.218.148
       port: 9876
     judge:
-      address: localhost
-      judge_port: 8080
+      address: 39.103.218.148
+      judge_port: 8081
+      testcase_port: 8100
       judge_token: 9cb52e974da95ae0b5fa6a0aa232ca470a21f616289656b95fb1289f7c6e8203
       url_judge_core: http://${base.config.judge.address}:${base.config.judge.judge_port}/judge
+      url_testcase_core: http://${base.config.judge.address}:${base.config.judge.testcase_port}/testcase/
 
 spring:
   main:

@@ -104,6 +104,9 @@ public class CompetitionController {
      */
     @PutMapping
     public ResponseResult<Void> updateCompetition(@RequestBody Competition competition){
+        if(competition.getCompetitionPassword() != null && !competition.getCompetitionPassword().equals("")){
+            competition.setCompetitionPassword(passwordEncoder.encode(competition.getCompetitionPassword()));
+        }
         boolean result = competitionServiceApi.update(competition, competition.getCompetitionId());
         if(result){
             return ResponseResult.<Void>builder()
@@ -133,7 +136,7 @@ public class CompetitionController {
 //        设置创建竞赛人id
         competition.setCompetitionCreateUser(userInfo.getUserId());
         // 对密码加密
-        if(competition.getCompetitionPassword() != null){
+        if(competition.getCompetitionPassword() != null && !competition.getCompetitionPassword().equals("")){
             competition.setCompetitionPassword(passwordEncoder.encode(competition.getCompetitionPassword()));
         }
         boolean result = competitionServiceApi.save(competition);

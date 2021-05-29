@@ -1,13 +1,8 @@
 package cn.edu.nciae.onlinejudge.commons.utils;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
@@ -219,6 +214,45 @@ public class OkHttpClientUtil {
         RequestBody body = RequestBody.create(json, JSON);
         // 构造 Request
         buildRequestWithToken(url, myNetCall, body, token);
+    }
+
+    /**
+     * 包含文件类型信息的post请求
+     * @param url
+     * @param paramsMap
+     * @return
+     */
+    public Response uploadFile(String url, Map<String, Object> paramsMap){
+        // 添加请求类型
+        MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MediaType.parse("multipart/form-data"));
+        //  创建请求的请求体
+        for (String key : paramsMap.keySet()) {
+            // 追加表单信息
+            Object object = paramsMap.get(key);
+            if (object instanceof File) {
+                File file = (File) object;
+                builder.addFormDataPart(key, file.getName(), RequestBody.create(file, null));
+            } else {
+                builder.addFormDataPart(key, object.toString());
+            }
+        }
+        RequestBody body = builder.build();
+        // 创建request, 表单提交
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .build();
+        // 将 Request 封装为 Call
+        Call call = okHttpClient.newCall(request);
+        // 执行 Call，得到 Response
+        Response response = null;
+        try {
+            response = call.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
     /**

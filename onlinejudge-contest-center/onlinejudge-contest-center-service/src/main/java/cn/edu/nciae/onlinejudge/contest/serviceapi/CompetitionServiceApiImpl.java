@@ -58,6 +58,7 @@ public class CompetitionServiceApiImpl extends CompetitionServiceImpl implements
      */
     @Override
     public boolean update(Competition competition, Long competitionId) {
+        initUpdate(competition);
         return super.update(competition, new UpdateWrapper<Competition>().eq("competition_id", competitionId));
     }
 
@@ -73,12 +74,24 @@ public class CompetitionServiceApiImpl extends CompetitionServiceImpl implements
     }
 
     /**
+     * 更新竞赛时初始化的信息
+     * @param competition
+     */
+    private void initUpdate(Competition competition){
+        if(competition.getCompetitionPassword() != null && !competition.getCompetitionPassword().equals("")){
+            competition.setCompetitionType("Password Protected");
+        }else {
+            competition.setCompetitionType("Public");
+        }
+    }
+
+    /**
      * 添加竞赛时初始化的信息
      * @param competition
      */
     private void initAdd(Competition competition){
         competition.setCompetitionCreateTime(new Date());
-        if(competition.getCompetitionPassword() == null){
+        if(competition.getCompetitionPassword() == null || competition.getCompetitionPassword().equals("")){
             competition.setCompetitionType("Public");
         }else{
             competition.setCompetitionType("Password Protected");

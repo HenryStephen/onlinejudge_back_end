@@ -4,9 +4,11 @@ import cn.edu.nciae.onlinejudge.commons.business.BusinessStatus;
 import cn.edu.nciae.onlinejudge.commons.dto.ResponseResult;
 import cn.edu.nciae.onlinejudge.content.api.TagServiceApi;
 import cn.edu.nciae.onlinejudge.content.domain.Tag;
+import cn.edu.nciae.onlinejudge.content.vo.TagParam;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -28,8 +30,8 @@ public class TagController {
      * @return
      */
     @GetMapping
-    public ResponseResult<List<Tag>> getTagList() {
-        List<Tag> tagList = tagServiceApi.list();
+    public ResponseResult<List<Tag>> getTagList(@RequestParam TagParam tagParam) {
+        List<Tag> tagList = tagServiceApi.list(tagParam);
         return ResponseResult.<List<Tag>>builder()
                 .code(BusinessStatus.OK.getCode())
                 .message("查询标签列表成功")

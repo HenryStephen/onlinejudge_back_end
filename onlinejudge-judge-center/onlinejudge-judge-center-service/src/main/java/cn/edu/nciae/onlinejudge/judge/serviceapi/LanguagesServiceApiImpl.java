@@ -55,4 +55,24 @@ public class LanguagesServiceApiImpl extends LanguagesServiceImpl implements Lan
     public Languages getLanguageById(Integer languageId) {
         return super.getById(languageId);
     }
+
+    /**
+     * 查找出不是特殊判题的编程语言
+     *
+     * @return
+     */
+    @Override
+    public List<Languages> listByNoSpj() {
+        return super.list(new QueryWrapper<Languages>().eq("is_spj",0));
+    }
+
+    /**
+     * 查找出特殊判题的编程语言
+     *
+     * @return
+     */
+    @Override
+    public List<Languages> listBySpj() {
+        return super.list(new QueryWrapper<Languages>().eq("is_spj",1));
+    }
 }
