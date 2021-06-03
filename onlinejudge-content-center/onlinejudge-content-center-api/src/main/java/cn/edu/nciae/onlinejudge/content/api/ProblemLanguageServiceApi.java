@@ -14,4 +14,11 @@ public interface ProblemLanguageServiceApi {
 	 * @return
 	 */
 	boolean save(ProblemLanguage problemLanguage);
+
+	/**
+	 * 根据题目id删除关联关系
+	 * @param problemId
+	 * @return
+	 */
+	boolean removeByProblemId(Long problemId);
 }

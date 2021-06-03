@@ -3,6 +3,7 @@ package cn.edu.nciae.onlinejudge.content.serviceapi;
 import cn.edu.nciae.onlinejudge.content.api.ProblemLanguageServiceApi;
 import cn.edu.nciae.onlinejudge.content.domain.ProblemLanguage;
 import cn.edu.nciae.onlinejudge.content.service.impl.ProblemLanguageServiceImpl;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.dubbo.config.annotation.Service;
 
 /**
@@ -21,5 +22,15 @@ public class ProblemLanguageServiceApiImpl extends ProblemLanguageServiceImpl im
 	@Override
 	public boolean save(ProblemLanguage problemLanguage){
 		return super.save(problemLanguage);
+	}
+
+	/**
+	 * 根据题目id删除关联关系
+	 * @param problemId
+	 * @return
+	 */
+	@Override
+	public boolean removeByProblemId(Long problemId) {
+		return super.remove(new QueryWrapper<ProblemLanguage>().eq("problem_id",problemId));
 	}
 }

@@ -2,10 +2,12 @@ package cn.edu.nciae.onlinejudge.content.serviceapi;
 
 import cn.edu.nciae.onlinejudge.content.api.TagServiceApi;
 import cn.edu.nciae.onlinejudge.content.domain.Tag;
+import cn.edu.nciae.onlinejudge.content.mapper.TagMapper;
 import cn.edu.nciae.onlinejudge.content.service.impl.TagServiceImpl;
 import cn.edu.nciae.onlinejudge.content.vo.TagParam;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.dubbo.config.annotation.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -18,6 +20,9 @@ import java.util.List;
 @org.springframework.stereotype.Service
 @Service(version = "1.0.0")
 public class TagServiceApiImpl extends TagServiceImpl implements TagServiceApi {
+
+    @Autowired
+    private TagMapper tagMapper;
 
     /**
      * 根据参数查询标签列表
@@ -44,7 +49,8 @@ public class TagServiceApiImpl extends TagServiceImpl implements TagServiceApi {
      * @return
      */
     @Override
-    public boolean save(Tag tag){
-        return super.save(tag);
+    public Tag saveTag(Tag tag){
+        tagMapper.insert(tag);
+        return tag;
     }
 }

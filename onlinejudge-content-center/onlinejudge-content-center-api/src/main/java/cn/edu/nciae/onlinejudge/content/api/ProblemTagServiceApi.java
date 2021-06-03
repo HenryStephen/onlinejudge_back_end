@@ -14,4 +14,11 @@ public interface ProblemTagServiceApi {
 	 * @return
 	 */
 	boolean save(ProblemTag problemTag);
+
+	/**
+	 * 根据problemid删除所有的problem_language
+	 * @param problemId
+	 * @return
+	 */
+	boolean removeByProblemId(Long problemId);
 }

@@ -3,7 +3,6 @@ package cn.edu.nciae.onlinejudge.content.controller;
 import cn.edu.nciae.onlinejudge.commons.business.BusinessStatus;
 import cn.edu.nciae.onlinejudge.commons.dto.ResponseResult;
 import cn.edu.nciae.onlinejudge.content.api.*;
-import cn.edu.nciae.onlinejudge.content.domain.Problem;
 import cn.edu.nciae.onlinejudge.content.domain.ProblemLanguage;
 import cn.edu.nciae.onlinejudge.content.domain.ProblemTag;
 import cn.edu.nciae.onlinejudge.content.domain.Tag;
@@ -218,7 +217,17 @@ public class ProblemController {
      */
     @PostMapping
     public ResponseResult<ProblemDTO> addProblem(@RequestBody ProblemDTO problemDTO){
-//        添加题目、样例、标签等信息
+        // 获取认证信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //获取用户名
+        String userName = authentication.getName();
+        //获取用户信息
+        UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
+        //设置添加用户id
+        problemDTO.setAddUserId(userInfo.getUserId());
+        //设置作者
+        problemDTO.setProblemAuthor(userName);
+//        添加题目、样例等信息
         problemDTO = problemServiceApi.insertOneProblemVO(problemDTO);
         // 添加problem_language
         List<String> languageList = problemDTO.getLanguages();
@@ -253,7 +262,7 @@ public class ProblemController {
             if(tagTemp == null){
                 tag.setTagDescription(tag.getTagName());
                 // 添加新标签
-                tagServiceApi.save(tag);
+                tag = tagServiceApi.saveTag(tag);
                 problemTag.setTagId(tag.getTagId());
             }else{
                 problemTag.setTagId(tagTemp.getTagId());
@@ -298,23 +307,64 @@ public class ProblemController {
 
     /**
      * 更新题目
-     * @param problemId
+     * @param problemDTO
      * @return
      */
-    @PutMapping("/{problemId}")
-    public ResponseResult<Void> updateProblem(@PathVariable("problemId") Long problemId, @RequestBody Problem problem){
-        //删除题目
-        boolean result = problemServiceApi.update(problem,problemId);
-        if(result){
-            return ResponseResult.<Void>builder()
-                    .code(BusinessStatus.OK.getCode())
-                    .message("修改题目成功")
-                    .build();
-        }else{
-            return ResponseResult.<Void>builder()
-                    .code(BusinessStatus.FAIL.getCode())
-                    .message("修改题目失败")
-                    .build();
+    @PutMapping
+    public ResponseResult<Void> updateProblem(@RequestBody ProblemDTO problemDTO){
+        //更新题目、样例等信息
+        problemDTO= problemServiceApi.updateProblemDTO(problemDTO);
+        //更新problem_language
+        List<String> languageList = problemDTO.getLanguages();
+        //首先删除problem_language
+        problemLanguageServiceApi.removeByProblemId(problemDTO.getProblemId());
+        //添加problem_language
+        for(String s : languageList){
+            Languages language = languagesServiceApi.getLanguageByLanguageName(s, false);
+            ProblemLanguage problemLanguage = new ProblemLanguage();
+            problemLanguage.setLanguageId(language.getLanguageId());
+            problemLanguage.setProblemId(problemDTO.getProblemId());
+            problemLanguageServiceApi.save(problemLanguage);
         }
+        // 添加到competition_problem中
+        CompetitionProblem competitionProblem = new CompetitionProblem();
+        if(problemDTO.getContestId() != null){
+            competitionProblem.setCompetitionId(problemDTO.getContestId());
+        }else{
+            competitionProblem.setCompetitionId(0L);
+        }
+        competitionProblem.setProblemId(problemDTO.getProblemId());
+        competitionProblem.setProblemDisplayId(problemDTO.getProblemDisplayId());
+        competitionProblem.setSubmitNumber(0);
+        competitionProblem.setSolvedNumber(0);
+        //更新competition_problem
+        competitionProblemServiceApi.updateByCompetitionIdAndProblemId(competitionProblem);
+        // 添加tag 和 problem_tag
+        List<Tag> tagList = problemDTO.getTags();
+        // 首先删除所有的problem_tag
+        problemTagServiceApi.removeByProblemId(problemDTO.getProblemId());
+        // 查出是否有该tag
+        for(Tag tag : tagList){
+            ProblemTag problemTag = new ProblemTag();
+            problemTag.setProblemId(problemDTO.getProblemId());
+            //根据标签名查找是否有标签
+            Tag tagTemp = tagServiceApi.getTagByTagName(tag.getTagName());
+            // 说明没有该标签
+            if(tagTemp == null){
+                tag.setTagDescription(tag.getTagName());
+                // 添加新标签
+                tag = tagServiceApi.saveTag(tag);
+                problemTag.setTagId(tag.getTagId());
+            }else{
+                problemTag.setTagId(tagTemp.getTagId());
+            }
+            // 保存problemTag
+            problemTagServiceApi.save(problemTag);
+        }
+        return ResponseResult.<Void>builder()
+                .code(BusinessStatus.OK.getCode())
+                .message("修改题目成功")
+                .build();
+
     }
 }

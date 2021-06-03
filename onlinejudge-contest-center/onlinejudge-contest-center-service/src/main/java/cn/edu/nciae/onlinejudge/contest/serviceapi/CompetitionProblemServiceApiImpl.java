@@ -6,6 +6,7 @@ import cn.edu.nciae.onlinejudge.contest.mapper.CompetitionProblemMapper;
 import cn.edu.nciae.onlinejudge.contest.service.impl.CompetitionProblemServiceImpl;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionProblemDTO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -66,5 +67,18 @@ public class CompetitionProblemServiceApiImpl extends CompetitionProblemServiceI
     @Override
     public boolean save(CompetitionProblem competitionProblem) {
         return super.save(competitionProblem);
+    }
+
+    /**
+     * 根据竞赛id和题目id更新关联关系
+     *
+     * @param competitionProblem
+     * @return
+     */
+    @Override
+    public boolean updateByCompetitionIdAndProblemId(CompetitionProblem competitionProblem) {
+        return super.update(competitionProblem, new UpdateWrapper<CompetitionProblem>()
+                .eq("competition_id",competitionProblem.getCompetitionId())
+                .eq("problem_id",competitionProblem.getProblemId()));
     }
 }

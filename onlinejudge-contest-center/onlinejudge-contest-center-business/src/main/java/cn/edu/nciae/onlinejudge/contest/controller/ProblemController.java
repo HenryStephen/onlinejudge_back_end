@@ -123,7 +123,7 @@ public class ProblemController {
      * @return
      */
     @GetMapping("/competition/{competitionId}/problem/{problemDisplayId}")
-    public ResponseResult<ProblemDTO> getCompetitionProblem(@PathVariable("competitionId")Long competitionId, @PathVariable("problemDisplayId") Long problemDisplayId){
+    public ResponseResult<ProblemDTO> getCompetitionProblemByDisplayId(@PathVariable("competitionId")Long competitionId, @PathVariable("problemDisplayId") Long problemDisplayId){
 //        先查出具体problemid
         CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndDisplayId(competitionId, problemDisplayId);
         ProblemDTO problemDTO = problemServiceApi.getProblemVOByPid(competitionProblem.getProblemId());
@@ -150,6 +150,48 @@ public class ProblemController {
             return ResponseResult.<ProblemDTO>builder()
                     .code(BusinessStatus.FAIL.getCode())
                     .message("查询题目失败")
+                    .data(null)
+                    .build();
+        }
+    }
+
+    /**
+     * 查询具体竞赛题目(管理员)
+     * @param competitionId
+     * @param problemId
+     * @return
+     */
+    @GetMapping("/competition/{competitionId}/{problemId}/admin")
+    public ResponseResult<ProblemDTO> getCompetitionProblemByProblemId(@PathVariable("competitionId")Long competitionId, @PathVariable("problemId") Long problemId){
+        ProblemDTO problemDTO = problemServiceApi.getProblemVOByPid(problemId);
+//        找到题目支持的语言id列表
+        List<Integer> languageIdList = problemServiceApi.getLanguageIdListByProblemId(problemId);
+        List<String> languageNameList = new ArrayList<String>();
+        if(languageIdList != null){
+            for (Integer languageId : languageIdList){
+                Languages languages = languagesServiceApi.getLanguageById(languageId);
+                languageNameList.add(languages.getLanguageName());
+            }
+        }
+//        设置题目支持的编程语言
+        if(languageIdList.size() != 0) {
+            problemDTO.setLanguages(languageNameList);
+        }
+        CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndProblemId(competitionId, problemId);
+        problemDTO.setProblemDisplayId(competitionProblem.getProblemDisplayId());
+        problemDTO.setSolvedNumber(competitionProblem.getSolvedNumber());
+        problemDTO.setSubmitNumber(competitionProblem.getSubmitNumber());
+        problemDTO.setProblemScore(competitionProblem.getProblemScore());
+        if (problemDTO != null) {
+            return ResponseResult.<ProblemDTO>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("查询竞赛题目成功")
+                    .data(problemDTO)
+                    .build();
+        } else {
+            return ResponseResult.<ProblemDTO>builder()
+                    .code(BusinessStatus.FAIL.getCode())
+                    .message("查询竞赛题目失败")
                     .data(null)
                     .build();
         }

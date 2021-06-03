@@ -64,4 +64,11 @@ public interface ProblemServiceApi {
      * @return
      */
     List<Integer> getLanguageIdListByProblemId(Long problemId);
+
+    /**
+     * 更新problemDTO
+     * @param problemDTO
+     * @return
+     */
+	ProblemDTO updateProblemDTO(ProblemDTO problemDTO);
 }

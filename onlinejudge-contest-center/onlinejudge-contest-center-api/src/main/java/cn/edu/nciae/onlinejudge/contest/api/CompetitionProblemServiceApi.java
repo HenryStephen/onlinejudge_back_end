@@ -40,4 +40,11 @@ public interface CompetitionProblemServiceApi {
 	 * @return
 	 */
 	boolean save(CompetitionProblem competitionProblem);
+
+	/**
+	 * 根据竞赛id和题目id更新关联关系
+	 * @param competitionProblem
+	 * @return
+	 */
+	boolean updateByCompetitionIdAndProblemId(CompetitionProblem competitionProblem);
 }

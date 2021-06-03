@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * 
@@ -100,7 +100,7 @@ public class Problem implements Serializable {
      */
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
     @TableField(value = "problem_create_time")
-    private LocalDateTime problemCreateTime;
+    private Date problemCreateTime;
 
     /**
      * 是否为特殊判题

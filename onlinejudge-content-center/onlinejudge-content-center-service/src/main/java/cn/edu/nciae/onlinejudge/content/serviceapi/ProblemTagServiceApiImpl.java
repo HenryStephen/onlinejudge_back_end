@@ -3,6 +3,7 @@ package cn.edu.nciae.onlinejudge.content.serviceapi;
 import cn.edu.nciae.onlinejudge.content.api.ProblemTagServiceApi;
 import cn.edu.nciae.onlinejudge.content.domain.ProblemTag;
 import cn.edu.nciae.onlinejudge.content.service.impl.ProblemTagServiceImpl;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.apache.dubbo.config.annotation.Service;
 
 /**
@@ -22,5 +23,15 @@ public class ProblemTagServiceApiImpl extends ProblemTagServiceImpl implements P
 	@Override
 	public boolean save(ProblemTag problemTag){
 		return super.save(problemTag);
+	}
+
+	/**
+	 * 根据problemid删除所有的problem_language
+	 * @param problemId
+	 * @return
+	 */
+	@Override
+	public boolean removeByProblemId(Long problemId) {
+		return super.remove(new QueryWrapper<ProblemTag>().eq("problem_id",problemId));
 	}
 }

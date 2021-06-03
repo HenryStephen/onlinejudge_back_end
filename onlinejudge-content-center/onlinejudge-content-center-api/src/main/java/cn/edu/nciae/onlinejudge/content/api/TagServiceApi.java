@@ -30,5 +30,5 @@ public interface TagServiceApi {
      * @param tag
      * @return
      */
-    boolean save(Tag tag);
+    Tag saveTag(Tag tag);
 }
