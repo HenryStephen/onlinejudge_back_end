@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.edu.nciae.onlinejudge.content.mapper.WebsiteInfoMapper">
+
+    <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.content.domain.WebsiteInfo">
+            <result property="websiteBaseUrl" column="website_base_url" jdbcType="VARCHAR"/>
+            <result property="websiteName" column="website_name" jdbcType="VARCHAR"/>
+            <result property="websiteNameShortcut" column="website_name_shortcut" jdbcType="VARCHAR"/>
+            <result property="websiteFooter" column="website_footer" jdbcType="VARCHAR"/>
+            <result property="websiteAuthor" column="website_author" jdbcType="VARCHAR"/>
+            <result property="allowRegistry" column="allow_registry" jdbcType="BOOLEAN"/>
+            <result property="submissionListShowAll" column="submission_list_show_all" jdbcType="BOOLEAN"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        website_base_url,website_name,website_name_shortcut,
+        website_footer,website_author,allow_registry,
+        submission_list_show_all
+    </sql>
+</mapper>
