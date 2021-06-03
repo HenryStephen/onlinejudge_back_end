@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : Connection
+ Source Server         : localhost
  Source Server Type    : MySQL
- Source Server Version : 80013
+ Source Server Version : 80015
  Source Host           : localhost:3306
  Source Schema         : onlinejudge_judgecenter
 
  Target Server Type    : MySQL
- Target Server Version : 80013
+ Target Server Version : 80015
  File Encoding         : 65001
 
- Date: 10/05/2021 13:12:14
+ Date: 03/06/2021 09:55:10
 */
 
 SET NAMES utf8mb4;
@@ -28,7 +28,7 @@ CREATE TABLE `checkpoint`  (
   `output` varchar(2560) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '标准输出',
   `is_deleted` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '逻辑删除',
   PRIMARY KEY (`checkpoint_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of checkpoint
@@ -49,7 +49,7 @@ CREATE TABLE `compile`  (
   `compile_command` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '编译命令',
   `env` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '环境变量',
   PRIMARY KEY (`compile_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of compile
@@ -77,7 +77,7 @@ CREATE TABLE `languages`  (
   `is_spj` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否是特殊判题',
   `is_deleted` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`language_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of languages
@@ -103,7 +103,7 @@ CREATE TABLE `run`  (
   `env` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   `memory_limit_check_only` int(20) NULL DEFAULT NULL,
   PRIMARY KEY (`run_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of run
@@ -121,7 +121,7 @@ INSERT INTO `run` VALUES (7, 'go_lang_config', '{exe_path}', '', NULL, 'GODEBUG=
 -- ----------------------------
 DROP TABLE IF EXISTS `submission`;
 CREATE TABLE `submission`  (
-  `submission_id` bigint(20) NOT NULL COMMENT '提交记录id',
+  `submission_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '提交记录id',
   `submission_user_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '提交用户id',
   `submission_problem_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '题目id',
   `submission_contest_id` bigint(20) NULL DEFAULT NULL COMMENT '竞赛id',
@@ -132,26 +132,10 @@ CREATE TABLE `submission`  (
   `submission_used_time` int(11) NULL DEFAULT NULL COMMENT '运行时间(MS)',
   `submission_used_memory` int(11) NULL DEFAULT NULL COMMENT '运行所需内存大小(KB)',
   PRIMARY KEY (`submission_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of submission
 -- ----------------------------
-INSERT INTO `submission` VALUES (839882089309540352, 1, 1, 0, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << 2 << endl;\n\nreturn 0;\n\n}', '2021-05-06 15:11:35', 8, 1, 3444736);
-INSERT INTO `submission` VALUES (839890249680293888, 1, 1, 0, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n}', '2021-05-06 15:44:00', 0, 1, 3444736);
-INSERT INTO `submission` VALUES (839891873920323584, 1, 1, 0, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n}', '2021-05-06 15:50:28', 0, 3, 3448832);
-INSERT INTO `submission` VALUES (840374446387761152, 1, 1, 0, 1, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n}', '2021-05-07 23:48:04', -2, NULL, NULL);
-INSERT INTO `submission` VALUES (840644727354298368, 1, 2, 1, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n', '2021-05-08 17:42:25', -2, NULL, NULL);
-INSERT INTO `submission` VALUES (840644993524830208, 1, 2, 1, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n}\n\n', '2021-05-08 17:43:06', 0, 2, 3403776);
-INSERT INTO `submission` VALUES (840651592884686848, 1, 1, 1, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n}', '2021-05-08 18:09:19', 0, 1, 3375104);
-INSERT INTO `submission` VALUES (840656628306022400, 2, 1, 1, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n', '2021-05-08 18:29:19', -2, NULL, NULL);
-INSERT INTO `submission` VALUES (840656653853528064, 2, 1, 1, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n}\n', '2021-05-08 18:29:25', 0, 1, 3342336);
-INSERT INTO `submission` VALUES (840658637222449152, 2, 1, 1, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n}\n', '2021-05-08 18:37:18', 0, 1, 3444736);
-INSERT INTO `submission` VALUES (840662818310197248, 2, 1, 0, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n}', '2021-05-08 18:53:55', 0, 1, 3379200);
-INSERT INTO `submission` VALUES (840887757999050752, 1, 1, 1, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n}', '2021-05-09 09:47:59', 0, 2, 3436544);
-INSERT INTO `submission` VALUES (840889848943480832, 1, 2, 1, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n}', '2021-05-09 09:56:03', 0, 1, 3457024);
-INSERT INTO `submission` VALUES (840924052196560896, 1, 1, 0, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n}', '2021-05-09 12:11:58', 0, 1, 3448832);
-INSERT INTO `submission` VALUES (840924373069205504, 1, 1, 1, 1, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n}', '2021-05-09 12:13:14', -2, NULL, NULL);
-INSERT INTO `submission` VALUES (840924754281107456, 2, 1, 1, 3, '#include <iostream>\n\nusing namespace std;\n\nint  main()\n\n{\n\nint a,b;\n\ncin >> a >> b;\n\ncout << a+b << endl;\n\nreturn 0;\n\n}', '2021-05-09 12:14:45', 0, 1, 3510272);
 
 SET FOREIGN_KEY_CHECKS = 1;

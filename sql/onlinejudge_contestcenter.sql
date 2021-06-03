@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : Connection
+ Source Server         : localhost
  Source Server Type    : MySQL
- Source Server Version : 80013
+ Source Server Version : 80015
  Source Host           : localhost:3306
  Source Schema         : onlinejudge_contestcenter
 
  Target Server Type    : MySQL
- Target Server Version : 80013
+ Target Server Version : 80015
  File Encoding         : 65001
 
- Date: 10/05/2021 13:12:06
+ Date: 03/06/2021 09:54:51
 */
 
 SET NAMES utf8mb4;
@@ -33,14 +33,15 @@ CREATE TABLE `competition`  (
   `competition_create_time` datetime(0) NOT NULL COMMENT '竞赛创建时间',
   `competition_start_time` datetime(0) NOT NULL COMMENT '竞赛开始时间',
   `competition_end_time` datetime(0) NOT NULL COMMENT '竞赛结束时间',
-  `is_deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
+  `visible` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否可见',
   PRIMARY KEY (`competition_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of competition
 -- ----------------------------
-INSERT INTO `competition` VALUES (1, 1, 'Competition Test', 'The Test Description', 'ACM', 'Password Protected', '$2a$10$j17XGvkhFpxAQS/f66uome0NuFVcVv3LqAvly1nV7inJtVH.V46NW', 1, '2021-05-08 09:32:56', '2021-05-08 12:00:00', '2021-05-11 12:00:00', 0);
+INSERT INTO `competition` VALUES (1, 1, 'Competition Test', '<p>The Test Description update</p>', 'ACM', 'Password Protected', '$2a$10$j17XGvkhFpxAQS/f66uome0NuFVcVv3LqAvly1nV7inJtVH.V46NW', 1, '2021-05-08 09:32:56', '2021-05-08 12:00:00', '2021-05-11 12:00:00', 1);
+INSERT INTO `competition` VALUES (4, 1, 'Contest Test 1', '<p>Contest Test 1 Description<br></p>', 'ACM', 'Public', '', 1, '2021-05-17 10:31:24', '2021-05-17 10:31:18', '2021-05-19 00:00:00', 1);
 
 -- ----------------------------
 -- Table structure for competition_problem
@@ -55,12 +56,13 @@ CREATE TABLE `competition_problem`  (
   `submit_number` int(10) NOT NULL DEFAULT 0 COMMENT '提交人数',
   `solved_number` int(10) NOT NULL DEFAULT 0 COMMENT '通过人数',
   PRIMARY KEY (`competition_problem_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of competition_problem
 -- ----------------------------
-INSERT INTO `competition_problem` VALUES (1, 1, 1, 2, NULL, 0, 0);
-INSERT INTO `competition_problem` VALUES (2, 1, 2, 1, NULL, 0, 0);
+INSERT INTO `competition_problem` VALUES (1, 0, 1, 1, NULL, 0, 0);
+INSERT INTO `competition_problem` VALUES (4, 1, 1, 1, NULL, 0, 0);
+INSERT INTO `competition_problem` VALUES (10, 0, 8, 3, NULL, 0, 0);
 
 SET FOREIGN_KEY_CHECKS = 1;

@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : Connection
+ Source Server         : localhost
  Source Server Type    : MySQL
- Source Server Version : 80013
+ Source Server Version : 80015
  Source Host           : localhost:3306
  Source Schema         : onlinejudge_contentcenter
 
  Target Server Type    : MySQL
- Target Server Version : 80013
+ Target Server Version : 80015
  File Encoding         : 65001
 
- Date: 10/05/2021 13:11:59
+ Date: 03/06/2021 09:54:40
 */
 
 SET NAMES utf8mb4;
@@ -29,16 +29,17 @@ CREATE TABLE `announcement`  (
   `announcement_content` varchar(2550) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '公告内容',
   `create_time` datetime(0) NOT NULL COMMENT '创建时间',
   `last_update_time` datetime(0) NULL DEFAULT NULL COMMENT '最后更新时间',
-  `is_deleted` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否删除',
+  `visible` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否可见',
   PRIMARY KEY (`announcement_id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of announcement
 -- ----------------------------
-INSERT INTO `announcement` VALUES (1, 0, 'liaomu', 'Welcome !', 'Hey guys. Welcome to the online judge of NCIAE.', '2021-04-11 08:00:00', '2021-04-11 00:00:00', 0);
-INSERT INTO `announcement` VALUES (2, 0, 'liangsheng', 'Welcome My Competition!', 'Hey, Competition!', '2021-04-17 00:00:00', '2021-04-17 00:00:00', 0);
-INSERT INTO `announcement` VALUES (3, 1, 'liaomu1', 'Update Test1', 'Update Test Content', '2021-04-17 00:00:00', '2021-04-18 00:00:00', 0);
+INSERT INTO `announcement` VALUES (1, 0, 'liaomu', 'Welcome !', 'Hey guys. Welcome to the online judge of NCIAE.', '2021-04-11 08:00:00', '2021-04-11 00:00:00', 1);
+INSERT INTO `announcement` VALUES (4, 0, 'admin', 'Test Announcement', '<p>Test Announcement Content<br></p>', '2021-05-16 16:21:54', '2021-05-16 16:21:54', 1);
+INSERT INTO `announcement` VALUES (5, 0, 'admin', 'Announcement Test 1', '<p>Announcement Test 1 Content Upate<br></p>', '2021-05-17 10:42:11', '2021-05-17 10:42:37', 1);
+INSERT INTO `announcement` VALUES (6, 1, 'admin', 'Contest Announcement Test 1', '<p>Contest Announcement Test 1 Content<br></p>', '2021-05-17 10:53:21', '2021-05-17 10:53:21', 1);
 
 -- ----------------------------
 -- Table structure for problem
@@ -53,25 +54,22 @@ CREATE TABLE `problem`  (
   `problem_output_formation` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '输出格式',
   `problem_time_limit` int(11) NOT NULL COMMENT '时间限制(MS)',
   `problem_memory_limit` int(11) NOT NULL COMMENT '内存限制(MB)',
-  `problem_submit_number` int(10) UNSIGNED ZEROFILL NOT NULL COMMENT '提交次数',
-  `problem_solved_number` int(10) UNSIGNED ZEROFILL NOT NULL COMMENT '解决人数',
   `problem_author` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '题目作者',
-  `problem_special_judge` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '特殊判题默认否0 是1',
   `problem_reminder` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '提示',
   `problem_source` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '题目来源',
   `problem_difficulty` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '题目难度',
-  `problem_status` int(10) UNSIGNED ZEROFILL NOT NULL DEFAULT 0000000000 COMMENT '状态0 public，1 private',
   `problem_testcase_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '测试用例id',
+  `problem_create_time` datetime(6) NOT NULL COMMENT '题目创建时间',
   `is_spj` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否为特殊判题',
-  `is_deleted` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否删除',
+  `visible` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否可见',
   PRIMARY KEY (`problem_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of problem
 -- ----------------------------
-INSERT INTO `problem` VALUES (1, 1, 'A + B Problem', '<p>Calculate a+b<br></p>', '<p>Two integer a,b (0&amp;lt;=a,b&amp;lt;=10)<br></p>', '<p>Output a plus b.<br></p>', 1000, 32, 0000000000, 0000000000, 'liaomu', 0, '<p>#include &lt;iostream&gt;</p><p>using namespace std;</p><p>int&nbsp; main()</p><p>{</p><p style=\"margin-left: 40px;\">int a,b;</p><p style=\"margin-left: 40px;\">cin &gt;&gt; a &gt;&gt; b;</p><p style=\"margin-left: 40px;\">cout &lt;&lt; a+b &lt;&lt; endl;</p><p style=\"margin-left: 40px;\">return 0;</p><p>}</p>', '网络来源', 'Low', 0000000000, '803a2d1cecdda488e4b7c8a9bf3bcee3', 0, 0);
-INSERT INTO `problem` VALUES (2, 1, 'A + B', '<p>Calculate a+b<br></p>', '<p>Two integer a,b (0&amp;lt;=a,b&amp;lt;=10)<br></p>', '<p>Output a plus b.<br></p>', 1000, 32, 0000000000, 0000000000, 'liaomu', 0, '<p>#include &lt;iostream&gt;</p><p>using namespace std;</p><p>int&nbsp; main()</p><p>{</p><p style=\"margin-left: 40px;\">int a,b;</p><p style=\"margin-left: 40px;\">cin &gt;&gt; a &gt;&gt; b;</p><p style=\"margin-left: 40px;\">cout &lt;&lt; a+b &lt;&lt; endl;</p><p style=\"margin-left: 40px;\">return 0;</p><p>}</p>', '网络来源', 'Low', 0000000000, '803a2d1cecdda488e4b7c8a9bf3bcee3', 0, 0);
+INSERT INTO `problem` VALUES (1, 1, '送分题-A+B Problem', '<p>Calculate a+b</p>', '<p>Two integer a,b (0&lt;=a,b&lt;=10)</p>', '<p>Output a+b</p>', 1000, 32, 'admin', '<p>#include#includeusing namespace std;int main(){#ifndef ONLINE_JUDGE	freopen(\"in.txt\",\"r\",stdin);#endif	int a,b;	while(cin &gt;&gt;a &gt;&gt;b)	{		cout &lt;</p>', '系统原理，熟悉OJ', 'Low', 'f6bf7fa502fe99f088e11403f88677bd', '2021-05-17 16:58:30.000000', 0, 1);
+INSERT INTO `problem` VALUES (8, 1, 'test 2', '<p>test 2<br></p>', '<p>test 2<br></p>', '<p>test 2 update<br></p>', 1000, 32, 'admin', '<p>test 2<br></p>', 'test 2', 'Low', 'f6bf7fa502fe99f088e11403f88677bd', '2021-06-02 15:43:43.000000', 0, 1);
 
 -- ----------------------------
 -- Table structure for problem_language
@@ -82,15 +80,17 @@ CREATE TABLE `problem_language`  (
   `problem_id` bigint(20) NOT NULL COMMENT '题目id',
   `language_id` int(20) NOT NULL COMMENT '语言id',
   PRIMARY KEY (`problem_language_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of problem_language
 -- ----------------------------
-INSERT INTO `problem_language` VALUES (1, 1, 1);
-INSERT INTO `problem_language` VALUES (2, 1, 3);
-INSERT INTO `problem_language` VALUES (3, 2, 1);
-INSERT INTO `problem_language` VALUES (4, 2, 3);
+INSERT INTO `problem_language` VALUES (25, 8, 1);
+INSERT INTO `problem_language` VALUES (26, 8, 3);
+INSERT INTO `problem_language` VALUES (27, 8, 4);
+INSERT INTO `problem_language` VALUES (28, 8, 5);
+INSERT INTO `problem_language` VALUES (29, 1, 1);
+INSERT INTO `problem_language` VALUES (30, 1, 3);
 
 -- ----------------------------
 -- Table structure for problem_tag
@@ -101,13 +101,15 @@ CREATE TABLE `problem_tag`  (
   `problem_id` bigint(20) NOT NULL COMMENT '问题id',
   `tag_id` bigint(20) NOT NULL COMMENT '标签id',
   PRIMARY KEY (`problem_tag_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of problem_tag
 -- ----------------------------
-INSERT INTO `problem_tag` VALUES (1, 1, 1);
-INSERT INTO `problem_tag` VALUES (2, 1, 2);
+INSERT INTO `problem_tag` VALUES (8, 8, 8);
+INSERT INTO `problem_tag` VALUES (9, 8, 9);
+INSERT INTO `problem_tag` VALUES (10, 1, 1);
+INSERT INTO `problem_tag` VALUES (11, 1, 2);
 
 -- ----------------------------
 -- Table structure for sample
@@ -120,13 +122,13 @@ CREATE TABLE `sample`  (
   `sample_output` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '样例输出',
   `is_deleted` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`sample_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of sample
 -- ----------------------------
-INSERT INTO `sample` VALUES (1, 1, '1 2', '3', 0);
-INSERT INTO `sample` VALUES (2, 1, '3 4', '7', 0);
+INSERT INTO `sample` VALUES (17, 8, '1 2', '4', 0);
+INSERT INTO `sample` VALUES (18, 1, '1 2', '3', 0);
 
 -- ----------------------------
 -- Table structure for tag
@@ -138,14 +140,36 @@ CREATE TABLE `tag`  (
   `tag_description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '标签描述',
   `is_deleted` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否删除',
   PRIMARY KEY (`tag_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 4 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of tag
 -- ----------------------------
 INSERT INTO `tag` VALUES (1, '水题', '水', 0);
 INSERT INTO `tag` VALUES (2, '测试', '测试', 0);
-INSERT INTO `tag` VALUES (3, '系统测试', '系统测试', 0);
-INSERT INTO `tag` VALUES (4, '水', '水', 0);
+INSERT INTO `tag` VALUES (5, 'Easy', 'Easy', 0);
+INSERT INTO `tag` VALUES (6, 'Low', 'Low', 0);
+INSERT INTO `tag` VALUES (7, 'Mid', 'Mid', 0);
+INSERT INTO `tag` VALUES (8, 'High', 'High', 0);
+INSERT INTO `tag` VALUES (9, 'Tag1', 'Tag1', 0);
+
+-- ----------------------------
+-- Table structure for website_info
+-- ----------------------------
+DROP TABLE IF EXISTS `website_info`;
+CREATE TABLE `website_info`  (
+  `website_base_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '网站基本url',
+  `website_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '网站名字',
+  `website_name_shortcut` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '网站简称',
+  `website_footer` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '页脚',
+  `website_author` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'LiaoMu' COMMENT '网站作者',
+  `allow_registry` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否允许注册',
+  `submission_list_show_all` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否显示全部题目提交'
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of website_info
+-- ----------------------------
+INSERT INTO `website_info` VALUES ('www.nciaeoj.com', 'NCIAE Online Judge', 'NCIAE-OJ', 'Code and Code,Born for More', 'LiaoMu', 1, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;
