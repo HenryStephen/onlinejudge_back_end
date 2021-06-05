@@ -56,6 +56,12 @@ public class CompetitionProblem implements Serializable {
     @TableField(value = "solved_number")
     private Integer solvedNumber;
 
+    /**
+     * 赛制
+     */
+    @TableField(value = "problem_rule_type")
+    private String problemRuleType;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -77,7 +83,8 @@ public class CompetitionProblem implements Serializable {
             && (this.getProblemDisplayId() == null ? other.getProblemDisplayId() == null : this.getProblemDisplayId().equals(other.getProblemDisplayId()))
             && (this.getProblemScore() == null ? other.getProblemScore() == null : this.getProblemScore().equals(other.getProblemScore()))
             && (this.getSubmitNumber() == null ? other.getSubmitNumber() == null : this.getSubmitNumber().equals(other.getSubmitNumber()))
-            && (this.getSolvedNumber() == null ? other.getSolvedNumber() == null : this.getSolvedNumber().equals(other.getSolvedNumber()));
+            && (this.getSolvedNumber() == null ? other.getSolvedNumber() == null : this.getSolvedNumber().equals(other.getSolvedNumber()))
+            && (this.getProblemRuleType() == null ? other.getProblemRuleType() == null : this.getProblemRuleType().equals(other.getProblemRuleType()));
     }
 
     @Override
@@ -91,6 +98,7 @@ public class CompetitionProblem implements Serializable {
         result = prime * result + ((getProblemScore() == null) ? 0 : getProblemScore().hashCode());
         result = prime * result + ((getSubmitNumber() == null) ? 0 : getSubmitNumber().hashCode());
         result = prime * result + ((getSolvedNumber() == null) ? 0 : getSolvedNumber().hashCode());
+        result = prime * result + ((getProblemRuleType() == null) ? 0 : getProblemRuleType().hashCode());
         return result;
     }
 
@@ -107,6 +115,7 @@ public class CompetitionProblem implements Serializable {
         sb.append(", problemScore=").append(problemScore);
         sb.append(", submitNumber=").append(submitNumber);
         sb.append(", solvedNumber=").append(solvedNumber);
+        sb.append(", problemRuleType=").append(problemRuleType);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

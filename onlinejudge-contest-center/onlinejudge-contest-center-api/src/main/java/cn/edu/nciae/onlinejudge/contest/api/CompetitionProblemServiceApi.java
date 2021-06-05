@@ -17,7 +17,15 @@ public interface CompetitionProblemServiceApi {
      * @param competitionId
      * @return
      */
-    List<CompetitionProblemDTO> list(Long competitionId);
+    List<CompetitionProblemDTO> listByCompetitionId(Long competitionId);
+
+	/**
+	 * 根据竞赛id和赛制查看题目列表
+	 * @param competitionId
+	 * @param problemRuleType
+	 * @return
+	 */
+	List<CompetitionProblemDTO> listByCompetitionIdAndRuleType(Long competitionId, String problemRuleType);
 
     /**
      * 根据竞赛id和显示id查看题目id
@@ -47,4 +55,21 @@ public interface CompetitionProblemServiceApi {
 	 * @return
 	 */
 	boolean updateByCompetitionIdAndProblemId(CompetitionProblem competitionProblem);
+
+	/**
+	 * 根据竞赛id和题目id逻辑删除题目
+	 * @param competitionId
+	 * @param problemId
+	 * @return
+	 */
+    boolean removeByCompetitionIdAndProblemId(long competitionId, Long problemId);
+
+	/**
+	 * 获取某个竞赛或者公共题目中最大的展示id
+	 * @param competitionId
+	 * @return
+	 */
+	Long getMaxDisplayId(Long competitionId);
+
+
 }

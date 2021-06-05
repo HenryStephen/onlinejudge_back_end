@@ -1,6 +1,7 @@
 package cn.edu.nciae.onlinejudge.content.vo;
 
 import cn.edu.nciae.onlinejudge.commons.utils.VOUtils;
+import cn.edu.nciae.onlinejudge.content.domain.Checkpoint;
 import cn.edu.nciae.onlinejudge.content.domain.Problem;
 import cn.edu.nciae.onlinejudge.content.domain.Sample;
 import cn.edu.nciae.onlinejudge.content.domain.Tag;
@@ -43,6 +44,11 @@ public class ProblemDTO extends Problem {
      */
     private Integer solvedNumber;
 
+    /**
+     * 赛制
+     */
+    private String problemRuleType;
+
 	/**
 	 * 竞赛id
 	 */
@@ -62,6 +68,11 @@ public class ProblemDTO extends Problem {
      * Languages of the problem
      */
     private List<String> languages;
+
+    /**
+     * checkpoint of the problem
+     */
+    private List<Checkpoint> checkpoints;
 
     /**
      * 用户对该题的状态

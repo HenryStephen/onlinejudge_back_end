@@ -5,13 +5,14 @@
 <mapper namespace="cn.edu.nciae.onlinejudge.contest.mapper.CompetitionProblemMapper">
 
     <resultMap id="BaseResultMap" type="cn.edu.nciae.onlinejudge.contest.domain.CompetitionProblem">
-            <id property="competitionProblemId" column="competition_problem_id" jdbcType="BIGINT"/>
-            <result property="competitionId" column="competition_id" jdbcType="BIGINT"/>
-            <result property="problemId" column="problem_id" jdbcType="BIGINT"/>
-            <result property="problemDisplayId" column="problem_display_id" jdbcType="BIGINT"/>
-            <result property="problemScore" column="problem_score" jdbcType="BIGINT"/>
-            <result property="submitNumber" column="submit_number" jdbcType="INTEGER"/>
-            <result property="solvedNumber" column="solved_number" jdbcType="INTEGER"/>
+        <id property="competitionProblemId" column="competition_problem_id" jdbcType="BIGINT"/>
+        <result property="competitionId" column="competition_id" jdbcType="BIGINT"/>
+        <result property="problemId" column="problem_id" jdbcType="BIGINT"/>
+        <result property="problemDisplayId" column="problem_display_id" jdbcType="BIGINT"/>
+        <result property="problemScore" column="problem_score" jdbcType="BIGINT"/>
+        <result property="submitNumber" column="submit_number" jdbcType="INTEGER"/>
+        <result property="solvedNumber" column="solved_number" jdbcType="INTEGER"/>
+        <result property="problemRuleType" column="problem_rule_type" jdbcType="VARCHAR"/>
     </resultMap>
 
     <resultMap id="CompetitionProblemViewResultMap" type="cn.edu.nciae.onlinejudge.contest.vo.CompetitionProblemDTO">
@@ -22,17 +23,31 @@
         <result property="problemScore" column="problem_score" jdbcType="BIGINT"/>
         <result property="submitNumber" column="submit_number" jdbcType="INTEGER"/>
         <result property="solvedNumber" column="solved_number" jdbcType="INTEGER"/>
+        <result property="problemRuleType" column="problem_rule_type" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         competition_problem_id,competition_id,problem_id,
         problem_display_id,problem_score,submit_number,
-        solved_number
+        solved_number,problem_rule_type
     </sql>
 
     <select id="selectListById" parameterType="java.lang.Long" resultMap="CompetitionProblemViewResultMap">
         select *
         from competition_problem
         where competition_id = #{competitionId}
+    </select>
+
+    <select id="selectMaxDisplayId" resultType="java.lang.Long">
+        select problem_display_id
+        from competition_problem
+        where competition_id = #{competitionId}
+        order by problem_display_id desc LIMIT 0,1
+    </select>
+    <select id="selectListByIdAndRuleType" resultMap="CompetitionProblemViewResultMap">
+        select *
+        from competition_problem
+        where competition_id = #{competitionId}
+          and problem_rule_type like #{problemRuleType}
     </select>
 </mapper>

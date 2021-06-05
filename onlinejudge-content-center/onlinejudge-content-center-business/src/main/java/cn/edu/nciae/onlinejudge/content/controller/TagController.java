@@ -30,7 +30,7 @@ public class TagController {
      * @return
      */
     @GetMapping
-    public ResponseResult<List<Tag>> getTagList(@RequestParam TagParam tagParam) {
+    public ResponseResult<List<Tag>> getTagList(TagParam tagParam) {
         List<Tag> tagList = tagServiceApi.list(tagParam);
         return ResponseResult.<List<Tag>>builder()
                 .code(BusinessStatus.OK.getCode())

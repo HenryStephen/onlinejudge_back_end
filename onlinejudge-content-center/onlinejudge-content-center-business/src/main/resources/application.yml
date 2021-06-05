@@ -9,6 +9,10 @@ base:
     rocketmq:
       hostname: 39.103.218.148
       port: 9876
+    judge:
+      address: 39.103.218.148
+      testcase_port: 8100
+      url_testcase_core: http://${base.config.judge.address}:${base.config.judge.testcase_port}/testcase/
 
 spring:
   main:

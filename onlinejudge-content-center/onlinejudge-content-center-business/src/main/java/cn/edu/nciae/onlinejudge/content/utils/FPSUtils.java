@@ -2,6 +2,7 @@ package cn.edu.nciae.onlinejudge.content.utils;
 
 import cn.edu.nciae.onlinejudge.content.domain.Checkpoint;
 import cn.edu.nciae.onlinejudge.content.domain.Sample;
+import cn.edu.nciae.onlinejudge.content.domain.Tag;
 import cn.edu.nciae.onlinejudge.content.vo.ProblemDTO;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -12,6 +13,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,13 +30,14 @@ public class FPSUtils {
 
     /**
      * 将fps转换成题目集
+     * @param userName 题目作者
      * @param userId 用户id
-     * @param filepath
+     * @param file
      * @return
      */
-    public static List<ProblemDTO> fps2ProblemVO(Long userId, String filepath) {
+    public static List<ProblemDTO> fps2ProblemVO(String userName, Long userId, File file) {
         Document doc;
-        doc = parseXML(filepath);
+        doc = parseFile(file);
         List<ProblemDTO> problems = new ArrayList<ProblemDTO>();
         //找到item标签
         itemList = doc.getElementsByTagName("item");
@@ -43,6 +46,8 @@ public class FPSUtils {
             ProblemDTO problemDTO = itemToProblemVO(itemList.item(i));
             //设置添加者id
             problemDTO.setAddUserId(userId);
+            //设置作者
+            problemDTO.setProblemAuthor(userName);
             problems.add(problemDTO);
         }
         return problems;
@@ -50,7 +55,6 @@ public class FPSUtils {
 
     /**
      * 将item转换成ProblemVO
-     *
      * @param item
      * @return
      */
@@ -60,15 +64,19 @@ public class FPSUtils {
         List<Sample> sampleList = getSampleList(item);
         //获取测试用例
         List<Checkpoint> checkpointList = getCheckpointList(item);
+        //获取标签列表
+        List<Tag> tagList = getTagList(item);
+        //获取题目支持编程语言列表
+        List<String> languageList = getLanguageList(item);
         NodeList nodeList = item.getChildNodes();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
             String name = node.getNodeName();
             String value = node.getTextContent();
-            if ("problem_title".equalsIgnoreCase(name)) {
+            if ("title".equalsIgnoreCase(name)) {
                 problemDTO.setProblemTitle(value);
             }
-            if ("problem_time_limit".equalsIgnoreCase(name)) {
+            if ("time_limit".equalsIgnoreCase(name)) {
                 Element tmp = (Element) node;
                 String unit = tmp.getAttribute("unit");
                 if ("s".equalsIgnoreCase(unit)) {
@@ -77,7 +85,7 @@ public class FPSUtils {
                     problemDTO.setProblemTimeLimit(Integer.valueOf(String.valueOf(value.split(" ")[0])));
                 }
             }
-            if ("problem_memory_limit".equalsIgnoreCase(name)) {
+            if ("memory_limit".equalsIgnoreCase(name)) {
                 Element tmp = (Element) node;
                 String unit = tmp.getAttribute("unit");
                 if ("b".equalsIgnoreCase(unit)) {
@@ -86,25 +94,29 @@ public class FPSUtils {
                     problemDTO.setProblemMemoryLimit(Integer.valueOf(String.valueOf(value.split(" ")[0])));
                 }
             }
-            if ("problem_description".equalsIgnoreCase(name)) {
+            if ("description".equalsIgnoreCase(name)) {
                 problemDTO.setProblemDescription(value);
             }
-            if ("problem_input_formation".equalsIgnoreCase(name)) {
+            if ("input".equalsIgnoreCase(name)) {
                 problemDTO.setProblemInputFormation(value);
             }
-            if ("problem_output_formation".equalsIgnoreCase(name)) {
+            if ("output".equalsIgnoreCase(name)) {
                 problemDTO.setProblemOutputFormation(value);
             }
-            if ("problem_reminder".equalsIgnoreCase(name)) {
+            if ("hint".equalsIgnoreCase(name)) {
                 problemDTO.setProblemReminder(value);
             }
-            if ("problem_author".equalsIgnoreCase(name)) {
+            if ("source".equalsIgnoreCase(name)) {
                 problemDTO.setProblemAuthor(value);
             }
+            if ("difficulty".equalsIgnoreCase(name)) {
+                problemDTO.setProblemDifficulty(value);
+            }
         }
-        problemDTO.setSubmitNumber(0);
-        problemDTO.setSolvedNumber(0);
         problemDTO.setSamples(sampleList);
+        problemDTO.setLanguages(languageList);
+        problemDTO.setTags(tagList);
+        problemDTO.setCheckpoints(checkpointList);
         return problemDTO;
     }
 
@@ -136,8 +148,33 @@ public class FPSUtils {
     }
 
     /**
+     * 解析文件
+     * @param file
+     * @return
+     */
+    private static Document parseFile(File file){
+        try{
+            // 初始化xml解析工厂
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            // 创建DocumentBuilder
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            // 创建解析xml的Document
+            Document doc = (Document) builder.parse(file);
+            return doc;
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (SAXException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * 获取输入输出样例
-     *
      * @param item
      * @return
      */
@@ -159,8 +196,39 @@ public class FPSUtils {
     }
 
     /**
+     * 获取题目标签列表
+     * @param item
+     * @return
+     */
+    public static List<Tag> getTagList(Node item){
+        List<Tag> tagList = new ArrayList<>(5);
+        NodeList tags = ((Element) item).getElementsByTagName("tag");
+        for(int i=0;i<tags.getLength();i++){
+            Element eleTag = (Element) tags.item(i);
+            Tag tag = new Tag();
+            tag.setTagName(eleTag.getTextContent());
+            tagList.add(tag);
+        }
+        return tagList;
+    }
+
+    /**
+     * 获取题目支持编程语言列表
+     * @param item
+     * @return
+     */
+    public static List<String> getLanguageList(Node item){
+        List<String> languagesList = new ArrayList<>(10);
+        NodeList languageTags = ((Element) item).getElementsByTagName("language");
+        for(int i=0;i<languageTags.getLength();i++){
+            Element eleLanguage = (Element) languageTags.item(i);
+            languagesList.add(eleLanguage.getTextContent());
+        }
+        return languagesList;
+    }
+
+    /**
      * 获取测试用例
-     *
      * @param item
      * @return
      */
@@ -180,4 +248,5 @@ public class FPSUtils {
         }
         return checkpointList;
     }
+
 }

@@ -8,8 +8,11 @@ import cn.edu.nciae.onlinejudge.content.vo.ProblemDTO;
 import cn.edu.nciae.onlinejudge.content.vo.ProblemListVO;
 import cn.edu.nciae.onlinejudge.content.vo.ProblemParam;
 import cn.edu.nciae.onlinejudge.contest.api.CompetitionProblemServiceApi;
+import cn.edu.nciae.onlinejudge.contest.api.CompetitionServiceApi;
 import cn.edu.nciae.onlinejudge.contest.domain.CompetitionProblem;
+import cn.edu.nciae.onlinejudge.contest.vo.CompetitionDTO;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionProblemDTO;
+import cn.edu.nciae.onlinejudge.contest.vo.PublicParam;
 import cn.edu.nciae.onlinejudge.judge.api.LanguagesServiceApi;
 import cn.edu.nciae.onlinejudge.judge.domain.Languages;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -38,6 +41,9 @@ public class ProblemController {
     @Reference(version = "1.0.0",check = false)
     private LanguagesServiceApi languagesServiceApi;
 
+    @Reference(version = "1.0.0",check = false)
+    private CompetitionServiceApi competitionServiceApi;
+
 
     /**
      * 获取竞赛题目列表
@@ -46,11 +52,13 @@ public class ProblemController {
      */
     @GetMapping("/competition/{competitionId}/problem")
     public ResponseResult<List<CompetitionProblemDTO>> getCompetitionProblemList(@PathVariable("competitionId") Long competitionId){
-        List<CompetitionProblemDTO> competitionProblemDTOS = competitionProblemServiceApi.list(competitionId);
-        // 设置题目标题
-        for (CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
-            Problem problem = problemServiceApi.getProblemById(competitionProblemDTO.getProblemId());
-            competitionProblemDTO.setProblemTiltle(problem.getProblemTitle());
+        List<CompetitionProblemDTO> competitionProblemDTOS = competitionProblemServiceApi.listByCompetitionId(competitionId);
+        if(competitionProblemDTOS.size()>0){
+            // 设置题目标题
+            for (CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
+                Problem problem = problemServiceApi.getProblemById(competitionProblemDTO.getProblemId());
+                competitionProblemDTO.setProblemTiltle(problem.getProblemTitle());
+            }
         }
         return ResponseResult.<List<CompetitionProblemDTO>>builder()
                 .code(BusinessStatus.OK.getCode())
@@ -71,13 +79,22 @@ public class ProblemController {
                                                                         @RequestParam("limit") Integer limit,
                                                                         ProblemParam problemParam){
         //首先找到公共竞赛包含的所有题目
-        List<CompetitionProblemDTO> competitionProblemDTOS = competitionProblemServiceApi.list(problemParam.getContestId());
+        List<CompetitionProblemDTO> competitionProblemDTOS = competitionProblemServiceApi.listByCompetitionId(problemParam.getContestId());
         //将所有题目的id放到一个List中
         List<Long> problemIdList = new ArrayList<>();
-        for(CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
-            problemIdList.add(competitionProblemDTO.getProblemId());
+        if(competitionProblemDTOS.size()>0){
+            for(CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
+                problemIdList.add(competitionProblemDTO.getProblemId());
+            }
+            problemParam.setProblemIdList(problemIdList);
         }
-        problemParam.setProblemIdList(problemIdList);
+        if(problemIdList.size() == 0){
+            return ResponseResult.<ProblemListVO>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("查询题目分页列表成功")
+                    .data(null)
+                    .build();
+        }
         Page page;
         if (problemParam.getPage() != null){
             page = new Page<ProblemDTO>(problemParam.getPage(), limit);
@@ -94,6 +111,7 @@ public class ProblemController {
                         problemDTO.setProblemScore(competitionProblemDTO.getProblemScore());
                         problemDTO.setSolvedNumber(competitionProblemDTO.getSolvedNumber());
                         problemDTO.setSubmitNumber(competitionProblemDTO.getSubmitNumber());
+                        problemDTO.setProblemRuleType(competitionProblemDTO.getProblemRuleType());
                     }
                 }
             }
@@ -182,6 +200,7 @@ public class ProblemController {
         problemDTO.setSolvedNumber(competitionProblem.getSolvedNumber());
         problemDTO.setSubmitNumber(competitionProblem.getSubmitNumber());
         problemDTO.setProblemScore(competitionProblem.getProblemScore());
+        problemDTO.setProblemRuleType(competitionProblem.getProblemRuleType());
         if (problemDTO != null) {
             return ResponseResult.<ProblemDTO>builder()
                     .code(BusinessStatus.OK.getCode())
@@ -194,6 +213,96 @@ public class ProblemController {
                     .message("查询竞赛题目失败")
                     .data(null)
                     .build();
+        }
+    }
+
+    /**
+     * 删除竞赛题目
+     * @param competitionId
+     * @param problemId
+     * @return
+     */
+    @DeleteMapping("/competition/{competitionId}/{problemId}/admin")
+    public ResponseResult<Void> deleteCompetitionProblem(@PathVariable("competitionId")Long competitionId, @PathVariable("problemId") Long problemId){
+        //在这里只是删除competition_problem表中的关联关系
+        //并不会删除具体题目
+        boolean result = competitionProblemServiceApi.removeByCompetitionIdAndProblemId(competitionId,problemId);
+        if(result){
+            return ResponseResult.<Void>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("删除竞赛题目成功")
+                    .build();
+        }else{
+            return ResponseResult.<Void>builder()
+                    .code(BusinessStatus.FAIL.getCode())
+                    .message("删除竞赛题目失败")
+                    .build();
+        }
+    }
+
+
+    /**
+     * 将竞赛题目公共化
+     * @param publicParam
+     * @return
+     */
+    @PostMapping("/problem/makePublic")
+    public ResponseResult<Void> makeCompetitionProblemPublic(@RequestBody PublicParam publicParam){
+        CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndProblemId(0L, publicParam.getProblemId());
+        if(competitionProblem == null){
+            competitionProblem = new CompetitionProblem();
+            competitionProblem.setCompetitionId(0L);
+            competitionProblem.setProblemId(publicParam.getProblemId());
+            Long maxDisplayId = competitionProblemServiceApi.getMaxDisplayId(competitionProblem.getCompetitionId());
+            if(maxDisplayId == null){
+                maxDisplayId = 0L;
+            }
+            competitionProblem.setProblemDisplayId(maxDisplayId + 1);
+            competitionProblem.setProblemScore(0L);
+            competitionProblem.setSubmitNumber(0);
+            competitionProblem.setSolvedNumber(0);
+            ProblemDTO problemDTO = problemServiceApi.getProblemVOByPid(publicParam.getProblemId());
+            competitionProblem.setProblemRuleType(problemDTO.getProblemRuleType());
+            competitionProblemServiceApi.save(competitionProblem);
+            return ResponseResult.<Void>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .data(null)
+                    .message("将竞赛题目公共化成功").build();
+        }else{
+            return ResponseResult.<Void>builder()
+                    .code(BusinessStatus.FAIL.getCode())
+                    .data(null)
+                    .message("该题目是公共题目").build();
+        }
+    }
+
+    @PostMapping("/problem/addPublic")
+    public ResponseResult<Void> addPublicProblem(@RequestBody PublicParam publicParam){
+        CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndProblemId(publicParam.getCompetitionId(), publicParam.getProblemId());
+        if(competitionProblem == null){
+            competitionProblem = new CompetitionProblem();
+            competitionProblem.setCompetitionId(publicParam.getCompetitionId());
+            competitionProblem.setProblemId(publicParam.getProblemId());
+            Long maxDisplayId = competitionProblemServiceApi.getMaxDisplayId(competitionProblem.getCompetitionId());
+            if(maxDisplayId == null){
+                maxDisplayId = 0L;
+            }
+            competitionProblem.setProblemDisplayId(maxDisplayId + 1);
+            competitionProblem.setProblemScore(0L);
+            competitionProblem.setSubmitNumber(0);
+            competitionProblem.setSolvedNumber(0);
+            CompetitionDTO competitionDTO = competitionServiceApi.getCompetitionVOById(publicParam.getCompetitionId());
+            competitionProblem.setProblemRuleType(competitionDTO.getCompetitionRuleType());
+            competitionProblemServiceApi.save(competitionProblem);
+            return ResponseResult.<Void>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .data(null)
+                    .message("添加公共题目到竞赛题目成功").build();
+        }else{
+            return ResponseResult.<Void>builder()
+                    .code(BusinessStatus.FAIL.getCode())
+                    .data(null)
+                    .message("该题目存在").build();
         }
     }
 }

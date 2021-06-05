@@ -2,7 +2,12 @@ package cn.edu.nciae.onlinejudge.content.controller;
 
 import cn.edu.nciae.onlinejudge.commons.business.BusinessStatus;
 import cn.edu.nciae.onlinejudge.commons.dto.ResponseResult;
+import cn.edu.nciae.onlinejudge.commons.utils.FilesUtils;
+import cn.edu.nciae.onlinejudge.commons.utils.MapperUtils;
+import cn.edu.nciae.onlinejudge.commons.utils.OkHttpClientUtil;
+import cn.edu.nciae.onlinejudge.commons.utils.ZipUtils;
 import cn.edu.nciae.onlinejudge.content.api.*;
+import cn.edu.nciae.onlinejudge.content.domain.Checkpoint;
 import cn.edu.nciae.onlinejudge.content.domain.ProblemLanguage;
 import cn.edu.nciae.onlinejudge.content.domain.ProblemTag;
 import cn.edu.nciae.onlinejudge.content.domain.Tag;
@@ -21,13 +26,21 @@ import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
 import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import okhttp3.Response;
+import org.apache.commons.io.FileUtils;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhanghonglin
@@ -37,6 +50,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/content/problem")
 public class ProblemController {
+
+    @Value("${base.config.judge.url_testcase_core}")
+    private String url_testcase_core;
 
     @Reference(version = "1.0.0", check = false)
     private ProblemServiceApi problemServiceApi;
@@ -73,17 +89,31 @@ public class ProblemController {
      * @return
      */
     @GetMapping
-    public ResponseResult<ProblemListVO> getProblemList(@RequestParam("offset") Integer offset,
-                                                        @RequestParam("limit") Integer limit,
+    public ResponseResult<ProblemListVO> getProblemList(@RequestParam(value = "offset",required = false) Integer offset,
+                                                        @RequestParam(value = "limit",required = false) Integer limit,
                                                         ProblemParam problemParam) {
         //首先找到公共竞赛包含的所有题目
-        List<CompetitionProblemDTO> competitionProblemDTOS = competitionProblemServiceApi.list(0L);
+        List<CompetitionProblemDTO> competitionProblemDTOS = null;
+        if(problemParam.getProblemRuleType() == null){
+            competitionProblemDTOS = competitionProblemServiceApi.listByCompetitionId(0L);
+        }else {
+            competitionProblemDTOS = competitionProblemServiceApi.listByCompetitionIdAndRuleType(0L, problemParam.getProblemRuleType());
+        }
         //将所有题目的id放到一个List中
         List<Long> problemIdList = new ArrayList<>();
-        for(CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
-            problemIdList.add(competitionProblemDTO.getProblemId());
+        if(competitionProblemDTOS != null && competitionProblemDTOS.size()>0){
+            for(CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
+                problemIdList.add(competitionProblemDTO.getProblemId());
+            }
+            problemParam.setProblemIdList(problemIdList);
         }
-        problemParam.setProblemIdList(problemIdList);
+        if(problemIdList.size() == 0){
+            return ResponseResult.<ProblemListVO>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("查询题目分页列表成功")
+                    .data(null)
+                    .build();
+        }
         Page page;
         if (problemParam.getPage() != null){
             page = new Page<ProblemDTO>(problemParam.getPage(), limit);
@@ -100,23 +130,24 @@ public class ProblemController {
                         problemDTO.setProblemScore(competitionProblemDTO.getProblemScore());
                         problemDTO.setSolvedNumber(competitionProblemDTO.getSolvedNumber());
                         problemDTO.setSubmitNumber(competitionProblemDTO.getSubmitNumber());
+                        problemDTO.setProblemRuleType(competitionProblemDTO.getProblemRuleType());
                     }
                 }
             }
-        }
-        // 获取认证信息
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //获取用户名
-        String userName = authentication.getName();
+            // 获取认证信息
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            //获取用户名
+            String userName = authentication.getName();
 //            如果不是匿名用户，已认证时
-        if(!"anonymousUser".equals(userName)){
-            //获取用户信息
-            UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
+            if(!"anonymousUser".equals(userName)){
+                //获取用户信息
+                UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
 //                设置用户解决的问题
-            for(ProblemDTO problemDTO : problems.getRecords()){
-                UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemDTO.getProblemId());
-                if(userProblem != null){
-                    problemDTO.setMyStatus(userProblem.getStatus());
+                for(ProblemDTO problemDTO : problems.getRecords()){
+                    UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemDTO.getProblemId());
+                    if(userProblem != null){
+                        problemDTO.setMyStatus(userProblem.getStatus());
+                    }
                 }
             }
         }
@@ -139,7 +170,7 @@ public class ProblemController {
     }
 
     /**
-     * 根据题目id查看题目详细信息
+     * 查询公共题集具体题目信息
      * @param problemId
      * @return
      */
@@ -164,6 +195,7 @@ public class ProblemController {
         problemDTO.setSolvedNumber(competitionProblem.getSolvedNumber());
         problemDTO.setSubmitNumber(competitionProblem.getSubmitNumber());
         problemDTO.setProblemScore(competitionProblem.getProblemScore());
+        problemDTO.setProblemRuleType(competitionProblem.getProblemRuleType());
         // 获取认证信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //获取用户名
@@ -195,11 +227,70 @@ public class ProblemController {
      * @return
      */
     @PostMapping("/FPS")
-    public ResponseResult<ProblemListVO> addProblemListByFPS(){
-        List<ProblemDTO> problemDTOList = FPSUtils.fps2ProblemVO(Long.valueOf("1"), "./Doc/standard-test-fps.xml");
+    public ResponseResult<ProblemListVO> addProblemListByFPS(@RequestParam("file") MultipartFile multipartFile) throws Exception {
+        // 将multifile转换成file
+        File file = FilesUtils.transferToFile(multipartFile);
+        // 获取认证信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //获取用户名
+        String userName = authentication.getName();
+        //获取用户信息
+        UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
+        List<ProblemDTO> problemDTOList = FPSUtils.fps2ProblemVO(userInfo.getUserName(),userInfo.getUserId(),file);
         for (ProblemDTO problemDTO : problemDTOList) {
-            //重新接收，获得problemId
+            //上传测试用例并获得测试用例id
+            String testcaseId = uploadTestCase(problemDTO.getCheckpoints());
+            //设置测试用例id
+            problemDTO.setProblemTestcaseId(testcaseId);
+            //添加题目，样例
             problemDTO = problemServiceApi.insertOneProblemVO(problemDTO);
+            // 添加problem_language
+            List<String> languageList = problemDTO.getLanguages();
+            for(String s : languageList){
+                Languages language = languagesServiceApi.getLanguageByLanguageName(s, false);
+                ProblemLanguage problemLanguage = new ProblemLanguage();
+                problemLanguage.setLanguageId(language.getLanguageId());
+                problemLanguage.setProblemId(problemDTO.getProblemId());
+                problemLanguageServiceApi.save(problemLanguage);
+            }
+            // 添加到competition_problem中
+            CompetitionProblem competitionProblem = new CompetitionProblem();
+            if(problemDTO.getContestId() != null){
+                competitionProblem.setCompetitionId(problemDTO.getContestId());
+            }else{
+                competitionProblem.setCompetitionId(0L);
+            }
+            competitionProblem.setProblemId(problemDTO.getProblemId());
+            //获取某个竞赛或者公共题目中最大的展示id
+            Long maxDisplayId = competitionProblemServiceApi.getMaxDisplayId(competitionProblem.getCompetitionId());
+            if(maxDisplayId == null){
+                maxDisplayId = 0L;
+            }
+            competitionProblem.setProblemDisplayId(maxDisplayId + 1);
+            competitionProblem.setSubmitNumber(0);
+            competitionProblem.setSolvedNumber(0);
+            competitionProblem.setProblemRuleType("ACM");
+            competitionProblemServiceApi.save(competitionProblem);
+            // 添加tag 和 problem_tag
+            List<Tag> tagList = problemDTO.getTags();
+            // 查出是否有该tag
+            for(Tag tag : tagList){
+                ProblemTag problemTag = new ProblemTag();
+                problemTag.setProblemId(problemDTO.getProblemId());
+                //根据标签名查找是否有标签
+                Tag tagTemp = tagServiceApi.getTagByTagName(tag.getTagName());
+                // 说明没有该标签
+                if(tagTemp == null){
+                    tag.setTagDescription(tag.getTagName());
+                    // 添加新标签
+                    tag = tagServiceApi.saveTag(tag);
+                    problemTag.setTagId(tag.getTagId());
+                }else{
+                    problemTag.setTagId(tagTemp.getTagId());
+                }
+                // 保存problemTag
+                problemTagServiceApi.save(problemTag);
+            }
         }
         return ResponseResult.<ProblemListVO>builder()
                 .message("添加FPS成功")
@@ -212,7 +303,7 @@ public class ProblemController {
     }
 
     /**
-     * 添加题目
+     * 添加题目（公共+竞赛 公用）
      * @return
      */
     @PostMapping
@@ -227,7 +318,7 @@ public class ProblemController {
         problemDTO.setAddUserId(userInfo.getUserId());
         //设置作者
         problemDTO.setProblemAuthor(userName);
-//        添加题目、样例等信息
+        //添加题目、样例等信息
         problemDTO = problemServiceApi.insertOneProblemVO(problemDTO);
         // 添加problem_language
         List<String> languageList = problemDTO.getLanguages();
@@ -246,9 +337,14 @@ public class ProblemController {
             competitionProblem.setCompetitionId(0L);
         }
         competitionProblem.setProblemId(problemDTO.getProblemId());
-        competitionProblem.setProblemDisplayId(problemDTO.getProblemDisplayId());
+        Long maxDisplayId = competitionProblemServiceApi.getMaxDisplayId(competitionProblem.getCompetitionId());
+        if(maxDisplayId == null){
+            maxDisplayId = 0L;
+        }
+        competitionProblem.setProblemDisplayId(maxDisplayId + 1);
         competitionProblem.setSubmitNumber(0);
         competitionProblem.setSolvedNumber(0);
+        competitionProblem.setProblemRuleType(problemDTO.getProblemRuleType());
         competitionProblemServiceApi.save(competitionProblem);
         // 添加tag 和 problem_tag
         List<Tag> tagList = problemDTO.getTags();
@@ -278,20 +374,15 @@ public class ProblemController {
     }
 
     /**
-     * 删除题目并且删除相关信息
+     * 删除题目
      * @param problemId
      * @return
      */
     @DeleteMapping("/{problemId}")
     public ResponseResult<Void> deleteProblem(@PathVariable("problemId") Long problemId){
-        //删除题目
-        boolean result = problemServiceApi.removeById(problemId);
-        //删除样例输入输出
-        result = sampleServiceApi.removeByProblemId(problemId) && result;
-        //删除测试用例
-        //to do
-        //problem—tag 关联删除
-        //to do
+        //在这里只是删除competition_problem表中的关联关系
+        //并不会删除具体题目
+        boolean result = competitionProblemServiceApi.removeByCompetitionIdAndProblemId(0L,problemId);
         if(result){
             return ResponseResult.<Void>builder()
                     .code(BusinessStatus.OK.getCode())
@@ -306,7 +397,7 @@ public class ProblemController {
     }
 
     /**
-     * 更新题目
+     * 更新题目（公共+竞赛 公用）
      * @param problemDTO
      * @return
      */
@@ -316,15 +407,17 @@ public class ProblemController {
         problemDTO= problemServiceApi.updateProblemDTO(problemDTO);
         //更新problem_language
         List<String> languageList = problemDTO.getLanguages();
-        //首先删除problem_language
-        problemLanguageServiceApi.removeByProblemId(problemDTO.getProblemId());
-        //添加problem_language
-        for(String s : languageList){
-            Languages language = languagesServiceApi.getLanguageByLanguageName(s, false);
-            ProblemLanguage problemLanguage = new ProblemLanguage();
-            problemLanguage.setLanguageId(language.getLanguageId());
-            problemLanguage.setProblemId(problemDTO.getProblemId());
-            problemLanguageServiceApi.save(problemLanguage);
+        if(languageList != null){
+            //首先删除problem_language
+            problemLanguageServiceApi.removeByProblemId(problemDTO.getProblemId());
+            //添加problem_language
+            for(String s : languageList){
+                Languages language = languagesServiceApi.getLanguageByLanguageName(s, false);
+                ProblemLanguage problemLanguage = new ProblemLanguage();
+                problemLanguage.setLanguageId(language.getLanguageId());
+                problemLanguage.setProblemId(problemDTO.getProblemId());
+                problemLanguageServiceApi.save(problemLanguage);
+            }
         }
         // 添加到competition_problem中
         CompetitionProblem competitionProblem = new CompetitionProblem();
@@ -337,34 +430,73 @@ public class ProblemController {
         competitionProblem.setProblemDisplayId(problemDTO.getProblemDisplayId());
         competitionProblem.setSubmitNumber(0);
         competitionProblem.setSolvedNumber(0);
+        competitionProblem.setProblemRuleType(problemDTO.getProblemRuleType());
         //更新competition_problem
         competitionProblemServiceApi.updateByCompetitionIdAndProblemId(competitionProblem);
         // 添加tag 和 problem_tag
         List<Tag> tagList = problemDTO.getTags();
-        // 首先删除所有的problem_tag
-        problemTagServiceApi.removeByProblemId(problemDTO.getProblemId());
-        // 查出是否有该tag
-        for(Tag tag : tagList){
-            ProblemTag problemTag = new ProblemTag();
-            problemTag.setProblemId(problemDTO.getProblemId());
-            //根据标签名查找是否有标签
-            Tag tagTemp = tagServiceApi.getTagByTagName(tag.getTagName());
-            // 说明没有该标签
-            if(tagTemp == null){
-                tag.setTagDescription(tag.getTagName());
-                // 添加新标签
-                tag = tagServiceApi.saveTag(tag);
-                problemTag.setTagId(tag.getTagId());
-            }else{
-                problemTag.setTagId(tagTemp.getTagId());
+        if(tagList != null){
+            // 首先删除所有的problem_tag
+            problemTagServiceApi.removeByProblemId(problemDTO.getProblemId());
+            // 查出是否有该tag
+            for(Tag tag : tagList){
+                ProblemTag problemTag = new ProblemTag();
+                problemTag.setProblemId(problemDTO.getProblemId());
+                //根据标签名查找是否有标签
+                Tag tagTemp = tagServiceApi.getTagByTagName(tag.getTagName());
+                // 说明没有该标签
+                if(tagTemp == null){
+                    tag.setTagDescription(tag.getTagName());
+                    // 添加新标签
+                    tag = tagServiceApi.saveTag(tag);
+                    problemTag.setTagId(tag.getTagId());
+                }else{
+                    problemTag.setTagId(tagTemp.getTagId());
+                }
+                // 保存problemTag
+                problemTagServiceApi.save(problemTag);
             }
-            // 保存problemTag
-            problemTagServiceApi.save(problemTag);
         }
         return ResponseResult.<Void>builder()
                 .code(BusinessStatus.OK.getCode())
                 .message("修改题目成功")
                 .build();
 
+    }
+
+    /**
+     * 上传测试用例，返回测试用例id
+     * @param checkpoints
+     * @return
+     * @throws IOException
+     */
+    private String uploadTestCase(List<Checkpoint> checkpoints) throws Exception {
+        if(checkpoints != null) {
+            String filesName = "";
+            for (int i = 0; i < checkpoints.size(); i++) {
+                File inFile = new File(String.valueOf(i+1) + ".in");
+                File outFile = new File(String.valueOf(i+1) + ".out");
+                FileUtils.write(inFile, checkpoints.get(i).getInput(), "utf8", false);
+                FileUtils.write(outFile, checkpoints.get(i).getOutput(), "utf8", false);
+                filesName+=(inFile.getName()+"|");
+                filesName+=(outFile.getName()+"|");
+            }
+            //去掉最后一个 ｜
+            filesName = filesName.substring(0, filesName.length() - 1);
+            ZipUtils.zip(filesName,"test.zip",null);
+            // 请求参数
+            Map<String, Object> paramsMap = new HashMap<String, Object>();
+            paramsMap.put("file", new File("test.zip"));
+            paramsMap.put("spj", false);
+            // 返回Response
+            Response response = OkHttpClientUtil.getInstance().uploadFile(url_testcase_core, paramsMap);
+            String jsonString = response.body().string();
+            // 获取error
+            Object data = MapperUtils.json2pojoByTree(jsonString,"data", Object.class);
+            String dataStr = MapperUtils.obj2json(data);
+            String testcaseId = MapperUtils.json2pojoByTree(dataStr, "id", String.class);
+            return testcaseId;
+        }
+        return "";
     }
 }

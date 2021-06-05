@@ -31,8 +31,20 @@ public class CompetitionProblemServiceApiImpl extends CompetitionProblemServiceI
      * @return
      */
     @Override
-    public List<CompetitionProblemDTO> list(Long competitionId) {
+    public List<CompetitionProblemDTO> listByCompetitionId(Long competitionId) {
         return competitionProblemMapper.selectListById(competitionId);
+    }
+
+    /**
+     * 根据竞赛id和赛制查看题目列表
+     *
+     * @param competitionId
+     * @param problemRuleType
+     * @return
+     */
+    @Override
+    public List<CompetitionProblemDTO> listByCompetitionIdAndRuleType(Long competitionId, String problemRuleType) {
+        return competitionProblemMapper.selectListByIdAndRuleType(competitionId, problemRuleType);
     }
 
     /**
@@ -81,4 +93,28 @@ public class CompetitionProblemServiceApiImpl extends CompetitionProblemServiceI
                 .eq("competition_id",competitionProblem.getCompetitionId())
                 .eq("problem_id",competitionProblem.getProblemId()));
     }
+
+    /**
+     * 根据竞赛id和题目id逻辑删除题目
+     * @param competitionId
+     * @param problemId
+     * @return
+     */
+    @Override
+    public boolean removeByCompetitionIdAndProblemId(long competitionId, Long problemId) {
+        return super.remove(new QueryWrapper<CompetitionProblem>()
+                .eq("competition_id",competitionId)
+                .eq("problem_id",problemId));
+    }
+
+    /**
+     * 获取某个竞赛或者公共题目中最大的展示id
+     * @param competitionId
+     * @return
+     */
+    @Override
+    public Long getMaxDisplayId(Long competitionId) {
+        return competitionProblemMapper.selectMaxDisplayId(competitionId);
+    }
+
 }

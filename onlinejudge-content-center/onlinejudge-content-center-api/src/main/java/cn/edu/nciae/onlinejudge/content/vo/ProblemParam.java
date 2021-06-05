@@ -27,6 +27,7 @@ public class ProblemParam implements Serializable {
     private String tag;
     private Integer page;
     private Long contestId;
+    private String problemRuleType;
 
     /**
      * 查出对应竞赛（公共的也可以）的题目id列表

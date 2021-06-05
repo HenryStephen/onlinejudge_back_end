@@ -152,4 +152,129 @@ class Program {
     }
 }]]></solution>
     </item>
+    <!--	<item>-->
+    <!--		<title><![CDATA[A Bug]]></title>-->
+    <!--		<time_limit unit="ms"><![CDATA[1000]]></time_limit>-->
+    <!--		<memory_limit unit="mb"><![CDATA[128]]></memory_limit>-->
+    <!--		<description>-->
+    <!--			<![CDATA[<p><b>Background</b> <br />-->
+    <!--			Professor Hopper is researching the sexual behavior of a rare  species of bugs. He assumes that they feature two different genders and  that they only interact with bugs of the opposite gender. In his  experiment, individual bugs and their interactions were easy to  identify, because numbers were printed on their backs. <br />-->
+    <!--			<b>Problem</b> <br />-->
+    <!--			Given a list of bug interactions, decide whether the experiment  supports his assumption of two genders with no homosexual bugs or if it  contains some bug interactions that falsify it.</p>-->
+    <!--			<p>&nbsp;</p>]]>-->
+    <!--		</description>-->
+    <!--		<input><![CDATA[<p>The first line of the input contains the number of scenarios. Each  scenario starts with one line giving the number of bugs (at least one,  and up to 2000) and the number of interactions (up to 1000000) separated  by a single space. In the following lines, each interaction is given in  the form of two distinct bug numbers separated by a single space. Bugs  are numbered consecutively starting from one.</p>]]></input>-->
+    <!--		<output><![CDATA[<p>The output for every scenario is a line containing &quot;Scenario #i:&quot;, where  i is the number of the scenario starting at 1, followed by one line  saying either &quot;No suspicious bugs found!&quot; if the experiment is  consistent with his assumption about the bugs' sexual behavior, or  &quot;Suspicious bugs found!&quot; if Professor Hopper's assumption is definitely  wrong.</p>]]></output>-->
+    <!--		<sample_input>-->
+    <!--			<![CDATA[-->
+    <!--			2-->
+    <!--			3 3-->
+    <!--			1 2-->
+    <!--			2 3-->
+    <!--			1 3-->
+    <!--			4 2-->
+    <!--			1 2-->
+    <!--			3 4-->
+    <!--			]]>-->
+    <!--		</sample_input>-->
+    <!--		<sample_output>-->
+    <!--			<![CDATA[-->
+    <!--			Scenario #1:-->
+    <!--			Suspicious bugs found!-->
+    <!--			Scenario #2:-->
+    <!--			No suspicious bugs found!-->
+    <!--			]]>-->
+    <!--		</sample_output>-->
+    <!--		<hint>-->
+    <!--			<![CDATA[-->
+    <!--			#include<iostream>-->
+    <!--			#include<cstring>-->
+    <!--			#include<vector>-->
+    <!--			#include<stdio.h>-->
+    <!--			#define NOT 0-->
+    <!--			#define MALE 1-->
+    <!--			#define FEMALE 2-->
+    <!--			using namespace std;-->
+    <!--			bool chk;-->
+    <!--			vector<vector<int> > list; //간선들-->
+    <!--			int visited[2000];-->
+    <!--			bool vis[2000];-->
+    <!--			void dfs(int s,int state)-->
+
+    <!--			{-->
+    <!--				if(visited[s] == NOT)-->
+    <!--					visited[s] = state;-->
+    <!--				else-->
+    <!--					return;-->
+    <!--				for(unsigned int i = 0; i < list[s].size();i++)-->
+    <!--				{-->
+    <!--					if(visited[list[s][i]] == NOT)-->
+    <!--					{-->
+    <!--						if(state == FEMALE)-->
+    <!--							dfs(list[s][i],MALE);           //다음 정점은 수컷으로-->
+    <!--						else if(state == MALE)-->
+    <!--							dfs(list[s][i],FEMALE);-->
+    <!--					}-->
+    <!--				}-->
+    <!--			}-->
+
+    <!--			void dfs_process(int s)-->
+
+    <!--			{-->
+    <!--				if(!vis[s]) vis[s] = true;-->
+    <!--				else if(chk) return;-->
+    <!--				else return;-->
+    <!--				for(unsigned int i = 0 ; i < list[s].size();i++)-->
+    <!--				{-->
+    <!--					if(visited[s] == visited[list[s][i]])-->
+    <!--						chk = true;     //성이 모호해 지는 관계-->
+    <!--					if(!vis[list[s][i]])-->
+    <!--						dfs_process(list[s][i]);-->
+    <!--				}-->
+    <!--			}-->
+
+    <!--			int main()-->
+
+    <!--			{-->
+    <!--				int T,n,m;-->
+    <!--				scanf("%d",&T);-->
+    <!--				for(int aa = 0; aa < T;aa++)-->
+    <!--				{-->
+    <!--					scanf("%d %d",&n,&m);-->
+    <!--					list.resize(n,vector<int>(0));-->
+    <!--					memset(visited,NOT,sizeof(visited));-->
+    <!--					memset(vis,false,sizeof(vis));-->
+    <!--					chk = false;-->
+    <!--					for(int i = 0; i < n;i++)-->
+    <!--						list[i].clear();-->
+    <!--					for(int i = 0; i < m ; i++)-->
+    <!--					{-->
+    <!--						int p,q;-->
+    <!--						scanf("%d %d",&p,&q);-->
+    <!--						list[p-1].push_back(q-1); //리스트 구현-->
+    <!--						list[q-1].push_back(p-1);-->
+    <!--					}-->
+    <!--					for(int i = 0; i < n;i++)-->
+    <!--					{-->
+    <!--						if(visited[i] == NOT)-->
+
+    <!--							dfs(i,FEMALE);-->
+    <!--						dfs_process(i);-->
+    <!--					}-->
+    <!--					printf("Scenario #%d:\n",aa+1);-->
+    <!--					if(chk)     //chk가 참이면 성이 모호해 지는 관계를 뜻함-->
+    <!--						printf("Suspicious bugs found!\n");-->
+    <!--					else-->
+    <!--						printf("No suspicious bugs found!\n");-->
+    <!--					printf("\n");-->
+    <!--				}-->
+    <!--				return 0;-->
+
+    <!--			}-->
+    <!--			]]>-->
+    <!--		</hint>-->
+    <!--		<source><![CDATA[]]></source>-->
+    <!--		<difficulty>High</difficulty>-->
+    <!--		<spj><![CDATA[]]></spj>-->
+    <!--	</item>-->
 </fps>
