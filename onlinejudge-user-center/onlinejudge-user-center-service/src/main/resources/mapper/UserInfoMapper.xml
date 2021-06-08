@@ -22,7 +22,31 @@
             <result property="userAvatarUrl" column="user_avatar_url" jdbcType="VARCHAR"/>
             <result property="userGithub" column="user_github" jdbcType="VARCHAR"/>
             <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+            <result property="isDisable" column="is_disable" jdbcType="BOOLEAN"/>
     </resultMap>
+
+    <resultMap id="UserInfoViewResultMap" type="cn.edu.nciae.onlinejudge.user.vo.UserInfoDTO">
+        <id property="userId" column="user_id" jdbcType="BIGINT"/>
+        <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+        <result property="userRealName" column="user_real_name" jdbcType="VARCHAR"/>
+        <result property="userPassword" column="user_password" jdbcType="VARCHAR"/>
+        <result property="userEmail" column="user_email" jdbcType="VARCHAR"/>
+        <result property="userRegtime" column="user_regtime" jdbcType="TIMESTAMP"/>
+        <result property="userSolveNumber" column="user_solve_number" jdbcType="INTEGER"/>
+        <result property="userSubmissionNumber" column="user_submission_number" jdbcType="INTEGER"/>
+        <result property="userTotalScore" column="user_total_score" jdbcType="INTEGER"/>
+        <result property="userLanguage" column="user_language" jdbcType="VARCHAR"/>
+        <result property="userSchool" column="user_school" jdbcType="VARCHAR"/>
+        <result property="userMood" column="user_mood" jdbcType="VARCHAR"/>
+        <result property="userBlog" column="user_blog" jdbcType="VARCHAR"/>
+        <result property="userAvatar" column="user_avatar" jdbcType="VARCHAR"/>
+        <result property="userAvatarUrl" column="user_avatar_url" jdbcType="VARCHAR"/>
+        <result property="userGithub" column="user_github" jdbcType="VARCHAR"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+        <result property="isDisable" column="is_disable" jdbcType="BOOLEAN"/>
+        <result property="roleType" column="enname" jdbcType="VARCHAR"/>
+    </resultMap>
+
 
     <sql id="Base_Column_List">
         user_id,user_name,user_real_name,
@@ -30,6 +54,41 @@
         user_solve_number,user_submission_number,user_total_score,
         user_language,user_school,user_mood,
         user_blog,user_avatar,user_avatar_url,
-        user_github,is_deleted
+        user_github,is_deleted,is_disable
     </sql>
+    <select id="selectUserInfoVOListPage" resultMap="UserInfoViewResultMap">
+        SELECT
+            u.*, r.enname
+        FROM
+            user_info AS u
+        LEFT JOIN user_role AS ur
+                  ON u.user_id = ur.user_id
+        LEFT JOIN role AS r
+                  ON r.id = ur.role_id
+        <where>
+            <if test="keyword != null">
+                and (
+                u.user_name like CONCAT('%',#{keyword},'%') or
+                u.user_real_name like CONCAT('%',#{keyword},'%')
+                )
+            </if>
+        </where>
+    </select>
+    <select id="selectUserDtoByUserId" resultMap="UserInfoViewResultMap">
+        SELECT
+            u.*, r.enname
+        FROM
+            user_info AS u
+        LEFT JOIN user_role AS ur
+                  ON u.user_id = ur.user_id
+        LEFT JOIN role AS r
+                  ON r.id = ur.role_id
+        where u.user_id = #{userId}
+    </select>
+
+    <select id="selectIsDisabled" resultType="java.lang.Boolean">
+        select is_disable
+        from user_info
+        where user_name like #{userName}
+    </select>
 </mapper>

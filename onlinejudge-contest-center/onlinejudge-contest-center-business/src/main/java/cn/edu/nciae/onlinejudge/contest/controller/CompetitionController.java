@@ -8,7 +8,9 @@ import cn.edu.nciae.onlinejudge.contest.vo.CompetitionDTO;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionListVO;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionParam;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionPassword;
+import cn.edu.nciae.onlinejudge.user.api.RoleServiceApi;
 import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
+import cn.edu.nciae.onlinejudge.user.domain.Role;
 import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -19,7 +21,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author zhanghonglin
@@ -35,6 +39,9 @@ public class CompetitionController {
 
     @Reference(version = "1.0.0",check = false)
     private UserInfoServiceApi userInfoServiceApi;
+
+    @Reference(version = "1.0.0",check = false)
+    private RoleServiceApi roleServiceApi;
 
     @Resource
     public BCryptPasswordEncoder passwordEncoder;
@@ -57,12 +64,53 @@ public class CompetitionController {
         }else{
             page = new Page<CompetitionDTO>(1, limit);
         }
-        IPage<CompetitionDTO> competitions = competitionServiceApi.getCompetitionListPage(page, competitionParam);
+        IPage<CompetitionDTO> competitions = null;
+        if(!competitionParam.getIsAdmin()){
+            competitions = competitionServiceApi.getCompetitionListPage(page, competitionParam);
+        }else{
+            // 获取认证信息
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            //获取用户名
+            String userName = authentication.getName();
+            if(!"anonymousUser".equals(userName)){
+                UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
+                // 获取用户id
+                Long userId = userInfo.getUserId();
+                // 查出用户角色类型
+                List<Role> roles = roleServiceApi.selectRoleByUserId(userId);
+                String roleType = roles.get(0).getEnname();
+                // 如果是管理员
+                if("Admin".equals(roleType)){
+                    competitionParam.setCreateUserId(userId);
+                }else if("Super Admin".equals(roleType)){
+                    // 如果是超级管理员
+                    competitionParam.setCreateUserId(null);
+                }
+            }
+            competitions = competitionServiceApi.getCompetitionListPageAdmin(page, competitionParam);
+        }
         for(CompetitionDTO competitionDTO : competitions.getRecords()){
             UserInfo userInfo = userInfoServiceApi.getByUserId(competitionDTO.getCompetitionCreateUser());
             competitionDTO.setCreateUserName(userInfo.getUserName());
             competitionDTO.setNow(new Date());
             competitionDTO.setCompetitionStatus(getCompetitionStatus(competitionDTO.getNow(), competitionDTO.getCompetitionStartTime(), competitionDTO.getCompetitionEndTime()));
+        }
+        // 找出满足competition status的竞赛
+        if(competitionParam.getStatus() != null){
+            List<CompetitionDTO> competitionDTOS = new ArrayList<>();
+            for(CompetitionDTO competitionDTO : competitions.getRecords()){
+                if(competitionDTO.getCompetitionStatus().equals(competitionParam.getStatus())){
+                    competitionDTOS.add(competitionDTO);
+                }
+            }
+            return ResponseResult.<CompetitionListVO>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("查询竞赛分页列表成功")
+                    .data(CompetitionListVO.builder()
+                            .results(competitionDTOS)
+                            .total(new Long(competitionDTOS.size()))
+                            .build())
+                    .build();
         }
         return ResponseResult.<CompetitionListVO>builder()
                 .code(BusinessStatus.OK.getCode())

@@ -276,6 +276,11 @@ public class ProblemController {
         }
     }
 
+    /**
+     * 从公共题目中添加题目到竞赛中
+     * @param publicParam
+     * @return
+     */
     @PostMapping("/problem/addPublic")
     public ResponseResult<Void> addPublicProblem(@RequestBody PublicParam publicParam){
         CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndProblemId(publicParam.getCompetitionId(), publicParam.getProblemId());

@@ -8,7 +8,7 @@ import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
 import cn.edu.nciae.onlinejudge.user.domain.Role;
 import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
 import cn.edu.nciae.onlinejudge.user.dto.ProfileDTO;
-import cn.edu.nciae.onlinejudge.user.vo.UserInfoProfileDTO;
+import cn.edu.nciae.onlinejudge.user.vo.UserInfoProfileVo;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.Authentication;
@@ -64,7 +64,7 @@ public class ProfileController {
                     .data(ProfileDTO.builder()
                         .userInfo(userInfo)
                         .roleType(roleList.get(0).getEnname())
-                        .problemPermission("All")
+                        .problemPermission(getProblemPermission(roleList.get(0).getEnname()))
                         .solvedProblemIdList(solvedProblemIdList)
                         .build()
                     ).build();
@@ -82,13 +82,13 @@ public class ProfileController {
      * @return
      */
     @PutMapping
-    public ResponseResult<ProfileDTO> updateUserInfoProfile(@RequestBody UserInfoProfileDTO userInfoProfileDTO){
+    public ResponseResult<ProfileDTO> updateUserInfoProfile(@RequestBody UserInfoProfileVo userInfoProfileVo){
         // 获取认证信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //获取用户名
         String userName = authentication.getName();
         UserInfo userInfo = new UserInfo();
-        BeanUtils.copyProperties(userInfoProfileDTO, userInfo);
+        BeanUtils.copyProperties(userInfoProfileVo, userInfo);
         boolean result = userInfoServiceApi.updateProfile(userInfo, userName);
         if(result){
             //获取用户信息
@@ -103,7 +103,7 @@ public class ProfileController {
                     .data(ProfileDTO.builder()
                             .userInfo(userInfo)
                             .roleType(roleList.get(0).getEnname())
-                            .problemPermission("All")
+                            .problemPermission(getProblemPermission(roleList.get(0).getEnname()))
                             .solvedProblemIdList(solvedProblemIdList)
                             .build())
                     .build();
@@ -113,6 +113,23 @@ public class ProfileController {
                     .message("修改Profile信息失败")
                     .data(null)
                     .build();
+        }
+    }
+
+    /**
+     * 获取用户操作问题的权限
+     * @param roleType
+     * @return
+     */
+    private String getProblemPermission(String roleType){
+        if("Super Admin".equals(roleType)){
+            return "All";
+        }else if("Admin".equals(roleType)){
+            return "Own";
+        }else if("Regular User".equals(roleType)){
+            return "None";
+        }else {
+            return "None";
         }
     }
 }

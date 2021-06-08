@@ -33,4 +33,9 @@ public class ProblemParam implements Serializable {
      * 查出对应竞赛（公共的也可以）的题目id列表
      */
     private List<Long> problemIdList;
+
+    /**
+     * 添加题目者id
+     */
+    private Long addUserId;
 }

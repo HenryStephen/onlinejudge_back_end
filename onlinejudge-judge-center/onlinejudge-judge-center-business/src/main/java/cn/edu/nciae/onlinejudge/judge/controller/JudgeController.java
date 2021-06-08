@@ -126,14 +126,13 @@ public class JudgeController {
         UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
         // 获取题目信息
         ProblemDTO problemDTO = null;
-        if(submissionParam.getContest_id() != null){
-//            说明参数中的problemid是展示id
-            CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndDisplayId(submissionParam.getContest_id(), submissionParam.getProblem_id());
-            problemDTO = problemServiceApi.getProblemVOByPid(competitionProblem.getProblemId());
-        }else{
-//            说明参数是正常的id
-            problemDTO = problemServiceApi.getProblemVOByPid(submissionParam.getProblem_id());
+        // 如果没有处在竞赛中，则设置成公共题目
+        if(submissionParam.getContest_id() == null){
+            submissionParam.setContest_id(0L);
         }
+        // 通过关联表查出来题目信息
+        CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndDisplayId(submissionParam.getContest_id(), submissionParam.getProblem_id());
+        problemDTO = problemServiceApi.getProblemVOByPid(competitionProblem.getProblemId());
         // 获取编程语言名称
         String languageName = submissionParam.getLanguage();
         // 获取语言对象
@@ -163,7 +162,7 @@ public class JudgeController {
                                             .submissionId(submissionId)
                                             .userId(userInfo.getUserId())
                                             .contestId(submissionParam.getContest_id())
-                                            .problemId(submissionParam.getProblem_id())// 如果有竞赛，则此id是展示id
+                                            .problemId(submissionParam.getProblem_id())// 此id是展示id
                                             .languageId(language.getLanguageId())
                                             .build());
         return ResponseResult.<String>builder()

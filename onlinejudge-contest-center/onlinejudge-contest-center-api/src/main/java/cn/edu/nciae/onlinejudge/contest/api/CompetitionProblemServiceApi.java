@@ -57,6 +57,13 @@ public interface CompetitionProblemServiceApi {
 	boolean updateByCompetitionIdAndProblemId(CompetitionProblem competitionProblem);
 
 	/**
+	 * 根据竞赛id和展示id更新关联关系
+	 * @param competitionProblem
+	 * @return
+	 */
+	boolean updateByCompetitionIdAndDisplayId(CompetitionProblem competitionProblem);
+
+	/**
 	 * 根据竞赛id和题目id逻辑删除题目
 	 * @param competitionId
 	 * @param problemId
@@ -70,6 +77,4 @@ public interface CompetitionProblemServiceApi {
 	 * @return
 	 */
 	Long getMaxDisplayId(Long competitionId);
-
-
 }

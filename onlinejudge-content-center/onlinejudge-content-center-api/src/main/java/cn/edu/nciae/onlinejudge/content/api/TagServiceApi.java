@@ -16,7 +16,13 @@ public interface TagServiceApi {
      * 根据参数查询标签列表
      * @return
      */
-    List<Tag> list(TagParam tagParam);
+    List<Tag> listByParam(TagParam tagParam);
+
+    /**
+     * 获取标签列表
+     * @return
+     */
+    List<Tag> list();
 
     /**
      * 根据标签名称查找标签

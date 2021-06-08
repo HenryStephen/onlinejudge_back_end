@@ -31,7 +31,13 @@ public class TagController {
      */
     @GetMapping
     public ResponseResult<List<Tag>> getTagList(TagParam tagParam) {
-        List<Tag> tagList = tagServiceApi.list(tagParam);
+        List<Tag> tagList = null;
+        // 代表是后台的请求
+        if(tagParam != null && tagParam.getKeyword() != null){
+            tagList = tagServiceApi.listByParam(tagParam);
+        }else{
+            tagList = tagServiceApi.list();
+        }
         return ResponseResult.<List<Tag>>builder()
                 .code(BusinessStatus.OK.getCode())
                 .message("查询标签列表成功")

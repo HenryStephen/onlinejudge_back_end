@@ -98,6 +98,42 @@
             <if test="problemParam.tag != null">
                 and t.tag_name like #{problemParam.tag}
             </if>
+            <if test=" 1==1 ">
+                and p.visible = 1
+            </if>
+        </where>
+    </select>
+
+    <select id="selectProblemVOListPageAdmin" resultMap="ProblemViewResultMap">
+        select p.* from problem as p
+        <if test="problemParam.tag != null">
+            LEFT JOIN problem_tag AS pt
+            ON p.problem_id = pt.problem_id
+            LEFT JOIN tag AS t
+            ON pt.tag_id = t.tag_id
+        </if>
+        <where>
+            <if test="problemParam.problemIdList != null">
+                and p.problem_id in
+                <foreach collection="problemParam.problemIdList" item="problemId" open="(" separator="," close=")">
+                    #{problemId}
+                </foreach>
+            </if>
+            <if test="problemParam.difficulty != null">
+                and p.problem_difficulty like #{problemParam.difficulty}
+            </if>
+            <if test="problemParam.keyword != null">
+                and (
+                p.problem_title like CONCAT('%',#{problemParam.keyword},'%') or
+                p.problem_description like CONCAT('%',#{problemParam.keyword},'%')
+                )
+            </if>
+            <if test="problemParam.tag != null">
+                and t.tag_name like #{problemParam.tag}
+            </if>
+            <if test="problemParam.addUserId != null">
+                and p.add_user_id = #{problemParam.addUserId}
+            </if>
         </where>
     </select>
 

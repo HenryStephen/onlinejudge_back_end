@@ -23,6 +23,14 @@ public interface ProblemServiceApi {
     IPage<ProblemDTO> getProblemListPage(Page page, ProblemParam problemParam);
 
     /**
+     * 查询题目分页列表（管理员）
+     * @param page
+     * @param problemParam
+     * @return
+     */
+    IPage<ProblemDTO> getProblemListPageAdmin(Page page, ProblemParam problemParam);
+
+    /**
      * 查询题目
      * @param problemId
      * @return

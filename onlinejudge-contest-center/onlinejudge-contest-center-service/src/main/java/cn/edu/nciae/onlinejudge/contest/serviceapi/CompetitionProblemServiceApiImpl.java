@@ -95,6 +95,19 @@ public class CompetitionProblemServiceApiImpl extends CompetitionProblemServiceI
     }
 
     /**
+     * 根据竞赛id和展示id更新关联关系
+     *
+     * @param competitionProblem
+     * @return
+     */
+    @Override
+    public boolean updateByCompetitionIdAndDisplayId(CompetitionProblem competitionProblem) {
+        return super.update(competitionProblem, new UpdateWrapper<CompetitionProblem>()
+                .eq("competition_id",competitionProblem.getCompetitionId())
+                .eq("problem_display_id",competitionProblem.getProblemDisplayId()));
+    }
+
+    /**
      * 根据竞赛id和题目id逻辑删除题目
      * @param competitionId
      * @param problemId

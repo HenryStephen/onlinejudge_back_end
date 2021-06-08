@@ -14,7 +14,7 @@ import java.io.Serializable;
  * 用于修改用户profile的DTO
  */
 @Data
-public class UserInfoProfileDTO implements Serializable {
+public class UserInfoProfileVo implements Serializable {
 
     /**
      * 用户真实姓名

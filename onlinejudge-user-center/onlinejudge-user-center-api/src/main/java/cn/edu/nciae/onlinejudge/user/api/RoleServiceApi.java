@@ -16,4 +16,11 @@ public interface RoleServiceApi {
      * @return
      */
     List<Role> selectRoleByUserId(Long userId);
+
+    /**
+     * 根据角色名字获取角色
+     * @param roleType
+     * @return
+     */
+    Role getRoleByRoleName(String roleType);
 }

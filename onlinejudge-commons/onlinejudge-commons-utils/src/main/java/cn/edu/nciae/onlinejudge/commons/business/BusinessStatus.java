@@ -16,7 +16,12 @@ public enum BusinessStatus {
     /**
      * 管理员 - 账号密码错误
      */
-    ADMIN_PASSWORD(100101, "管理员账号密码错误"),
+    ADMIN_PASSWORD(100101, "账号或密码错误"),
+
+    /**
+     * 账户被禁用
+     */
+    ADMIN_DISABLED(100000, "账户已被禁用，请联系管理员"),
 
     /**
      * 未知错误

@@ -1,13 +1,14 @@
 package cn.edu.nciae.onlinejudge.oauth2.controller;
 
-
 import cn.edu.nciae.onlinejudge.commons.business.BusinessException;
 import cn.edu.nciae.onlinejudge.commons.business.BusinessStatus;
 import cn.edu.nciae.onlinejudge.commons.dto.ResponseResult;
 import cn.edu.nciae.onlinejudge.commons.utils.MapperUtils;
 import cn.edu.nciae.onlinejudge.commons.utils.OkHttpClientUtil;
 import cn.edu.nciae.onlinejudge.oauth2.vo.LoginParam;
+import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
 import com.google.common.collect.Maps;
+import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -53,6 +54,9 @@ public class LoginController {
     @Resource
     public BCryptPasswordEncoder passwordEncoder;
 
+    @Reference(version = "1.0.0",check = false)
+    private UserInfoServiceApi userInfoServiceApi;
+
     /**
      * 登录
      *
@@ -67,7 +71,22 @@ public class LoginController {
         // 验证密码是否正确
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginParam.getUsername());
         if (userDetails == null || !passwordEncoder.matches(loginParam.getPassword(), userDetails.getPassword())) {
-            throw new BusinessException(BusinessStatus.ADMIN_PASSWORD);
+            //账号或密码错误
+            return ResponseResult.<Map<String, Object>>builder()
+                    .code(BusinessStatus.ADMIN_PASSWORD.getCode())
+                    .message(BusinessStatus.ADMIN_PASSWORD.getMessage())
+                    .data(null)
+                    .build();
+        } else if(userDetails != null){
+            //userDetails不为空时，判断用户是否被禁用
+            Boolean isDisabled = userInfoServiceApi.getIsDisabledByUserName(userDetails.getUsername());
+            if(isDisabled){
+                return ResponseResult.<Map<String, Object>>builder()
+                        .code(BusinessStatus.ADMIN_DISABLED.getCode())
+                        .message(BusinessStatus.ADMIN_DISABLED.getMessage())
+                        .data(null)
+                        .build();
+            }
         }
 
         // 通过 HTTP 客户端请求登录接口

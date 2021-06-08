@@ -22,7 +22,9 @@ import cn.edu.nciae.onlinejudge.judge.api.LanguagesServiceApi;
 import cn.edu.nciae.onlinejudge.judge.domain.Languages;
 import cn.edu.nciae.onlinejudge.statistic.api.UserProblemServiceApi;
 import cn.edu.nciae.onlinejudge.statistic.domain.UserProblem;
+import cn.edu.nciae.onlinejudge.user.api.RoleServiceApi;
 import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
+import cn.edu.nciae.onlinejudge.user.domain.Role;
 import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -78,7 +80,10 @@ public class ProblemController {
     @Reference(version = "1.0.0", check = false)
     private TagServiceApi tagServiceApi;
 
-    @Reference(version = "1.0.0", check = false)
+    @Reference(version = "1.0.0",check = false)
+    private RoleServiceApi roleServiceApi;
+
+    @Reference(version = "1.0.0",check = false)
     private ProblemTagServiceApi problemTagServiceApi;
 
     /**
@@ -170,6 +175,108 @@ public class ProblemController {
     }
 
     /**
+     * 查询公共题目分页列表(管理员)
+     * @param offset
+     * @param limit
+     * @param problemParam
+     * @return
+     */
+    @GetMapping("/admin")
+    public ResponseResult<ProblemListVO> getProblemListAdmin(@RequestParam(value = "offset",required = false) Integer offset,
+                                                        @RequestParam(value = "limit",required = false) Integer limit,
+                                                        ProblemParam problemParam) {
+        //首先找到公共竞赛包含的所有题目
+        List<CompetitionProblemDTO> competitionProblemDTOS = null;
+        if(problemParam.getProblemRuleType() == null){
+            competitionProblemDTOS = competitionProblemServiceApi.listByCompetitionId(0L);
+        }else {
+            competitionProblemDTOS = competitionProblemServiceApi.listByCompetitionIdAndRuleType(0L, problemParam.getProblemRuleType());
+        }
+        //将所有题目的id放到一个List中
+        List<Long> problemIdList = new ArrayList<>();
+        if(competitionProblemDTOS != null && competitionProblemDTOS.size()>0){
+            for(CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
+                problemIdList.add(competitionProblemDTO.getProblemId());
+            }
+            problemParam.setProblemIdList(problemIdList);
+        }
+        if(problemIdList.size() == 0){
+            return ResponseResult.<ProblemListVO>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("查询题目分页列表成功")
+                    .data(null)
+                    .build();
+        }
+        // 获取认证信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        //获取用户名
+        String userName = authentication.getName();
+        if(!"anonymousUser".equals(userName)){
+            UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
+            // 获取用户id
+            Long userId = userInfo.getUserId();
+            // 查出用户角色类型
+            List<Role> roles = roleServiceApi.selectRoleByUserId(userId);
+            String roleType = roles.get(0).getEnname();
+            // 如果是管理员
+            if("Admin".equals(roleType)){
+                problemParam.setAddUserId(userId);
+            }else if("Super Admin".equals(roleType)){
+                // 如果是超级管理员
+                problemParam.setAddUserId(null);
+            }
+        }
+        Page page;
+        if (problemParam.getPage() != null){
+            page = new Page<ProblemDTO>(problemParam.getPage(), limit);
+        } else {
+            page = new Page<ProblemDTO>(1, limit);
+        }
+        IPage<ProblemDTO> problems = problemServiceApi.getProblemListPageAdmin(page, problemParam);
+        // 设置题目的相关信息
+        if(problems != null){
+            for(ProblemDTO problemDTO : problems.getRecords()){
+                for(CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
+                    if(problemDTO.getProblemId().equals(competitionProblemDTO.getProblemId())){
+                        problemDTO.setProblemDisplayId(competitionProblemDTO.getProblemDisplayId());
+                        problemDTO.setProblemScore(competitionProblemDTO.getProblemScore());
+                        problemDTO.setSolvedNumber(competitionProblemDTO.getSolvedNumber());
+                        problemDTO.setSubmitNumber(competitionProblemDTO.getSubmitNumber());
+                        problemDTO.setProblemRuleType(competitionProblemDTO.getProblemRuleType());
+                    }
+                }
+            }
+//            如果不是匿名用户，已认证时
+            if(!"anonymousUser".equals(userName)){//获取用户信息
+                UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
+//                设置用户解决的问题
+                for(ProblemDTO problemDTO : problems.getRecords()){
+                    UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemDTO.getProblemId());
+                    if(userProblem != null){
+                        problemDTO.setMyStatus(userProblem.getStatus());
+                    }
+                }
+            }
+        }
+        if(problems != null && problems.getRecords() != null){
+            return ResponseResult.<ProblemListVO>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("查询题目分页列表成功")
+                    .data(ProblemListVO.builder()
+                            .results(problems.getRecords())
+                            .total(problems.getTotal())
+                            .build())
+                    .build();
+        }else{
+            return ResponseResult.<ProblemListVO>builder()
+                    .code(BusinessStatus.FAIL.getCode())
+                    .message("查询题目分页列表失败")
+                    .data(null)
+                    .build();
+        }
+    }
+
+    /**
      * 查询公共题集具体题目信息
      * @param problemId
      * @return
@@ -200,12 +307,15 @@ public class ProblemController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         //获取用户名
         String userName = authentication.getName();
-        //获取用户信息
-        UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
-        UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemId);
-//        设置mystatus
-        if(userProblem != null){
-            problemDTO.setMyStatus(userProblem.getStatus());
+        //如果不是匿名用户，已认证时
+        if(!"anonymousUser".equals(userName)){
+            //获取用户信息
+            UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
+            UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemId);
+            // 设置mystatus
+            if(userProblem != null){
+                problemDTO.setMyStatus(userProblem.getStatus());
+            }
         }
         if (problemDTO != null) {
             return ResponseResult.<ProblemDTO>builder()

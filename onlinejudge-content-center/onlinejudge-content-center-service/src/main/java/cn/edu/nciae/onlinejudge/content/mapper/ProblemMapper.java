@@ -24,6 +24,14 @@ public interface ProblemMapper extends BaseMapper<Problem> {
 	IPage<ProblemDTO> selectProblemVOListPage(Page page, ProblemParam problemParam);
 
 	/**
+	 * 查询题目分页列表（管理员）
+	 * @param page
+	 * @param problemParam
+	 * @return
+	 */
+	IPage<ProblemDTO> selectProblemVOListPageAdmin(Page page, ProblemParam problemParam);
+
+	/**
 	 * 查询题目
 	 * @param problemId
 	 * @return

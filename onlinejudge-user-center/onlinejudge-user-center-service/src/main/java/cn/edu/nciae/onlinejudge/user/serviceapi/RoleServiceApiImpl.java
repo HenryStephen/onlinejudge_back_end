@@ -4,6 +4,7 @@ import cn.edu.nciae.onlinejudge.user.api.RoleServiceApi;
 import cn.edu.nciae.onlinejudge.user.domain.Role;
 import cn.edu.nciae.onlinejudge.user.mapper.RoleMapper;
 import cn.edu.nciae.onlinejudge.user.service.impl.RoleServiceImpl;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,5 +31,15 @@ public class RoleServiceApiImpl extends RoleServiceImpl implements RoleServiceAp
     @Override
     public List<Role> selectRoleByUserId(Long userId) {
         return roleMapper.selectRoleByUserId(userId);
+    }
+
+    /**
+     * 根据角色名字获取角色
+     * @param roleType
+     * @return
+     */
+    @Override
+    public Role getRoleByRoleName(String roleType) {
+        return super.getOne(new QueryWrapper<Role>().eq("enname", roleType));
     }
 }

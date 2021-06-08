@@ -45,6 +45,18 @@ public class ProblemServiceApiImpl extends ProblemServiceImpl implements Problem
     }
 
     /**
+     * 查询题目分页列表（管理员）
+     *
+     * @param page
+     * @param problemParam
+     * @return
+     */
+    @Override
+    public IPage<ProblemDTO> getProblemListPageAdmin(Page page, ProblemParam problemParam) {
+        return problemMapper.selectProblemVOListPageAdmin(page, problemParam);
+    }
+
+    /**
      * 查询题目
      *
      * @param problemId

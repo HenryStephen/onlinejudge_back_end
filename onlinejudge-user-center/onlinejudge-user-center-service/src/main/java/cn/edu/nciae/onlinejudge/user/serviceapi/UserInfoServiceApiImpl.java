@@ -2,9 +2,14 @@ package cn.edu.nciae.onlinejudge.user.serviceapi;
 
 import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
 import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
+import cn.edu.nciae.onlinejudge.user.mapper.UserInfoMapper;
 import cn.edu.nciae.onlinejudge.user.service.impl.UserInfoServiceImpl;
+import cn.edu.nciae.onlinejudge.user.vo.UserInfoDTO;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +23,9 @@ import java.util.List;
 @Service
 @org.apache.dubbo.config.annotation.Service(version = "1.0.0")
 public class UserInfoServiceApiImpl extends UserInfoServiceImpl implements UserInfoServiceApi {
+
+    @Autowired
+    private UserInfoMapper userInfoMapper;
 
     /**
      * 根据用户名查找用户
@@ -100,5 +108,48 @@ public class UserInfoServiceApiImpl extends UserInfoServiceImpl implements UserI
     @Override
     public boolean update(UserInfo userInfo, Long userId) {
         return super.update(userInfo, new UpdateWrapper<UserInfo>().eq("user_id", userId));
+    }
+
+    /**
+     * 查看用户分页列表
+     * @param pageP
+     * @param keyword
+     * @return
+     */
+    @Override
+    public IPage<UserInfoDTO> getUserInfoListPage(Page pageP, String keyword) {
+        return userInfoMapper.selectUserInfoVOListPage(pageP, keyword);
+    }
+
+    /**
+     * 根据用户id获取用户
+     *
+     * @param userId
+     * @return
+     */
+    @Override
+    public UserInfoDTO getUserDtoByUserId(Long userId) {
+        return userInfoMapper.selectUserDtoByUserId(userId);
+    }
+
+    /**
+     * 根据用户id修改用户
+     *
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public boolean updateByUserId(UserInfo userInfo) {
+        return super.update(userInfo, new UpdateWrapper<UserInfo>().eq("user_id",userInfo.getUserId()));
+    }
+
+    /**
+     * 获取账户是否已经被禁用
+     * @param username
+     * @return
+     */
+    @Override
+    public Boolean getIsDisabledByUserName(String username) {
+        return userInfoMapper.selectIsDisabled(username);
     }
 }

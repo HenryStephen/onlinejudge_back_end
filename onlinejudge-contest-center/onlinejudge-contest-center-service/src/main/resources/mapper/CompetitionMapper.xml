@@ -48,9 +48,6 @@
             <if test="competitionParam.rule_type != null">
                 and c.competition_rule_type like #{competitionParam.rule_type}
             </if>
-<!--            <if test="competitionParam.status != null">-->
-<!--                and c.competition_status = #{competitionParam.status}-->
-<!--            </if>-->
             <if test="competitionParam.keyword != null">
                 and (
                 c.competition_title like CONCAT('%',#{competitionParam.keyword},'%') or
@@ -58,7 +55,26 @@
                 )
             </if>
             <if test="competitionParam.isAdmin != null and competitionParam.isAdmin == false">
-                c.visible = 1
+                and c.visible = 1
+            </if>
+        </where>
+    </select>
+
+    <select id="selectCompetitionVOListPageAdmin" resultMap="CompetitionViewResultMap">
+        select c.*
+        from competition as c
+        <where>
+            <if test="competitionParam.rule_type != null">
+                and c.competition_rule_type like #{competitionParam.rule_type}
+            </if>
+            <if test="competitionParam.keyword != null">
+                and (
+                c.competition_title like CONCAT('%',#{competitionParam.keyword},'%') or
+                c.competition_description like CONCAT('%',#{competitionParam.keyword},'%')
+                )
+            </if>
+            <if test="competitionParam.createUserId != null">
+                c.competition_create_user = #{competitionParam.createUserId}
             </if>
         </where>
     </select>
@@ -66,4 +82,5 @@
     <select id="selectCompetitionVOById" parameterType="java.lang.Long" resultMap="CompetitionViewResultMap">
         select * from competition where competition.competition_id = #{competitionId}
     </select>
+
 </mapper>

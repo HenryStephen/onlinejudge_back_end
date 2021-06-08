@@ -20,11 +20,20 @@ public interface CompetitionMapper extends BaseMapper<Competition> {
     IPage<CompetitionDTO> selectCompetitionVOListPage(Page page, CompetitionParam competitionParam);
 
     /**
+     * 根据参数查询竞赛列表(管理员)
+     * @param page
+     * @param competitionParam
+     * @return
+     */
+    IPage<CompetitionDTO> selectCompetitionVOListPageAdmin(Page page, CompetitionParam competitionParam);
+
+    /**
      * 根据竞赛id查找竞赛信息
      * @param competitionId
      * @return
      */
     CompetitionDTO selectCompetitionVOById(Long competitionId);
+
 }
 
 

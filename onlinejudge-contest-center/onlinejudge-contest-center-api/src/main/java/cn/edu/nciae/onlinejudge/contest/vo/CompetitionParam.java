@@ -40,4 +40,7 @@ public class CompetitionParam implements Serializable {
      * 是否管理员
      */
     private Boolean isAdmin;
+
+    //附加信息：创建比赛的id
+    private Long createUserId;
 }

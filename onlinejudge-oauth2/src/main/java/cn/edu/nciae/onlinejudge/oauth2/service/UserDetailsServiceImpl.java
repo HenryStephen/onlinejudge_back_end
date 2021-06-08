@@ -34,7 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
         // 查询用户
         UserInfo userInfo = userInfoServiceApi.getByUserName(s);
-        // 默认所有用户拥有 USER 权限
+        // 权限列表
         List<GrantedAuthority> grantedAuthorities = Lists.newArrayList();
         // 用户存在
         if (userInfo != null) {

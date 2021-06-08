@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * 获取用户信息的DTO
  */
 @Data
-public class UserInfoDTO implements Serializable {
+public class UserInfoVo implements Serializable {
     /**
      * 用户ID
      */

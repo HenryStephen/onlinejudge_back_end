@@ -39,6 +39,18 @@ public class CompetitionServiceApiImpl extends CompetitionServiceImpl implements
     }
 
     /**
+     * 根据参数查询竞赛列表（管理员）
+     *
+     * @param page
+     * @param competitionParam
+     * @return
+     */
+    @Override
+    public IPage<CompetitionDTO> getCompetitionListPageAdmin(Page page, CompetitionParam competitionParam) {
+        return competitionMapper.selectCompetitionVOListPageAdmin(page, competitionParam);
+    }
+
+    /**
      * 根据id查找具体竞赛
      *
      * @param competitionId

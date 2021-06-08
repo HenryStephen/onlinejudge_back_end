@@ -21,6 +21,14 @@ public interface CompetitionServiceApi {
      */
     IPage<CompetitionDTO> getCompetitionListPage(Page page, CompetitionParam competitionParam);
 
+	/**
+	 * 根据参数查询竞赛列表（管理员）
+	 * @param page
+	 * @param competitionParam
+	 * @return
+	 */
+	IPage<CompetitionDTO> getCompetitionListPageAdmin(Page page, CompetitionParam competitionParam);
+
     /**
      * 根据id查找具体竞赛
      * @param competitionId
@@ -42,4 +50,6 @@ public interface CompetitionServiceApi {
 	 * @return
 	 */
 	boolean save(Competition competition);
+
+
 }

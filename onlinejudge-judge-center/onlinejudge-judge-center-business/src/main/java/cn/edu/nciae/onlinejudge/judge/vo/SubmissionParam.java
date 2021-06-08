@@ -19,7 +19,7 @@ import java.io.Serializable;
 public class SubmissionParam implements Serializable {
 
     /**
-     * 题目id
+     * 代表题目展示id
      */
     private Long problem_id;
 

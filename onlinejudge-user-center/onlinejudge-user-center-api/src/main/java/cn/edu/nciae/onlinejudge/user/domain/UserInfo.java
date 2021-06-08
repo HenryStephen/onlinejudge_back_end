@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
- *
+ * 
  * @TableName user_info
  */
 @TableName(value ="user_info")
@@ -51,8 +51,8 @@ public class UserInfo implements Serializable {
     /**
      * 注册时间
      */
-    @TableField(value = "user_regtime")
     @JsonFormat(locale="zh", timezone="GMT+8", pattern="yyyy-MM-dd HH:mm:ss")
+    @TableField(value = "user_regtime")
     private Date userRegtime;
 
     /**
@@ -121,6 +121,12 @@ public class UserInfo implements Serializable {
     @TableField(value = "is_deleted")
     private Boolean isDeleted;
 
+    /**
+     * 是否禁用
+     */
+    @TableField(value = "is_disable")
+    private Boolean isDisable;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -152,7 +158,8 @@ public class UserInfo implements Serializable {
             && (this.getUserAvatar() == null ? other.getUserAvatar() == null : this.getUserAvatar().equals(other.getUserAvatar()))
             && (this.getUserAvatarUrl() == null ? other.getUserAvatarUrl() == null : this.getUserAvatarUrl().equals(other.getUserAvatarUrl()))
             && (this.getUserGithub() == null ? other.getUserGithub() == null : this.getUserGithub().equals(other.getUserGithub()))
-            && (this.getIsDeleted() == null ? other.getIsDeleted() == null : this.getIsDeleted().equals(other.getIsDeleted()));
+            && (this.getIsDeleted() == null ? other.getIsDeleted() == null : this.getIsDeleted().equals(other.getIsDeleted()))
+            && (this.getIsDisable() == null ? other.getIsDisable() == null : this.getIsDisable().equals(other.getIsDisable()));
     }
 
     @Override
@@ -176,6 +183,7 @@ public class UserInfo implements Serializable {
         result = prime * result + ((getUserAvatarUrl() == null) ? 0 : getUserAvatarUrl().hashCode());
         result = prime * result + ((getUserGithub() == null) ? 0 : getUserGithub().hashCode());
         result = prime * result + ((getIsDeleted() == null) ? 0 : getIsDeleted().hashCode());
+        result = prime * result + ((getIsDisable() == null) ? 0 : getIsDisable().hashCode());
         return result;
     }
 
@@ -202,6 +210,7 @@ public class UserInfo implements Serializable {
         sb.append(", userAvatarUrl=").append(userAvatarUrl);
         sb.append(", userGithub=").append(userGithub);
         sb.append(", isDeleted=").append(isDeleted);
+        sb.append(", isDisable=").append(isDisable);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

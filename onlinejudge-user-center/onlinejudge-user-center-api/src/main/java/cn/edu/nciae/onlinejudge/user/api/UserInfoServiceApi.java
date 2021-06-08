@@ -1,6 +1,9 @@
 package cn.edu.nciae.onlinejudge.user.api;
 
 import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
+import cn.edu.nciae.onlinejudge.user.vo.UserInfoDTO;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import java.util.List;
 
@@ -62,4 +65,33 @@ public interface UserInfoServiceApi {
      * @param userId
      */
     boolean update(UserInfo userInfo, Long userId);
+
+    /**
+     * 查看用户分页列表
+     * @param pageP
+     * @param keyword
+     * @return
+     */
+    IPage<UserInfoDTO> getUserInfoListPage(Page pageP, String keyword);
+
+    /**
+     * 根据用户id获取用户
+     * @param userId
+     * @return
+     */
+    UserInfoDTO getUserDtoByUserId(Long userId);
+
+    /**
+     * 根据用户id修改用户
+     * @param userInfo
+     * @return
+     */
+    boolean updateByUserId(UserInfo userInfo);
+
+    /**
+     * 获取用户是否被禁用
+     * @param username
+     * @return
+     */
+    Boolean getIsDisabledByUserName(String username);
 }
