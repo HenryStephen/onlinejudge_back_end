@@ -4,7 +4,6 @@ import cn.edu.nciae.onlinejudge.commons.business.BusinessStatus;
 import cn.edu.nciae.onlinejudge.commons.dto.MessageDTO;
 import cn.edu.nciae.onlinejudge.commons.dto.ResponseResult;
 import cn.edu.nciae.onlinejudge.commons.utils.FilesUtils;
-import cn.edu.nciae.onlinejudge.commons.utils.MapperUtils;
 import cn.edu.nciae.onlinejudge.commons.utils.OkHttpClientUtil;
 import cn.edu.nciae.onlinejudge.commons.utils.SnowflakeUtil;
 import cn.edu.nciae.onlinejudge.content.api.ProblemServiceApi;
@@ -82,7 +81,6 @@ public class JudgeController {
      */
     @PostMapping("/heartbeat")
     public MessageDTO<String> heartBeat(@RequestBody HeartBeatParam heartBeatParam){
-//        System.out.println(heartBeatParam.toString());
         return MessageDTO.<String>builder()
                 .data("success")
                 .error(null)
@@ -198,7 +196,7 @@ public class JudgeController {
     public ResponseResult<SubmissionListVO> getSubmissionList(@RequestParam("offset") Integer offset,
                                                   @RequestParam("limit") Integer limit,
                                                   SubmissionKeyword submissionKeyword){
-//        设置分页
+        // 设置分页
         Page page;
         if (submissionKeyword.getPage() != null){
             page = new Page<ProblemDTO>(submissionKeyword.getPage(), limit);
@@ -216,8 +214,8 @@ public class JudgeController {
             //将用户id添加进去
             submissionKeyword.setUserId(userInfo.getUserId());
         }else{
-//            查看全部人的状态信息
-//            如果需要查看指定用户的信息，则先找到指定用户的id列表，模糊查询
+            // 查看全部人的状态信息
+            // 如果需要查看指定用户的信息，则先找到指定用户的id列表，模糊查询
             if(submissionKeyword.getUsername() != null && !submissionKeyword.getUsername().equals("")){
                 List<UserInfo> userInfoList = userInfoServiceApi.getUserListByUserName(submissionKeyword.getUsername());
                 List<Long> userIdList = null;
@@ -230,11 +228,11 @@ public class JudgeController {
                 submissionKeyword.setUserList(userIdList);
             }
         }
-//        如果竞赛id为空，则设置为0
+        // 如果竞赛id为空，则设置为0
         if(submissionKeyword.getContest_id() == null){
             submissionKeyword.setContest_id(0L);
         }
-//        查找出来不带用户名
+        // 查找出来不带用户名
         IPage<SubmissionDTO> submissions = submissionServiceApi.getSubmissionListPage(page, submissionKeyword);
         for(SubmissionDTO submissionDTO : submissions.getRecords()){
             UserInfo userInfo = userInfoServiceApi.getByUserId(submissionDTO.getSubmissionUserId());
@@ -242,7 +240,7 @@ public class JudgeController {
         }
         return ResponseResult.<SubmissionListVO>builder()
                 .code(BusinessStatus.OK.getCode())
-                .message("查询题目分页列表成功")
+                .message("查询提交信息分页列表成功")
                 .data(SubmissionListVO.builder()
                         .results(submissions.getRecords())
                         .total(submissions.getTotal())

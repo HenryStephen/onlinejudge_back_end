@@ -10,6 +10,7 @@ import lombok.*;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author zhanghonglin
@@ -78,6 +79,11 @@ public class ProblemDTO extends Problem {
      * 用户对该题的状态
      */
     private Integer myStatus;
+
+    /**
+     * 题目的统计信息
+     */
+    private Map<Long,Long> statistic_info;
 
     /**
      * desc : get Problem instance from VO

@@ -9,4 +9,11 @@ public interface UserRoleServiceApi {
      * @return
      */
     boolean updateByUserId(UserRole userRole);
+
+    /**
+     * 保存user-role的关系
+     * @param userRole
+     * @return
+     */
+    boolean save(UserRole userRole);
 }

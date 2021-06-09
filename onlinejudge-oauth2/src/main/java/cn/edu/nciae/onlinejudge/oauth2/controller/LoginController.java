@@ -1,12 +1,16 @@
 package cn.edu.nciae.onlinejudge.oauth2.controller;
 
-import cn.edu.nciae.onlinejudge.commons.business.BusinessException;
 import cn.edu.nciae.onlinejudge.commons.business.BusinessStatus;
 import cn.edu.nciae.onlinejudge.commons.dto.ResponseResult;
 import cn.edu.nciae.onlinejudge.commons.utils.MapperUtils;
 import cn.edu.nciae.onlinejudge.commons.utils.OkHttpClientUtil;
+import cn.edu.nciae.onlinejudge.oauth2.vo.CheckParam;
 import cn.edu.nciae.onlinejudge.oauth2.vo.LoginParam;
+import cn.edu.nciae.onlinejudge.oauth2.vo.RegisterParam;
 import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
+import cn.edu.nciae.onlinejudge.user.api.UserRoleServiceApi;
+import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
+import cn.edu.nciae.onlinejudge.user.domain.UserRole;
 import com.google.common.collect.Maps;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,6 +61,9 @@ public class LoginController {
     @Reference(version = "1.0.0",check = false)
     private UserInfoServiceApi userInfoServiceApi;
 
+    @Reference(version = "1.0.0",check = false)
+    private UserRoleServiceApi userRoleServiceApi;
+
     /**
      * 登录
      *
@@ -67,7 +74,6 @@ public class LoginController {
     public ResponseResult<Map<String, Object>> login(@RequestBody LoginParam loginParam, HttpServletRequest request) throws Exception {
         // 封装返回的结果集
         Map<String, Object> result = Maps.newHashMap();
-
         // 验证密码是否正确
         UserDetails userDetails = userDetailsService.loadUserByUsername(loginParam.getUsername());
         if (userDetails == null || !passwordEncoder.matches(loginParam.getPassword(), userDetails.getPassword())) {
@@ -136,4 +142,68 @@ public class LoginController {
                 .build();
     }
 
+    /**
+     * 检查用户名或邮箱是否重复
+     * @param checkParam
+     * @return
+     */
+    @PostMapping("/user/checkUsernameOrEmail")
+    public ResponseResult<Boolean> checkUsernameOrEmail(@RequestBody CheckParam checkParam){
+        if(checkParam.getUsername() != null){
+            Boolean result = userInfoServiceApi.checkUserName(checkParam.getUsername());
+            return ResponseResult.<Boolean>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("检测成功")
+                    .data(result)
+                    .build();
+        }
+        if(checkParam.getEmail() != null){
+            Boolean result = userInfoServiceApi.checkEmail(checkParam.getEmail());
+            return ResponseResult.<Boolean>builder()
+                    .code(BusinessStatus.OK.getCode())
+                    .message("检测成功")
+                    .data(result)
+                    .build();
+        }
+        return ResponseResult.<Boolean>builder()
+                .code(BusinessStatus.OK.getCode())
+                .message("检测成功")
+                .data(false)
+                .build();
+    }
+
+    /**
+     * 注册
+     * @param registerParam
+     * @return
+     */
+    @PostMapping("/user/register")
+    public ResponseResult<Void> register(@RequestBody RegisterParam registerParam){
+        System.out.println(registerParam.toString());
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserName(registerParam.getUsername());
+        userInfo.setUserPassword(passwordEncoder.encode(registerParam.getPassword()));
+        userInfo.setUserEmail(registerParam.getEmail());
+        userInfo = userInfoServiceApi.saveUserInfo(userInfo);
+        System.out.println(userInfo.getUserId());
+        if(userInfo.getUserId() != null){
+            UserRole userRole = new UserRole();
+            userRole.setId(0L);
+            userRole.setUserId(userInfo.getUserId());
+            userRole.setRoleId(3L);
+            boolean result = userRoleServiceApi.save(userRole);
+            if(result){
+                return ResponseResult.<Void>builder()
+                        .message("注册成功")
+                        .code(BusinessStatus.OK.getCode())
+                        .data(null)
+                        .build();
+            }
+        }
+        return ResponseResult.<Void>builder()
+                .message("注册失败")
+                .code(BusinessStatus.FAIL.getCode())
+                .data(null)
+                .build();
+    }
 }

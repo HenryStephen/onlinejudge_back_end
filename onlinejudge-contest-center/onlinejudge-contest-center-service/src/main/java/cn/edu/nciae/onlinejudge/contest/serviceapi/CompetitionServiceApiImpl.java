@@ -86,6 +86,16 @@ public class CompetitionServiceApiImpl extends CompetitionServiceImpl implements
     }
 
     /**
+     * 获取最近的比赛
+     *
+     * @return
+     */
+    @Override
+    public Integer getRecentContestCount() {
+        return competitionMapper.selectRecentContestCount();
+    }
+
+    /**
      * 更新竞赛时初始化的信息
      * @param competition
      */

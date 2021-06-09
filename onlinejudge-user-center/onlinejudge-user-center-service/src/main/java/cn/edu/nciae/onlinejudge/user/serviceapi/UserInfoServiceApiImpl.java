@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -151,5 +152,75 @@ public class UserInfoServiceApiImpl extends UserInfoServiceImpl implements UserI
     @Override
     public Boolean getIsDisabledByUserName(String username) {
         return userInfoMapper.selectIsDisabled(username);
+    }
+
+    /**
+     * 根据ac个数降序排序
+     * @param page
+     * @return
+     */
+    @Override
+    public IPage<UserInfoDTO> getUserInfoListPageByACnumberDESC(Page page) {
+        return userInfoMapper.selectUserInfoListPageByACnumberDESC(page);
+    }
+
+    /**
+     * 检测用户名是否重复
+     *
+     * @param username
+     * @return
+     */
+    @Override
+    public Boolean checkUserName(String username) {
+        UserInfo userInfo = super.getOne(new QueryWrapper<UserInfo>().eq("user_name", username));
+        return (userInfo == null) ? false : true;
+    }
+
+    /**
+     * 检测邮箱是否重复
+     *
+     * @param email
+     * @return
+     */
+    @Override
+    public Boolean checkEmail(String email) {
+        UserInfo userInfo = super.getOne(new QueryWrapper<UserInfo>().eq("user_email", email));
+        return (userInfo == null) ? false : true;
+    }
+
+    /**
+     * 添加用户信息
+     * @param userInfo
+     * @return
+     */
+    @Override
+    public UserInfo saveUserInfo(UserInfo userInfo){
+        initAdd(userInfo);
+        userInfoMapper.insert(userInfo);
+        return userInfo;
+    }
+
+    /**
+     * 获取用户数量
+     *
+     * @return
+     */
+    @Override
+    public Integer getUserCount() {
+        return super.count();
+    }
+
+    /**
+     * 添加用户时的初始化方法
+     * @param userInfo
+     */
+    private void initAdd(UserInfo userInfo){
+        userInfo.setUserRegtime(new Date());
+        userInfo.setUserSolveNumber(0);
+        userInfo.setUserSubmissionNumber(0);
+        userInfo.setUserTotalScore(0);
+        userInfo.setUserLanguage("zh-CN");
+        userInfo.setIsDeleted(false);
+        userInfo.setIsDisable(false);
     }
 }

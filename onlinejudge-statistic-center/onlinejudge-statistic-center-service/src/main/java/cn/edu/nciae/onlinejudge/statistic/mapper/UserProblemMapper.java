@@ -15,7 +15,7 @@ public interface UserProblemMapper extends BaseMapper<UserProblem> {
      * @param userId
      * @return
      */
-    List<Long> selectSolvedProblem(Long userId);
+    List<Long> selectSolvedProblem(Long userId, Long competitionId);
 }
 
 

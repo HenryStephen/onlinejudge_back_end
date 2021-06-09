@@ -91,4 +91,9 @@
         from user_info
         where user_name like #{userName}
     </select>
+    <select id="selectUserInfoListPageByACnumberDESC" resultMap="UserInfoViewResultMap">
+        select *
+        from user_info
+        order by user_solve_number desc
+    </select>
 </mapper>

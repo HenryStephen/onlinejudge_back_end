@@ -94,4 +94,38 @@ public interface UserInfoServiceApi {
      * @return
      */
     Boolean getIsDisabledByUserName(String username);
+
+    /**
+     * 根据ac个数降序排序
+     * @param page
+     * @return
+     */
+    IPage<UserInfoDTO> getUserInfoListPageByACnumberDESC(Page page);
+
+    /**
+     * 检测用户名是否重复
+     * @param username
+     * @return
+     */
+    Boolean checkUserName(String username);
+
+    /**
+     * 检测邮箱是否重复
+     * @param email
+     * @return
+     */
+    Boolean checkEmail(String email);
+
+    /**
+     * 添加用户信息
+     * @param userInfo
+     * @return
+     */
+    UserInfo saveUserInfo(UserInfo userInfo);
+
+    /**
+     * 获取用户数量
+     * @return
+     */
+    Integer getUserCount();
 }

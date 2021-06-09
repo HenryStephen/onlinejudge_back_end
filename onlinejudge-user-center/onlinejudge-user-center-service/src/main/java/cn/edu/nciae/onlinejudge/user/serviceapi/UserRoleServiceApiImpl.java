@@ -19,4 +19,14 @@ public class UserRoleServiceApiImpl extends UserRoleServiceImpl implements UserR
     public boolean updateByUserId(UserRole userRole) {
         return super.update(userRole, new UpdateWrapper<UserRole>().eq("user_id",userRole.getUserId()));
     }
+
+    /**
+     * 添加user-role的关系
+     * @param userRole
+     * @return
+     */
+    @Override
+    public boolean save(UserRole userRole){
+        return super.save(userRole);
+    }
 }

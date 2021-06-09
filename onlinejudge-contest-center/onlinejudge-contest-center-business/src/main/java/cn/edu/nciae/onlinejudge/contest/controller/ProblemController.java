@@ -15,9 +15,15 @@ import cn.edu.nciae.onlinejudge.contest.vo.CompetitionProblemDTO;
 import cn.edu.nciae.onlinejudge.contest.vo.PublicParam;
 import cn.edu.nciae.onlinejudge.judge.api.LanguagesServiceApi;
 import cn.edu.nciae.onlinejudge.judge.domain.Languages;
+import cn.edu.nciae.onlinejudge.statistic.api.UserProblemServiceApi;
+import cn.edu.nciae.onlinejudge.statistic.domain.UserProblem;
+import cn.edu.nciae.onlinejudge.user.api.UserInfoServiceApi;
+import cn.edu.nciae.onlinejudge.user.domain.UserInfo;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -44,6 +50,12 @@ public class ProblemController {
     @Reference(version = "1.0.0",check = false)
     private CompetitionServiceApi competitionServiceApi;
 
+    @Reference(version = "1.0.0",check = false)
+    private UserInfoServiceApi userInfoServiceApi;
+
+    @Reference(version = "1.0.0",check = false)
+    private UserProblemServiceApi userProblemServiceApi;
+
 
     /**
      * 获取竞赛题目列表
@@ -53,11 +65,28 @@ public class ProblemController {
     @GetMapping("/competition/{competitionId}/problem")
     public ResponseResult<List<CompetitionProblemDTO>> getCompetitionProblemList(@PathVariable("competitionId") Long competitionId){
         List<CompetitionProblemDTO> competitionProblemDTOS = competitionProblemServiceApi.listByCompetitionId(competitionId);
+        // 获取认证信息
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // 获取用户名
+        String userName = authentication.getName();
+        UserInfo userInfo = null;
+        //如果不是匿名用户，已认证时
+        if(!"anonymousUser".equals(userName)){
+            //获取用户信息
+            userInfo = userInfoServiceApi.getByUserName(userName);
+        }
         if(competitionProblemDTOS.size()>0){
             // 设置题目标题
             for (CompetitionProblemDTO competitionProblemDTO : competitionProblemDTOS){
                 Problem problem = problemServiceApi.getProblemById(competitionProblemDTO.getProblemId());
                 competitionProblemDTO.setProblemTiltle(problem.getProblemTitle());
+                if(userInfo != null){
+                    UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndDisplayIdAndCompetitionId(userInfo.getUserId(), competitionProblemDTO.getProblemDisplayId(), competitionProblemDTO.getCompetitionId());
+                    // 设置mystatus
+                    if(userProblem != null){
+                        competitionProblemDTO.setMyStatus(userProblem.getStatus());
+                    }
+                }
             }
         }
         return ResponseResult.<List<CompetitionProblemDTO>>builder()
@@ -142,11 +171,12 @@ public class ProblemController {
      */
     @GetMapping("/competition/{competitionId}/problem/{problemDisplayId}")
     public ResponseResult<ProblemDTO> getCompetitionProblemByDisplayId(@PathVariable("competitionId")Long competitionId, @PathVariable("problemDisplayId") Long problemDisplayId){
-//        先查出具体problemid
+        //先查出具体problemid
         CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndDisplayId(competitionId, problemDisplayId);
         ProblemDTO problemDTO = problemServiceApi.getProblemVOByPid(competitionProblem.getProblemId());
-//        将problemid修改成展示id
-        problemDTO.setProblemId(problemDisplayId);
+        //设置展示id
+        problemDTO.setProblemDisplayId(problemDisplayId);
+        //查出支持的编程语言列表
         List<Integer> languageIdList = problemServiceApi.getLanguageIdListByProblemId(competitionProblem.getProblemId());
         List<String> languageNameList = new ArrayList<String>();
         if(languageIdList != null){
@@ -182,7 +212,7 @@ public class ProblemController {
     @GetMapping("/competition/{competitionId}/{problemId}/admin")
     public ResponseResult<ProblemDTO> getCompetitionProblemByProblemId(@PathVariable("competitionId")Long competitionId, @PathVariable("problemId") Long problemId){
         ProblemDTO problemDTO = problemServiceApi.getProblemVOByPid(problemId);
-//        找到题目支持的语言id列表
+        // 找到题目支持的语言id列表
         List<Integer> languageIdList = problemServiceApi.getLanguageIdListByProblemId(problemId);
         List<String> languageNameList = new ArrayList<String>();
         if(languageIdList != null){
@@ -191,7 +221,7 @@ public class ProblemController {
                 languageNameList.add(languages.getLanguageName());
             }
         }
-//        设置题目支持的编程语言
+        // 设置题目支持的编程语言
         if(languageIdList.size() != 0) {
             problemDTO.setLanguages(languageNameList);
         }

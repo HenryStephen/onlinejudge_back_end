@@ -53,10 +53,14 @@ public class ProfileController {
         }
         //获取用户信息
         UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
-//        获取用户角色信息
-        List<Role> roleList = roleServiceApi.selectRoleByUserId(userInfo.getUserId());
-//        获取用户已经解决的问题列表
-        List<Long> solvedProblemIdList = userProblemServiceApi.getSolvedProblemIdList(userInfo.getUserId());
+        List<Role> roleList = null;
+        List<Long> solvedProblemIdList = null;
+        if(!"anonymousUser".equals(userName)){
+            // 获取用户角色信息
+            roleList = roleServiceApi.selectRoleByUserId(userInfo.getUserId());
+            // 获取用户已经解决的问题列表
+            solvedProblemIdList = userProblemServiceApi.getSolvedProblemIdList(userInfo.getUserId(),0L);
+        }
         if(userInfo != null){
             return ResponseResult.<ProfileDTO>builder()
                     .code(BusinessStatus.OK.getCode())
@@ -71,7 +75,7 @@ public class ProfileController {
         }else{
             return ResponseResult.<ProfileDTO>builder()
                     .code(BusinessStatus.FAIL.getCode())
-                    .message("获取用户信息失败")
+                    //.message("获取用户信息失败")
                     .data(null)
                     .build();
         }
@@ -91,12 +95,12 @@ public class ProfileController {
         BeanUtils.copyProperties(userInfoProfileVo, userInfo);
         boolean result = userInfoServiceApi.updateProfile(userInfo, userName);
         if(result){
-            //获取用户信息
+            // 获取用户信息
             userInfo = userInfoServiceApi.getByUserName(userName);
-//        获取用户角色信息
+            // 获取用户角色信息
             List<Role> roleList = roleServiceApi.selectRoleByUserId(userInfo.getUserId());
-//        获取用户已经解决的问题列表
-            List<Long> solvedProblemIdList = userProblemServiceApi.getSolvedProblemIdList(userInfo.getUserId());
+            // 获取用户已经解决的问题列表
+            List<Long> solvedProblemIdList = userProblemServiceApi.getSolvedProblemIdList(userInfo.getUserId(), 0L);
             return ResponseResult.<ProfileDTO>builder()
                     .code(BusinessStatus.OK.getCode())
                     .message("修改Profile信息成功")

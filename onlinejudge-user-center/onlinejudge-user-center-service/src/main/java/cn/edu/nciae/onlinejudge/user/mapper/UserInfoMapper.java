@@ -33,6 +33,13 @@ public interface UserInfoMapper extends BaseMapper<UserInfo> {
      * @return
      */
     Boolean selectIsDisabled(String username);
+
+    /**
+     * 根据ac个数降序排序
+     * @param page
+     * @return
+     */
+    IPage<UserInfoDTO> selectUserInfoListPageByACnumberDESC(Page page);
 }
 
 

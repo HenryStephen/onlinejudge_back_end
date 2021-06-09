@@ -22,5 +22,8 @@ public class CompetitionProblemDTO extends CompetitionProblem {
      */
     private String problemTiltle;
 
-
+    /**
+     * 用户对该题的状态
+     */
+    private Integer myStatus;
 }

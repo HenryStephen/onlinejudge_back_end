@@ -114,39 +114,38 @@ public class SubmissionConsumer {
             competitionProblem.setSolvedNumber(solvedNumber+1);
         }
         competitionProblemServiceApi.updateByCompetitionIdAndDisplayId(competitionProblem);
-
-        //更新userInfo
-//        UserInfo userInfo = userInfoServiceApi.getByUserId(submission.getSubmissionUserId());
-//        Integer userSubmissionNumber = userInfo.getUserSubmissionNumber();
-//        Integer userSolveNumber = userInfo.getUserSolveNumber();
-//        userInfo = new UserInfo();
-//        userInfo.setUserSubmissionNumber(userSubmissionNumber+1);
-//        // 更新userProblem
-//        UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(submission.getSubmissionUserId(), submission.getSubmissionProblemId());
-//        if(userProblem != null){
-//            // 如果状态不为 success,则修改
-//            if(!JudgeResult.SUCCESS.getCode().equals(userProblem.getStatus())){
-//                // 如果此次的状态为success
-//                if(status.equals(JudgeResult.SUCCESS.getCode())){
-//                    userProblem.setStatus(status);
-//                    userInfo.setUserSolveNumber(userSolveNumber+1);
-//                }else{
-//                    userProblem.setStatus(Math.max(userProblem.getStatus(),status));
-//                }
-//            }
-//        }else{
-//            // 如果不存在信息
-//            userProblem = new UserProblem();
-//            userProblem.setUserId(submissionVO.getUserId());
-//            userProblem.setProblemId(submissionVO.getProblemId());
-//            userProblem.setStatus(status);
-//            if(status.equals(JudgeResult.SUCCESS.getCode())){
-//                userInfo.setUserSolveNumber(userSolveNumber+1);
-//            }
-//        }
-//        userInfoServiceApi.update(userInfo, submissionVO.getUserId());
-//        userProblemServiceApi.saveOrUpdate(userProblem);
-
+        // 更新userInfo
+        UserInfo userInfo = userInfoServiceApi.getByUserId(submission.getSubmissionUserId());
+        Integer userSubmissionNumber = userInfo.getUserSubmissionNumber();
+        Integer userSolveNumber = userInfo.getUserSolveNumber();
+        userInfo = new UserInfo();
+        userInfo.setUserSubmissionNumber(userSubmissionNumber+1);
+        // 更新userProblem
+        UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndDisplayIdAndCompetitionId(submission.getSubmissionUserId(), submission.getSubmissionProblemId(), submission.getSubmissionContestId());
+        if(userProblem != null){
+            // 如果状态不为 success,则修改
+            if(!JudgeResult.SUCCESS.getCode().equals(userProblem.getStatus())){
+                // 如果此次的状态为success
+                if(status.equals(JudgeResult.SUCCESS.getCode())){
+                    userProblem.setStatus(status);
+                    userInfo.setUserSolveNumber(userSolveNumber+1);
+                }else{
+                    userProblem.setStatus(Math.max(userProblem.getStatus(),status));
+                }
+            }
+        }else{
+            // 如果不存在信息
+            userProblem = new UserProblem();
+            userProblem.setUserId(submission.getSubmissionUserId());
+            userProblem.setProblemDisplayId(submission.getSubmissionProblemId());
+            userProblem.setCompetitionId(submission.getSubmissionContestId());
+            userProblem.setStatus(status);
+            if(status.equals(JudgeResult.SUCCESS.getCode())){
+                userInfo.setUserSolveNumber(userSolveNumber+1);
+            }
+        }
+        userInfoServiceApi.update(userInfo, submissionVO.getUserId());
+        userProblemServiceApi.saveOrUpdate(userProblem);
     }
 
     /**

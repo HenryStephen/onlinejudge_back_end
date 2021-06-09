@@ -22,27 +22,33 @@ public class UserProblemServiceApiImpl extends UserProblemServiceImpl implements
 
     @Autowired
     private UserProblemMapper userProblemMapper;
+
     /**
      * 根据用户id和问题id获取status
      *
      * @param userId
-     * @param problemId
+     * @param displayId
+     * @param competitionId
      * @return
      */
     @Override
-    public UserProblem getStatusByUserIdAndProblemId(Long userId, Long problemId) {
-        return super.getOne(new QueryWrapper<UserProblem>().eq("user_id",userId).eq("problem_id",problemId));
+    public UserProblem getStatusByUserIdAndDisplayIdAndCompetitionId(Long userId, Long displayId, Long competitionId) {
+        return super.getOne(new QueryWrapper<UserProblem>()
+                .eq("user_id",userId)
+                .eq("competition_id",competitionId)
+                .eq("problem_display_id",displayId));
     }
 
     /**
      * 获取用户已经解决的问题列表
      *
      * @param userId
+     * @param competitionId
      * @return
      */
     @Override
-    public List<Long> getSolvedProblemIdList(Long userId) {
-        return userProblemMapper.selectSolvedProblem(userId);
+    public List<Long> getSolvedProblemIdList(Long userId, Long competitionId) {
+        return userProblemMapper.selectSolvedProblem(userId, competitionId);
     }
 
     /**

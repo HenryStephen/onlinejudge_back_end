@@ -69,4 +69,10 @@
             </choose>
         </where>
     </select>
+    <select id="selectStatistic" resultType="java.util.Map">
+        SELECT submission_status as status, count(*) as statusCount
+        FROM submission
+        WHERE submission_contest_id = #{competitionId} and submission_problem_id = #{problemDisplayId}
+        GROUP BY submission_status
+    </select>
 </mapper>

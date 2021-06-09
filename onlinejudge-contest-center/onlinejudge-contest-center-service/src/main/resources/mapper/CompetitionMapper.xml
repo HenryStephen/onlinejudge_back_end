@@ -82,5 +82,11 @@
     <select id="selectCompetitionVOById" parameterType="java.lang.Long" resultMap="CompetitionViewResultMap">
         select * from competition where competition.competition_id = #{competitionId}
     </select>
+    <select id="selectRecentContestCount" resultType="java.lang.Integer">
+        select count(*)
+        from competition
+        where (competition_start_time &lt;= NOW() and competition_end_time &gt;= NOW())
+        or competition_start_time &gt;= NOW()
+    </select>
 
 </mapper>

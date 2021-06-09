@@ -129,14 +129,14 @@ public class CompetitionController {
      */
     @GetMapping("/{competitionId}")
     public ResponseResult<CompetitionDTO> getCompetition(@PathVariable("competitionId") Long competitionId){
-//        先查到competition
+        // 先查到competition
         CompetitionDTO competitionDTO = competitionServiceApi.getCompetitionVOById(competitionId);
         UserInfo userInfo = userInfoServiceApi.getByUserId(competitionDTO.getCompetitionCreateUser());
-//        设置发起人
+        // 设置发起人
         competitionDTO.setCreateUserName(userInfo.getUserName());
-//        设置当前时间
+        // 设置当前时间
         competitionDTO.setNow(new Date());
-//        设置当前竞赛状态
+        // 设置当前竞赛状态
         competitionDTO.setCompetitionStatus(getCompetitionStatus(competitionDTO.getNow(), competitionDTO.getCompetitionStartTime(), competitionDTO.getCompetitionEndTime()));
         return ResponseResult.<CompetitionDTO>builder()
                 .code(BusinessStatus.OK.getCode())
@@ -178,10 +178,10 @@ public class CompetitionController {
     public ResponseResult<Void> addCompetition(@RequestBody Competition competition){
         // 获取认证信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        //获取用户名
+        // 获取用户名
         String userName = authentication.getName();
         UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
-//        设置创建竞赛人id
+        // 设置创建竞赛人id
         competition.setCompetitionCreateUser(userInfo.getUserId());
         // 对密码加密
         if(competition.getCompetitionPassword() != null && !competition.getCompetitionPassword().equals("")){
@@ -232,13 +232,13 @@ public class CompetitionController {
     private Integer getCompetitionStatus(Date nowTime, Date startTime, Date endTime){
         Integer status = null;
         if(nowTime.before(startTime)){
-//            未开始
+            // 未开始
             return 1;
         }else if(nowTime.after(endTime)){
-//            已结束
+            // 已结束
             return -1;
         }else if(nowTime.after(startTime) && nowTime.before(endTime)){
-//            正在进行
+            // 正在进行
             return 0;
         }
         return status;

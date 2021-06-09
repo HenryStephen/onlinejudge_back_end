@@ -15,17 +15,19 @@ public interface UserProblemServiceApi {
     /**
      * 根据用户id和问题id获取status
      * @param userId
-     * @param problemId
+     * @param displayId
+     * @param competitionId
      * @return
      */
-    UserProblem getStatusByUserIdAndProblemId(Long userId, Long problemId);
+    UserProblem getStatusByUserIdAndDisplayIdAndCompetitionId(Long userId, Long displayId, Long competitionId);
 
     /**
      * 获取用户已经解决的问题列表
      * @param userId
+     * @param competitionId
      * @return
      */
-    List<Long> getSolvedProblemIdList(Long userId);
+    List<Long> getSolvedProblemIdList(Long userId, Long competitionId);
 
     /**
      * 添加或者修改userproblem

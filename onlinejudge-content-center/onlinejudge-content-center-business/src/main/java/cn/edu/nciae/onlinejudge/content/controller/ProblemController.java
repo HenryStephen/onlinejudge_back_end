@@ -19,6 +19,7 @@ import cn.edu.nciae.onlinejudge.contest.api.CompetitionProblemServiceApi;
 import cn.edu.nciae.onlinejudge.contest.domain.CompetitionProblem;
 import cn.edu.nciae.onlinejudge.contest.vo.CompetitionProblemDTO;
 import cn.edu.nciae.onlinejudge.judge.api.LanguagesServiceApi;
+import cn.edu.nciae.onlinejudge.judge.api.SubmissionServiceApi;
 import cn.edu.nciae.onlinejudge.judge.domain.Languages;
 import cn.edu.nciae.onlinejudge.statistic.api.UserProblemServiceApi;
 import cn.edu.nciae.onlinejudge.statistic.domain.UserProblem;
@@ -86,6 +87,9 @@ public class ProblemController {
     @Reference(version = "1.0.0",check = false)
     private ProblemTagServiceApi problemTagServiceApi;
 
+    @Reference(version = "1.0.0",check = false)
+    private SubmissionServiceApi submissionServiceApi;
+
     /**
      * 查询公共题目分页列表
      * @param offset
@@ -102,6 +106,7 @@ public class ProblemController {
         if(problemParam.getProblemRuleType() == null){
             competitionProblemDTOS = competitionProblemServiceApi.listByCompetitionId(0L);
         }else {
+            // 带有题目规则的查询
             competitionProblemDTOS = competitionProblemServiceApi.listByCompetitionIdAndRuleType(0L, problemParam.getProblemRuleType());
         }
         //将所有题目的id放到一个List中
@@ -141,15 +146,15 @@ public class ProblemController {
             }
             // 获取认证信息
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            //获取用户名
+            // 获取用户名
             String userName = authentication.getName();
-//            如果不是匿名用户，已认证时
+            // 如果不是匿名用户，已认证时
             if(!"anonymousUser".equals(userName)){
                 //获取用户信息
                 UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
-//                设置用户解决的问题
+                // 设置用户解决的问题
                 for(ProblemDTO problemDTO : problems.getRecords()){
-                    UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemDTO.getProblemId());
+                    UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndDisplayIdAndCompetitionId(userInfo.getUserId(), problemDTO.getProblemDisplayId(), 0L);
                     if(userProblem != null){
                         problemDTO.setMyStatus(userProblem.getStatus());
                     }
@@ -246,17 +251,6 @@ public class ProblemController {
                     }
                 }
             }
-//            如果不是匿名用户，已认证时
-            if(!"anonymousUser".equals(userName)){//获取用户信息
-                UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
-//                设置用户解决的问题
-                for(ProblemDTO problemDTO : problems.getRecords()){
-                    UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemDTO.getProblemId());
-                    if(userProblem != null){
-                        problemDTO.setMyStatus(userProblem.getStatus());
-                    }
-                }
-            }
         }
         if(problems != null && problems.getRecords() != null){
             return ResponseResult.<ProblemListVO>builder()
@@ -278,13 +272,16 @@ public class ProblemController {
 
     /**
      * 查询公共题集具体题目信息
-     * @param problemId
+     * @param problemDisplayId
      * @return
      */
-    @GetMapping("/{problemId}")
-    public ResponseResult<ProblemDTO> getProblem(@PathVariable("problemId") Long problemId){
+    @GetMapping("/{problemDisplayId}")
+    public ResponseResult<ProblemDTO> getProblem(@PathVariable("problemDisplayId") Long problemDisplayId){
+        // 首先获取到problemId
+        CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndDisplayId(0L, problemDisplayId);
+        Long problemId = competitionProblem.getProblemId();
         ProblemDTO problemDTO = problemServiceApi.getProblemVOByPid(problemId);
-//        找到题目支持的语言id列表
+        // 找到题目支持的语言id列表
         List<Integer> languageIdList = problemServiceApi.getLanguageIdListByProblemId(problemId);
         List<String> languageNameList = new ArrayList<String>();
         if(languageIdList != null){
@@ -293,11 +290,11 @@ public class ProblemController {
                 languageNameList.add(languages.getLanguageName());
             }
         }
-//        设置题目支持的编程语言
+        // 设置题目支持的编程语言
         if(languageIdList.size() != 0) {
             problemDTO.setLanguages(languageNameList);
         }
-        CompetitionProblem competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndProblemId(0L, problemId);
+        competitionProblem = competitionProblemServiceApi.getByCompetitionIdAndProblemId(0L, problemId);
         problemDTO.setProblemDisplayId(competitionProblem.getProblemDisplayId());
         problemDTO.setSolvedNumber(competitionProblem.getSolvedNumber());
         problemDTO.setSubmitNumber(competitionProblem.getSubmitNumber());
@@ -311,12 +308,22 @@ public class ProblemController {
         if(!"anonymousUser".equals(userName)){
             //获取用户信息
             UserInfo userInfo = userInfoServiceApi.getByUserName(userName);
-            UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndProblemId(userInfo.getUserId(), problemId);
+            UserProblem userProblem = userProblemServiceApi.getStatusByUserIdAndDisplayIdAndCompetitionId(userInfo.getUserId(), problemDisplayId, 0L);
             // 设置mystatus
             if(userProblem != null){
                 problemDTO.setMyStatus(userProblem.getStatus());
             }
         }
+        // 根据竞赛id和题目id获得题目的统计信息
+        List<Map<String, Long>> statistic = submissionServiceApi.getStatistic(0L, problemDTO.getProblemDisplayId());
+        Map<Long, Long> statistic_info = new HashMap<>();
+        for(Map<String,Long> elem : statistic){
+            statistic_info.put(elem.get("status"), elem.get("statusCount"));
+        }
+        for (Map.Entry<Long, Long> entry : statistic_info.entrySet()) {
+            System.out.println(entry.getKey() + ": " + entry.getValue());
+        }
+        problemDTO.setStatistic_info(statistic_info);
         if (problemDTO != null) {
             return ResponseResult.<ProblemDTO>builder()
                     .code(BusinessStatus.OK.getCode())
@@ -356,12 +363,14 @@ public class ProblemController {
             problemDTO = problemServiceApi.insertOneProblemVO(problemDTO);
             // 添加problem_language
             List<String> languageList = problemDTO.getLanguages();
-            for(String s : languageList){
-                Languages language = languagesServiceApi.getLanguageByLanguageName(s, false);
-                ProblemLanguage problemLanguage = new ProblemLanguage();
-                problemLanguage.setLanguageId(language.getLanguageId());
-                problemLanguage.setProblemId(problemDTO.getProblemId());
-                problemLanguageServiceApi.save(problemLanguage);
+            if(languageList != null){
+                for(String s : languageList){
+                    Languages language = languagesServiceApi.getLanguageByLanguageName(s, false);
+                    ProblemLanguage problemLanguage = new ProblemLanguage();
+                    problemLanguage.setLanguageId(language.getLanguageId());
+                    problemLanguage.setProblemId(problemDTO.getProblemId());
+                    problemLanguageServiceApi.save(problemLanguage);
+                }
             }
             // 添加到competition_problem中
             CompetitionProblem competitionProblem = new CompetitionProblem();
@@ -383,23 +392,25 @@ public class ProblemController {
             competitionProblemServiceApi.save(competitionProblem);
             // 添加tag 和 problem_tag
             List<Tag> tagList = problemDTO.getTags();
-            // 查出是否有该tag
-            for(Tag tag : tagList){
-                ProblemTag problemTag = new ProblemTag();
-                problemTag.setProblemId(problemDTO.getProblemId());
-                //根据标签名查找是否有标签
-                Tag tagTemp = tagServiceApi.getTagByTagName(tag.getTagName());
-                // 说明没有该标签
-                if(tagTemp == null){
-                    tag.setTagDescription(tag.getTagName());
-                    // 添加新标签
-                    tag = tagServiceApi.saveTag(tag);
-                    problemTag.setTagId(tag.getTagId());
-                }else{
-                    problemTag.setTagId(tagTemp.getTagId());
+            if(tagList != null){
+                // 查出是否有该tag
+                for(Tag tag : tagList){
+                    ProblemTag problemTag = new ProblemTag();
+                    problemTag.setProblemId(problemDTO.getProblemId());
+                    //根据标签名查找是否有标签
+                    Tag tagTemp = tagServiceApi.getTagByTagName(tag.getTagName());
+                    // 说明没有该标签
+                    if(tagTemp == null){
+                        tag.setTagDescription(tag.getTagName());
+                        // 添加新标签
+                        tag = tagServiceApi.saveTag(tag);
+                        problemTag.setTagId(tag.getTagId());
+                    }else{
+                        problemTag.setTagId(tagTemp.getTagId());
+                    }
+                    // 保存problemTag
+                    problemTagServiceApi.save(problemTag);
                 }
-                // 保存problemTag
-                problemTagServiceApi.save(problemTag);
             }
         }
         return ResponseResult.<ProblemListVO>builder()
@@ -538,8 +549,6 @@ public class ProblemController {
         }
         competitionProblem.setProblemId(problemDTO.getProblemId());
         competitionProblem.setProblemDisplayId(problemDTO.getProblemDisplayId());
-        competitionProblem.setSubmitNumber(0);
-        competitionProblem.setSolvedNumber(0);
         competitionProblem.setProblemRuleType(problemDTO.getProblemRuleType());
         //更新competition_problem
         competitionProblemServiceApi.updateByCompetitionIdAndProblemId(competitionProblem);

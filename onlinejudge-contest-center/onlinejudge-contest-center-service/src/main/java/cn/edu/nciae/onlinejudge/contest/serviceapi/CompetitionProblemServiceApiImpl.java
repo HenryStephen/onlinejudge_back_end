@@ -56,7 +56,9 @@ public class CompetitionProblemServiceApiImpl extends CompetitionProblemServiceI
      */
     @Override
     public CompetitionProblem getByCompetitionIdAndDisplayId(Long competitionId, Long problemDisplayId) {
-        return super.getOne(new QueryWrapper<CompetitionProblem>().eq("competition_id",competitionId).eq("problem_display_id",problemDisplayId));
+        return super.getOne(new QueryWrapper<CompetitionProblem>()
+                .eq("competition_id",competitionId)
+                .eq("problem_display_id",problemDisplayId));
     }
 
     /**

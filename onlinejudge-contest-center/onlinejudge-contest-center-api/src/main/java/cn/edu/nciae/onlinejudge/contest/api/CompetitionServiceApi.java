@@ -51,5 +51,9 @@ public interface CompetitionServiceApi {
 	 */
 	boolean save(Competition competition);
 
-
+	/**
+	 * 获取最近的比赛
+	 * @return
+	 */
+    Integer getRecentContestCount();
 }

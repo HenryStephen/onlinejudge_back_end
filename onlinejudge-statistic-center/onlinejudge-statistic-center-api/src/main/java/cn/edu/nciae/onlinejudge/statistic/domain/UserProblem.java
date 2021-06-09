@@ -15,16 +15,28 @@ import lombok.Data;
 @Data
 public class UserProblem implements Serializable {
     /**
+     * 关联关系id
+     */
+    @TableId(value = "user_problem_id", type = IdType.AUTO)
+    private Long userProblemId;
+
+    /**
      * 用户id
      */
-    @TableId(value = "user_id")
+    @TableField(value = "user_id")
     private Long userId;
 
     /**
      * 题目id
      */
-    @TableField(value = "problem_id")
-    private Long problemId;
+    @TableField(value = "problem_display_id")
+    private Long problemDisplayId;
+
+    /**
+     * 竞赛id
+     */
+    @TableField(value = "competition_id")
+    private Long competitionId;
 
     /**
      * 状态
@@ -47,8 +59,10 @@ public class UserProblem implements Serializable {
             return false;
         }
         UserProblem other = (UserProblem) that;
-        return (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
-            && (this.getProblemId() == null ? other.getProblemId() == null : this.getProblemId().equals(other.getProblemId()))
+        return (this.getUserProblemId() == null ? other.getUserProblemId() == null : this.getUserProblemId().equals(other.getUserProblemId()))
+            && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
+            && (this.getProblemDisplayId() == null ? other.getProblemDisplayId() == null : this.getProblemDisplayId().equals(other.getProblemDisplayId()))
+            && (this.getCompetitionId() == null ? other.getCompetitionId() == null : this.getCompetitionId().equals(other.getCompetitionId()))
             && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()));
     }
 
@@ -56,8 +70,10 @@ public class UserProblem implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
+        result = prime * result + ((getUserProblemId() == null) ? 0 : getUserProblemId().hashCode());
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
-        result = prime * result + ((getProblemId() == null) ? 0 : getProblemId().hashCode());
+        result = prime * result + ((getProblemDisplayId() == null) ? 0 : getProblemDisplayId().hashCode());
+        result = prime * result + ((getCompetitionId() == null) ? 0 : getCompetitionId().hashCode());
         result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
         return result;
     }
@@ -68,8 +84,10 @@ public class UserProblem implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
+        sb.append(", userProblemId=").append(userProblemId);
         sb.append(", userId=").append(userId);
-        sb.append(", problemId=").append(problemId);
+        sb.append(", problemDisplayId=").append(problemDisplayId);
+        sb.append(", competitionId=").append(competitionId);
         sb.append(", status=").append(status);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");

@@ -28,7 +28,9 @@ public class AnnouncementController {
     private AnnouncementServiceApi announcementServiceApi;
 
     /**
-     * 获取公共公告列表
+     * 获取公共公告分页列表
+     * @param pageNum
+     * @param limit
      * @return
      */
     @GetMapping
@@ -48,7 +50,7 @@ public class AnnouncementController {
     }
 
     /**
-     * 获得公共公告列表(管理员)
+     * 获得公共公告分页列表(管理员)
      * @param pageNum
      * @param limit
      * @return

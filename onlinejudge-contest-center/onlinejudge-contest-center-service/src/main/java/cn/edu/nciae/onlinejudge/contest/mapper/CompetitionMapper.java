@@ -34,6 +34,12 @@ public interface CompetitionMapper extends BaseMapper<Competition> {
      */
     CompetitionDTO selectCompetitionVOById(Long competitionId);
 
+    /**
+     * 获取最近的比赛
+     *
+     * @return
+     */
+    Integer selectRecentContestCount();
 }
 
 

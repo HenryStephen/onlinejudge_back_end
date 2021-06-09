@@ -109,13 +109,14 @@ public class FPSUtils {
             if ("source".equalsIgnoreCase(name)) {
                 problemDTO.setProblemAuthor(value);
             }
-            if ("difficulty".equalsIgnoreCase(name)) {
-                problemDTO.setProblemDifficulty(value);
-            }
+//            if ("difficulty".equalsIgnoreCase(name)) {
+//                problemDTO.setProblemDifficulty(value);
+//            }
         }
+        problemDTO.setProblemDifficulty("Low"); //默认难度为Low
         problemDTO.setSamples(sampleList);
-        problemDTO.setLanguages(languageList);
-        problemDTO.setTags(tagList);
+        problemDTO.setLanguages(languageList);  //可能为空
+        problemDTO.setTags(tagList); // 可能为空
         problemDTO.setCheckpoints(checkpointList);
         return problemDTO;
     }
@@ -203,6 +204,9 @@ public class FPSUtils {
     public static List<Tag> getTagList(Node item){
         List<Tag> tagList = new ArrayList<>(5);
         NodeList tags = ((Element) item).getElementsByTagName("tag");
+        if(tags == null){
+            return null;
+        }
         for(int i=0;i<tags.getLength();i++){
             Element eleTag = (Element) tags.item(i);
             Tag tag = new Tag();
@@ -219,10 +223,14 @@ public class FPSUtils {
      */
     public static List<String> getLanguageList(Node item){
         List<String> languagesList = new ArrayList<>(10);
-        NodeList languageTags = ((Element) item).getElementsByTagName("language");
+        NodeList languageTags = ((Element) item).getElementsByTagName("solution");
+        if(languageTags == null){
+            return null;
+        }
         for(int i=0;i<languageTags.getLength();i++){
             Element eleLanguage = (Element) languageTags.item(i);
-            languagesList.add(eleLanguage.getTextContent());
+            String language = eleLanguage.getAttribute("language");
+            languagesList.add(language);
         }
         return languagesList;
     }

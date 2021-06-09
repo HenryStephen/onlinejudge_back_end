@@ -1,17 +1,17 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : localhost
+ Source Server         : Localhost
  Source Server Type    : MySQL
- Source Server Version : 80015
+ Source Server Version : 80025
  Source Host           : localhost:3306
  Source Schema         : onlinejudge_contentcenter
 
  Target Server Type    : MySQL
- Target Server Version : 80015
+ Target Server Version : 80025
  File Encoding         : 65001
 
- Date: 03/06/2021 09:54:40
+ Date: 09/06/2021 23:51:05
 */
 
 SET NAMES utf8mb4;
@@ -21,155 +21,199 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Table structure for announcement
 -- ----------------------------
 DROP TABLE IF EXISTS `announcement`;
-CREATE TABLE `announcement`  (
-  `announcement_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '公告id',
-  `competition_id` bigint(20) UNSIGNED NULL DEFAULT NULL COMMENT '竞赛id',
+CREATE TABLE `announcement` (
+  `announcement_id` bigint NOT NULL AUTO_INCREMENT COMMENT '公告id',
+  `competition_id` bigint unsigned DEFAULT NULL COMMENT '竞赛id',
   `nickname` varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '创建人用户名',
   `announcement_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '公告标题',
-  `announcement_content` varchar(2550) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '公告内容',
-  `create_time` datetime(0) NOT NULL COMMENT '创建时间',
-  `last_update_time` datetime(0) NULL DEFAULT NULL COMMENT '最后更新时间',
-  `visible` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否可见',
+  `announcement_content` varchar(2550) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '公告内容',
+  `create_time` datetime NOT NULL COMMENT '创建时间',
+  `last_update_time` datetime DEFAULT NULL COMMENT '最后更新时间',
+  `visible` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '是否可见',
   PRIMARY KEY (`announcement_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 7 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of announcement
 -- ----------------------------
-INSERT INTO `announcement` VALUES (1, 0, 'liaomu', 'Welcome !', 'Hey guys. Welcome to the online judge of NCIAE.', '2021-04-11 08:00:00', '2021-04-11 00:00:00', 1);
-INSERT INTO `announcement` VALUES (4, 0, 'admin', 'Test Announcement', '<p>Test Announcement Content<br></p>', '2021-05-16 16:21:54', '2021-05-16 16:21:54', 1);
-INSERT INTO `announcement` VALUES (5, 0, 'admin', 'Announcement Test 1', '<p>Announcement Test 1 Content Upate<br></p>', '2021-05-17 10:42:11', '2021-05-17 10:42:37', 1);
-INSERT INTO `announcement` VALUES (6, 1, 'admin', 'Contest Announcement Test 1', '<p>Contest Announcement Test 1 Content<br></p>', '2021-05-17 10:53:21', '2021-05-17 10:53:21', 1);
+BEGIN;
+INSERT INTO `announcement` VALUES (1, 0, 'admin', 'Welcome', '<p>Welcome to NCIAE Online Judge System !<br></p>', '2021-06-09 23:11:24', '2021-06-09 23:13:39', 1);
+INSERT INTO `announcement` VALUES (2, 0, 'admin', 'About Rule Type', '<p>Recently, this Online Judge System only support the rule type of ACM.</p>', '2021-06-09 23:13:24', '2021-06-09 23:13:24', 1);
+INSERT INTO `announcement` VALUES (3, 1, 'admin', '训练模式', '<p>本比赛训练模式为ACM模式，与HBCPC比赛方式相符</p>', '2021-06-09 23:22:42', '2021-06-09 23:22:42', 1);
+COMMIT;
 
 -- ----------------------------
 -- Table structure for problem
 -- ----------------------------
 DROP TABLE IF EXISTS `problem`;
-CREATE TABLE `problem`  (
-  `problem_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '题目ID',
-  `add_user_id` bigint(20) NOT NULL COMMENT '添加者ID',
+CREATE TABLE `problem` (
+  `problem_id` bigint NOT NULL AUTO_INCREMENT COMMENT '题目ID',
+  `add_user_id` bigint NOT NULL COMMENT '添加者ID',
   `problem_title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '题目名称',
   `problem_description` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '题目描述',
-  `problem_input_formation` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '输入格式',
-  `problem_output_formation` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '输出格式',
-  `problem_time_limit` int(11) NOT NULL COMMENT '时间限制(MS)',
-  `problem_memory_limit` int(11) NOT NULL COMMENT '内存限制(MB)',
-  `problem_author` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '题目作者',
-  `problem_reminder` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '提示',
-  `problem_source` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '题目来源',
+  `problem_input_formation` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '输入格式',
+  `problem_output_formation` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '输出格式',
+  `problem_time_limit` int NOT NULL COMMENT '时间限制(MS)',
+  `problem_memory_limit` int NOT NULL COMMENT '内存限制(MB)',
+  `problem_author` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '题目作者',
+  `problem_reminder` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '提示',
+  `problem_source` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '题目来源',
   `problem_difficulty` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '题目难度',
   `problem_testcase_id` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '测试用例id',
-  `problem_create_time` datetime(6) NOT NULL COMMENT '题目创建时间',
-  `is_spj` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否为特殊判题',
-  `visible` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否可见',
+  `problem_create_time` datetime NOT NULL COMMENT '题目创建时间',
+  `is_spj` tinyint(1) unsigned zerofill NOT NULL DEFAULT '0' COMMENT '是否为特殊判题',
+  `visible` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '是否可见',
   PRIMARY KEY (`problem_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of problem
 -- ----------------------------
-INSERT INTO `problem` VALUES (1, 1, '送分题-A+B Problem', '<p>Calculate a+b</p>', '<p>Two integer a,b (0&lt;=a,b&lt;=10)</p>', '<p>Output a+b</p>', 1000, 32, 'admin', '<p>#include#includeusing namespace std;int main(){#ifndef ONLINE_JUDGE	freopen(\"in.txt\",\"r\",stdin);#endif	int a,b;	while(cin &gt;&gt;a &gt;&gt;b)	{		cout &lt;</p>', '系统原理，熟悉OJ', 'Low', 'f6bf7fa502fe99f088e11403f88677bd', '2021-05-17 16:58:30.000000', 0, 1);
-INSERT INTO `problem` VALUES (8, 1, 'test 2', '<p>test 2<br></p>', '<p>test 2<br></p>', '<p>test 2 update<br></p>', 1000, 32, 'admin', '<p>test 2<br></p>', 'test 2', 'Low', 'f6bf7fa502fe99f088e11403f88677bd', '2021-06-02 15:43:43.000000', 0, 1);
+BEGIN;
+INSERT INTO `problem` VALUES (1, 1, '通话记录', '<p>使用3个队列，分别保留手机上最近10个，（0）未接来电、（1）已接来电、（2）已拨电话。</p>', '<p>全部通话记录，每行一条记录。</p><p>每条记录包含两个数字，第一个数代表记录类型，第二个数代表手机号码。</p>', '<p>分3列输出未接来电、已接来电、已拨电话。</p><p>列之间用空格分割，后接电话在最先输出，不足10条用0占位。</p>', 1000, 128, 'admin', '', NULL, 'Low', '3cb685c09d4c9dafc7afc7962548b7f1', '2021-06-09 23:14:07', 0, 1);
+INSERT INTO `problem` VALUES (2, 1, '使用栈实现进制转换', '<p>使用栈将一个很长（&gt;30）的十进制数转换为二进制数</p>', '<p>若干个很长的十进制数</p>\n<p>每行一个</p>', '<p>转换为二进制，每行输出一个</p>', 1000, 128, 'admin', '', NULL, 'Low', '2cff5958c92a822894698cea8bf35c99', '2021-06-09 23:14:07', 0, 1);
+INSERT INTO `problem` VALUES (3, 1, '判断升序', '<p>实现public static boolean isSorted(int[] table)</p>\n<p>判断整数数组元素是否已经按升序排序。</p>', '<p>一列数，需要判断的数组元素。</p>', '<p>如果已经排序输出YES</p>\n<p>如果没有排序输出NO</p>', 1000, 128, 'admin', '<p>import java.util.*;</p>\n<p>public class Main{</p>\n<p>&nbsp;&nbsp; public static void main(String args[]){</p>\n<p>&nbsp; Scanner cin = new Scanner(System.in);</p>\n<p>&nbsp; int a, b;<br />\n&nbsp; b=-1;<br />\n&nbsp; while (cin.hasNext()){</p>\n<p>&nbsp; a = cin.nextInt();</p>\n<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; if(??????????){<br />\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;????????;<br />\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;????????????????????;<br />\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }<br />\n&nbsp;????????????;</p>\n<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }</p>\n<p>&nbsp;if(!cin.hasNext())<br />\n&nbsp;&nbsp;????????????????????????</p>\n<p>&nbsp; }</p>\n<p>}</p>\n<p><br />\n</p>', NULL, 'Low', '78831506dbb03745181d3c893a642c6e', '2021-06-09 23:14:07', 0, 1);
+INSERT INTO `problem` VALUES (4, 1, '金额的中文大写', '<p>读入一个浮点数值，将其转化为金额的中文大写形式。<br />\n例如：<br />\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 123.45转化为&ldquo;壹佰贰拾叁元肆角伍分&rdquo;。</p>\n<p>1）当金额为整数时，只表示整数部分，省略小数部分，并添加&ldquo;整&rdquo;字。<br />\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 例如：123表示为&ldquo;壹佰贰拾叁元整&rdquo;</p>\n<p>2）当金额中有连续的0时（含一个0），只需写一个&ldquo;零&rdquo;即可。<br />\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 例如：10005表示为&ldquo;壹万零伍元整&rdquo;</p>\n<p>3）10元缩写为&ldquo;拾元整&rdquo;。</p>', '<p>表示金额的浮点数若干，每行一个</p>', '<p>各金额的中文大写形式，每行一个</p>\n<p>注：数字&ldquo;壹贰叁肆伍陆柒捌玖拾佰仟万亿&rdquo;<br />\n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 单位&ldquo;元角分&rdquo;</p>', 1000, 128, 'admin', '', NULL, 'Low', '1e2bca877b325bbefd0496490c18b2b6', '2021-06-09 23:14:07', 0, 1);
+INSERT INTO `problem` VALUES (5, 1, '复数加法', '<p>数集拓展到实数范围内，仍有些运算无法进行。比如判别式小于0的<a href=\"http://baike.baidu.com/view/397767.htm\" target=\"_blank\"><font color=\"#136ec2\">一元二次方程</font></a>仍<a href=\"http://baike.baidu.com/view/1203270.htm\" target=\"_blank\"><font color=\"#136ec2\">无解</font></a>，因此将数集再次扩充，达到复数范围。</p>\n<div class=\"spctrl\"></div>\n<p>　　<b>定义：形如z=a+bi的数称为复数(complex number)</b>，其中规定<b>i</b>为<b>虚数单位</b>，且i^2=i*i=-1（a，b是任意<a href=\"http://baike.baidu.com/view/14749.htm\" target=\"_blank\"><font color=\"#136ec2\">实数</font></a>）</p>\n<div class=\"spctrl\"></div>\n<p>　　我们将复数z=a+bi中的实数a称为复数z的实部（real part)记作Rez=a</p>\n<div class=\"spctrl\"></div>\n<p>　　实数b称为复数z的<a href=\"http://baike.baidu.com/view/2441262.htm\" target=\"_blank\"><font color=\"#136ec2\">虚部</font></a>（imaginary part)记作 Imz=b.</p>\n<div class=\"spctrl\"></div>\n<p>　　已知：当b=0时，z=a，这时复数成为实数；</p>\n<div class=\"spctrl\"></div>\n<p>　　当a=0且b&ne;0时 ，z=bi，我们就将其称为<a href=\"http://baike.baidu.com/view/899964.htm\" target=\"_blank\"><b><font color=\"#136ec2\">纯虚数</font></b></a>。</p>\n<div class=\"spctrl\"></div>\n<p>　　<b>定义： 对于复数z=a+bi，称复数z\'=a-bi为z的</b><a href=\"http://baike.baidu.com/view/137793.htm\" target=\"_blank\"><b><font color=\"#136ec2\">共轭复数</font></b></a><b>。</b></p>\n<div class=\"spctrl\"></div>\n<p>　　<b>定义：将复数的实部与虚部的平方和的正的平方根的值称为该复数的模，记作∣z∣</b></p>\n<div class=\"spctrl\"></div>\n<p>　　即对于复数z=a+bi，它的模</p>\n<div class=\"spctrl\"></div>\n<p>　　∣z∣=&radic;(a^2+b^2)</p>\n<div class=\"spctrl\"></div>\n<p>　　复数的集合用C表示，显然，R是C的真子集</p>\n<div class=\"spctrl\"></div>\n<p>　　复数集是无序集，不能建立大小顺序。</p>\n<div class=\"spctrl\"></div>\n<p>　　共轭复数有些有趣的性质: ︱x+yi︱=︱x-yi︱ (x+yi)*(x-yi)=x^2+y^2=︱x+yi︱^2=︱x-yi︱^2</p>', '<p>两个复数分两行，每行两个数，代表复数的实部和虚部。</p>', '<p>两个复数的和。</p>', 1000, 128, 'admin', '', NULL, 'Low', '35642b9b38124cb313fee695f7ec4006', '2021-06-09 23:14:07', 0, 1);
+INSERT INTO `problem` VALUES (6, 1, '复数乘积', '<p>数集拓展到实数范围内，仍有些运算无法进行。比如判别式小于0的<a href=\"http://baike.baidu.com/view/397767.htm\" target=\"_blank\"><font color=\"#136ec2\">一元二次方程</font></a>仍<a href=\"http://baike.baidu.com/view/1203270.htm\" target=\"_blank\"><font color=\"#136ec2\">无解</font></a>，因此将数集再次扩充，达到复数范围。</p>\n<div class=\"spctrl\"></div>\n<p>　　<b>定义：形如z=a+bi的数称为复数(complex number)</b>，其中规定<b>i</b>为<b>虚数单位</b>，且i^2=i*i=-1（a，b是任意<a href=\"http://baike.baidu.com/view/14749.htm\" target=\"_blank\"><font color=\"#136ec2\">实数</font></a>）</p>\n<div class=\"spctrl\"></div>\n<p>　　我们将复数z=a+bi中的实数a称为复数z的实部（real part)记作Rez=a</p>\n<div class=\"spctrl\"></div>\n<p>　　实数b称为复数z的<a href=\"http://baike.baidu.com/view/2441262.htm\" target=\"_blank\"><font color=\"#136ec2\">虚部</font></a>（imaginary part)记作 Imz=b.</p>\n<div class=\"spctrl\"></div>\n<p>　　已知：当b=0时，z=a，这时复数成为实数；</p>\n<div class=\"spctrl\"></div>\n<p>　　当a=0且b&ne;0时 ，z=bi，我们就将其称为<a href=\"http://baike.baidu.com/view/899964.htm\" target=\"_blank\"><b><font color=\"#136ec2\">纯虚数</font></b></a>。</p>\n<div class=\"spctrl\"></div>\n<p>　　<b>定义： 对于复数z=a+bi，称复数z\'=a-bi为z的</b><a href=\"http://baike.baidu.com/view/137793.htm\" target=\"_blank\"><b><font color=\"#136ec2\">共轭复数</font></b></a><b>。</b></p>\n<div class=\"spctrl\"></div>\n<p>　　<b>定义：将复数的实部与虚部的平方和的正的平方根的值称为该复数的模，记作∣z∣</b></p>\n<div class=\"spctrl\"></div>\n<p>　　规定复数的乘法按照以下的法则进行：</p>\n<div class=\"spctrl\"></div>\n<p>　　设z1=a+bi，z2=c+di(a、b、c、d&isin;R)是任意两个复数，那么它们的积(a+bi)(c+di)=(ac－bd)+(bc+ad)i.</p>\n<div class=\"spctrl\"></div>\n<p>　　其实就是把两个复数相乘，类似两个多项式相乘，在所得的结果中把i2换成－1，并且把实部与虚部分别合并.两个复数的积仍然是一个复数.</p>', '<p>两个复数分两行，每行两个数，代表复数的实部和虚部。</p>', '<p>两个复数的乘积。</p>', 1000, 128, 'admin', '', NULL, 'Low', '4a16e5f116d1f050472547f881616d53', '2021-06-09 23:14:07', 0, 1);
+INSERT INTO `problem` VALUES (7, 1, '多项式相加', '<p>一条单链表可以表示一个一元多项式，每个节点包含三个域：指数、系数和后继节点（指针或引用）。</p>\n<p>表示多项式3X<sup>4</sup>-6X<sup>2</sup>+5X-10的单链表如图所示。给定两个多项式，实现两个多项式相加算法。</p>\n<p></p>\n<p><img alt=\"\" width=\"600\" height=\"103\" src=\"http://oj.acm.zj.cn:80/upload/201107/1928.PNG\" /></p>', '<p>第一行输入包含两个整数m,n</p>\n<p>后续为m行和n行数据</p>\n<p>m，n分别代表两个多项式的项数</p>\n<p>后续每一行代表多项式的项，包含a,b两个数据，表示该项的系数和指数。</p>\n<p></p>', '<p>从较高指数到较低指数，依次输出求得的和。</p>\n<p>每行一项，格式与输入相同，但无需输出项数，系数为0的项也不输出。</p>', 1000, 128, 'admin', '', NULL, 'Low', '3e6136d666e3da911548f500d5d10f1a', '2021-06-09 23:14:07', 0, 1);
+INSERT INTO `problem` VALUES (8, 1, '素MM', '<p><style type=\"text/css\">p { margin-bottom: 0.21cm; }</style></p>\n<p style=\"text-indent: 0.74cm; margin-bottom: 0cm;\">素数有很多神奇的性质，所以很美。我们知道一个日期将年、月、日按顺序连接在一起可以组成一个八位数，例如<font face=\"DejaVu Serif, serif\">2011</font>年<font face=\"DejaVu Serif, serif\">3</font>月<font face=\"DejaVu Serif, serif\">6</font>日可以写成<font face=\"DejaVu Serif, serif\">20110306</font>。我的某个<font face=\"DejaVu Serif, serif\">MM</font>的生日组成的数是一个素数。偶尔我叫她素<font face=\"DejaVu Serif, serif\">MM</font>，没人知道是啥意思，她自己也不知道。<font face=\"DejaVu Serif, serif\">O(&cap;_&cap;)O</font>哈哈<font face=\"DejaVu Serif, serif\">~</font>我心里可是真的美美的<font face=\"DejaVu Serif, serif\">(⊙o⊙)</font>哦！</p>\n<p style=\"margin-bottom: 0cm;\"><font face=\"DejaVu Serif, serif\">	</font>嗯，什么？你的生日也是素数？你也想做&ldquo;素<font face=\"DejaVu Serif, serif\">MM&rdquo;</font>或者&ldquo;素<font face=\"DejaVu Serif, serif\">GG&rdquo;</font>？那好吧，不过我可是很小气的哦！只有你出生在<font face=\"DejaVu Serif, serif\">1988</font>年或者<font face=\"DejaVu Serif, serif\">1989</font>年我才让你做&ldquo;素<font face=\"DejaVu Serif, serif\">MM&rdquo;</font>或&ldquo;素<font face=\"DejaVu Serif, serif\">GG&rdquo;</font>。要不然，你把这两年里日期组成的数是素数的找出来也可以&mdash;&mdash;没准还带你到浙大去&ldquo;旅游&rdquo;呢！</p>\n<p></p>', '<p><style type=\"text/css\">p { margin-bottom: 0.21cm; }</style></p>\n<p style=\"margin-bottom: 0cm;\">无</p>\n<p></p>', '<p><style type=\"text/css\">p { margin-bottom: 0.21cm; }</style></p>\n<p style=\"margin-bottom: 0cm;\"><font face=\"DejaVu Serif, serif\">1988</font>年与<font face=\"DejaVu Serif, serif\">1989</font>年，这两年里的日期所组成的素数。每个素数占一行。</p>\n<p></p>', 1, 128, 'admin', '<p><style type=\"text/css\">p { margin-bottom: 0.21cm; }</style></p>\n<p style=\"margin-bottom: 0cm;\">&ldquo;&hellip;&hellip;&rdquo;代表后面还有素数没有输出。你输出时也要将后面的素数输出。</p>\n<p><style type=\"text/css\">p { margin-bottom: 0.21cm; }\n\n\n	\n	\n	\n	\n\n\n“……”代表后面还有素数没有输出。你输出时也要将后面的素数输出。</style></p>', NULL, 'Low', '40555daef3c9c44a2fc0a5302a2869be', '2021-06-09 23:14:53', 0, 1);
+INSERT INTO `problem` VALUES (9, 1, 'Stars', '<p>On a clear moon-less night, you can see millions of stars glimmering in the sky. Faced with this overwhelming number, the Greeks started nearly 2,000 years ago to bring some order to the chaos. They identified groups of stars, called constellations, and gave them names, mostly from the Greek mythology, that are still in use today. Examples are ``Ursa Minor\'\', ``Pisces\'\', ``Cancer\'\', and many others.</p>\n<p></p>\n<p>Given a sketch of the constellation, it is not easy for the amateur to actually find the constellation in the sky. Moreover, simple constellations, such as ``Triangulum\'\' (triangle,) which consists of only three stars, may appear several times in the sky. Again, singling out the ``correct\'\' occurrence is not easy.</p>\n<p>Traditionally, maps were printed for just this purpose. But in this problem, we will see how the computer can help us find constellations in the sky.</p>\n<p></p>\n<p>You will be given a star map; for simplicity this will be a collection of points in the plane, each having a certain brightness associated with it. Then, given a constellation, also as a set of points in the plane, you are to determine:</p>\n<p></p>\n<ul>\n    <li>the number of occurrences of the constellation in the star map, and</li>\n    <li>the position of the brightest occurrence, if one exists. (The rationale behind this is as follows: if a constellation seems to appear several times in the sky, the brightest one is most likely to be the real one, since it is the most eye-catching one.)</li>\n</ul>\n<p>An occurrence is a subset of stars from the map that forms a (possibly) arbitrarily rotated and/or scaled copy of the stars in the constellation.</p>\n<p>The brightness of an occurrence is the average brightness of the stars it consists of, i.e. the sum of individual brightnesses divided by the number of stars in the constellation.</p>', '<p>On a clear moon-less night, you can see millions of stars glimmering in the sky. Faced with this overwhelming number, the Greeks started nearly 2,000 years ago to bring some order to the chaos. They identified groups of stars, called constellations, and gave them names, mostly from the Greek mythology, that are still in use today. Examples are ``Ursa Minor\'\', ``Pisces\'\', ``Cancer\'\', and many others.</p>\n<p></p>\n<p>Given a sketch of the constellation, it is not easy for the amateur to actually find the constellation in the sky. Moreover, simple constellations, such as ``Triangulum\'\' (triangle,) which consists of only three stars, may appear several times in the sky. Again, singling out the ``correct\'\' occurrence is not easy.</p>\n<p>Traditionally, maps were printed for just this purpose. But in this problem, we will see how the computer can help us find constellations in the sky.</p>\n<p></p>\n<p>You will be given a star map; for simplicity this will be a collection of points in the plane, each having a certain brightness associated with it. Then, given a constellation, also as a set of points in the plane, you are to determine:</p>\n<p></p>\n<ul>\n    <li>the number of occurrences of the constellation in the star map, and</li>\n    <li>the position of the brightest occurrence, if one exists. (The rationale behind this is as follows: if a constellation seems to appear several times in the sky, the brightest one is most likely to be the real one, since it is the most eye-catching one.)</li>\n</ul>\n<p>An occurrence is a subset of stars from the map that forms a (possibly) arbitrarily rotated and/or scaled copy of the stars in the constellation.</p>\n<p>The brightness of an occurrence is the average brightness of the stars it consists of, i.e. the sum of individual brightnesses divided by the number of stars in the constellation.</p>', '<p>For each star map first output the number of the map (<tt>`Map #1\'</tt>, <tt>`Map #2\'</tt>, etc.) on a line of its own.</p>\n<p>For each constellation, in the same order as in the input, output first its name and how many times it occurs in the map on one line, as shown in the output sample.</p>\n<p>If there is at least one occurrence, output the position of the brightest occurrence by listing the positions of the stars that form the brightest occurrence. The star positions have to be printed in ascending <i>x</i>-order. Positions having the same <i>x</i>-coordinates must be sorted in ascending <i>y</i>-order. If there are several equally bright solutions, output only one of them. Adhere to the format shown in the sample output.</p>\n<p>Output a blank line before each constellation and a line of 5 dashes (<tt>`-----\'</tt>) after every star map.</p>', 1, 128, 'admin', '', NULL, 'Low', 'abdcf297c087b84ed0e64f58d0e20921', '2021-06-09 23:15:02', 0, 1);
+INSERT INTO `problem` VALUES (10, 1, 'Hexagon', '<p>Consider a game board consisting of 19 hexagonal fields, as shown in the figure below. We can easily distinguish three main directions in the shape of the board: from top to bottom, from top-left to bottom-right, and from top-right to bottom-left. For each of these primary directions, the board can be viewed as a series of rows, consisting of 3, 4, 5, 4, and 3 fields, respectively.</p>\n<p></p>\n<center><img src=\"http://d620/v3-htm01/317img3.gif\" alt=\"\" /></center>\n<p>The game board has to be completely covered using a set of hexagonal pieces. Each piece carries three numbers, one for every primary board direction. Only three different numbers are used for each direction. Every possible combination of three numbers for all three directions is assigned to a piece, leading to a set of 27 unique pieces. (The board in the above figure is still in the process of being covered.)</p>\n<p></p>\n<p>The score of a board is calculated as the sum of all 15 row scores (5 rows for each primary direction). The row scores are calculated as follows: if all pieces in a row carry the same number for the direction of the row, the row score is this number multiplied by the number of pieces in the row. Otherwise (the pieces carry different numbers in the row direction) the row score is zero. Note that the pieces may not be rotated. For example, the score of the leftmost row in the figure is  <img align=\"BOTTOM\" width=\"60\" height=\"13\" src=\"http://d620/v3-htm01/317img1.gif\" alt=\"tex2html_wrap_inline31\" /> , the score of the row to its right is  <img align=\"BOTTOM\" width=\"79\" height=\"12\" src=\"http://d620/v3-htm01/317img2.gif\" alt=\"tex2html_wrap_inline33\" /> .</p>\n<p></p>\n<p>While in the real game the pieces are chosen randomly and the set of pieces is fixed, we are interested in the highest possible score for a given set of numbers for each direction, when all pieces in a row carry  the same number for the direction of the row. This means you have to  choose those 19 pieces that result in the highest score.</p>', '<p>The first line of the input file contains an integer <i>n</i> which indicates the number of test cases. Each test case consists of three lines containing three integers each. Each of these three line contains the numbers for a single primary direction. From these numbers the set of pieces is generated.</p>\n<p></p>\n<h2><font color=\"#0070e8\"><a name=\"SECTION0001002000000000000000\"></a></font></h2>', '<p>For each test case output a line containing the number of the case (<tt>`Test #1\'</tt>, <tt>`Test #2\'</tt>, etc.), followed by a line containing the highest possible score for the given numbers. Add a blank line after each test case.</p>', 1, 128, 'admin', '', NULL, 'Low', '106626d3358d5e5cbef108c35588131e', '2021-06-09 23:15:03', 0, 1);
+INSERT INTO `problem` VALUES (11, 1, 'Domino Effect', '<p>Did you know that you can use domino bones for other things besides playing Dominoes? Take a number of dominoes and build a row by standing them on end with only a small distance in between. If you do it right, you can tip the first domino and cause all others to fall down in succession (this is where the phrase ``domino effect\'\' comes from).</p>\n<p></p>\n<p>While this is somewhat pointless with only a few dominoes, some people went to the opposite extreme in the early Eighties. Using millions of dominoes of different colors and materials to fill whole halls with elaborate patterns of falling dominoes, they created (short-lived) pieces of art. In these constructions, usually not only one but several rows of dominoes were falling at the same time. As you can imagine, timing is an essential factor here.</p>\n<p></p>\n<p>It is now your task to write a program that, given such a system of rows formed by dominoes, computes when and where the last domino falls. The system consists of several ``key dominoes\'\' connected by rows of simple dominoes. When a key domino falls, all rows connected to the domino will also start falling (except for the ones that have already fallen). When the falling rows reach other key dominoes that have not fallen yet, these other key dominoes will fall as well and set off the rows connected to them. Domino rows may start collapsing at either end. It is even possible that a row is collapsing on both ends, in which case the last domino falling in that row is somewhere between its key dominoes. You can assume that rows fall at a uniform rate.</p>', '<p>The input file contains descriptions of several domino systems. The first line of each description contains two integers: the number <i>n</i> of key dominoes ( <img align=\"MIDDLE\" width=\"90\" height=\"25\" src=\"http://d620/v3-htm01/318img1.gif\" alt=\"tex2html_wrap_inline29\" /> ) and the number <i>m</i> of rows between them. The key dominoes are numbered from 1 to <i>n</i>. There is at most one row between any pair of key dominoes and the domino graph is connected, i.e. there is at least one way to get from a domino to any other domino by following a series of domino rows.</p>\n<p>The following <i>m</i> lines each contain three integers <i>a</i>, <i>b</i>, and <i>l</i>, stating that there is a row between key dominoes <i>a</i> and <i>b</i> that takes <i>l</i> seconds to fall down from end to end.</p>\n<p></p>\n<p>Each system is started by tipping over key domino number 1.</p>\n<p></p>\n<p>The file ends with an empty system (with <i>n</i> = <i>m</i> = 0), which should not be processed.</p>', '<p>For each case output a line stating the number of the case (<tt>`System #1\'</tt>, <tt>`System #2\'</tt>, etc.). Then output a line containing the time when the last domino falls, exact to one digit to the right of the decimal point, and the location of the last domino falling, which is either at a key domino or between two key dominoes. Adhere to the format shown in the output sample. If you find several solutions, output only one of them. Output a blank line after each system.</p>', 1, 128, 'admin', '', NULL, 'Low', 'd6810c0b06148986210f4674e7056013', '2021-06-09 23:15:03', 0, 1);
+INSERT INTO `problem` VALUES (12, 1, 'Pendulum', '<p>Consider a pendulum hanging on a string from a hook on a wall. When pushed, this pendulum will swing back and forth. Now imagine other hooks on the wall, placed in the path of our pendulum\'s string. The pendulum will bend around them, possibly even loop around them. In general, it will follow a much more complex path than before. After some time, the pendulum\'s motion will repeat, the pendulum will follow a <i>periodic orbit</i>. What we would like you to do is to compute the distance travelled by the pendulum as it completes one cycle of the orbit.</p>\n<p></p>\n<p>More formally, we place a cartesian coordinate system on the wall. The pendulum\'s string is affixed at the origin (0,0). As usual, the <i>x</i>-axis points to the right and the <i>y</i>-axis points upwards. The string of the pendulum has a length of <i>r</i>. The pendulum is released at position (-<i>r</i>,0) and therefore starts swinging to the right. Furthermore, there are <i>n</i> additional hooks distributed over the plane which may influence the path of the pendulum.</p>\n<p></p>\n<p>In our ideal world, the following assumptions are true:</p>\n<p></p>\n<ul>\n    <li>The diameters of the hooks and of the string are zero.</li>\n    <li>The pendulum loses no energy (e.g. by friction).</li>\n    <li>The pendulum will never hit a hook, only its string will.</li>\n    <li>The pendulum\'s string is made of some futuristic material that only bends where it touches a hook but is otherwise rigid.</li>\n</ul>\n<p>Your program should simulate the movement of the pendulum and output the spatial length of the periodic orbit that it finally enters. As you may remember from physics: due to gravity, the pendulum will never reach a height greater than the one it started from! That is, it will never get above the <i>x</i>-axis. It will either reach its initial height again or circle endlessly around a hook in the wall.</p>', '<p>The input file contains several test cases. Each case begins with a line containing an integer <i>n</i> (the number of hooks,  <img align=\"MIDDLE\" width=\"90\" height=\"25\" src=\"http://d620/v3-htm01/319img1.gif\" alt=\"tex2html_wrap_inline44\" /> ) and a real <i>r</i> (the length of the pendulum\'s string). The following <i>n</i> lines each contain two integers specifying the <i>x</i>- and <i>y</i>-coordinate of the corresponding hook.</p>\n<p>The file ends with a case having <i>r</i> = 0, which should not be processed.</p>', '<p>For each case output a line containing the number of the case (<tt>`Pendulum #1\'</tt>, <tt>`Pendulum #2\'</tt>, etc.).</p>\n<p>Then print a line that contains the distance which the pendulum travels for completing one cycle of its periodic orbit. Do not count the distance travelled to reach the starting point of the orbit. (Adhere to the format shown in the output sample.) The distance should be exact to two digits to the right of the decimal point.</p>\n<p>Output a blank line after each test case.</p>', 1, 128, 'admin', '', NULL, 'Low', 'a2bb665ee1c2043d3f19f51a05b68b0e', '2021-06-09 23:15:03', 0, 1);
+INSERT INTO `problem` VALUES (13, 1, 'Border', '<p>You are to write a program that draws a border around a closed path into a bitmap, as displayed in the following figure:</p>\n<p></p>\n<center><img src=\"http://d620/v3-htm01/320img1.gif\" alt=\"\" /></center>\n<p>The path is closed and runs along the grid lines, i.e. between the squares of the grid. The path runs counter-clockwise, so if following the path is considered as going ``forward\'\', the border pixels are always to the ``right\'\' of the path. The bitmap always covers 32 by 32 squares and has its lower left corner at (0,0). You can safely assume that the path never touches the bounding rectangle of the bitmap and never touches or crosses itself. Note that a bit gets set if it is on the outside of the area surrounded by the path and if at least one of its edges belongs to the path, but not if only one of its corners is in the path. (A look at the convex corners in the figure should clarify that statement.)</p>', '<p>The first line of the input file contains the number of test cases in the file. Each test case that follows consists of two lines. The first line of each case contains two integer numbers <i>x</i> and <i>y</i> specifying the starting point of the path. The second line contains a string of variable length. Every letter in the string symbolizes a move of length one along the grid. Only the letters <tt>`W\'</tt> (``west\'\'), <tt>`E\'</tt> (``east\'\'), <tt>`N\'</tt> (``north\'\'), <tt>`S\'</tt> (``south\'\'), and <tt>`.\'</tt> (``end of path\'\', no move) appear in the string. The end-of-path character (<tt>`.\'</tt>) is immediately followed by the end of the line.</p>', '<p>For each test case, output a line with the number of the case (<tt>`Bitmap #1\'</tt>, <tt>`Bitmap #2\'</tt>, etc.). For each row of the bitmap from top to bottom, print a line where you print a character for every bit in that row from left to right. Print an uppercase <tt>`X\'</tt> for set bits and a period <tt>`.\'</tt> for unset bits. Output a blank line after each bitmap.</p>', 1, 128, 'admin', '', NULL, 'Low', '9adda403a1407efb5d0799357b562981', '2021-06-09 23:15:03', 0, 1);
+INSERT INTO `problem` VALUES (14, 2, 'Satellite Photographs', '<p>Farmer John purchased satellite photos of W x H pixels of his farm (1  &lt;= W &lt;= 80, 1 &lt;= H &lt;= 1000) and wishes to determine the  largest \'contiguous\' (connected) pasture. Pastures are contiguous when  any pair of pixels in a pasture can be connected by traversing adjacent  vertical or horizontal pixels that are part of the pasture.  (It is easy  to create pastures with very strange shapes, even circles that surround  other circles.) <br />\n<br />\nEach photo has been digitally enhanced to show pasture area as an  asterisk (\'*\') and non-pasture area as a period (\'.\').  Here is a 10 x 5  sample satellite photo: <br />\n<br />\n<tt>..*.....** <br />\n.**..***** <br />\n.*...*.... <br />\n..****.*** <br />\n..****.***</tt> <br />\n<br />\nThis photo shows three contiguous pastures of 4, 16, and 6 pixels.  Help FJ find the largest contiguous pasture in each of his satellite  photos.</p>', '<p>* Line 1: Two space-separated integers: W and H <br />\n* Lines 2..H+1: Each line contains W &quot;*&quot; or &quot;.&quot; characters  representing one raster line of a satellite photograph.</p>\n<p>&nbsp;</p>\n		', '<p>* Line 1: The size of the largest contiguous field in the satellite  photo.</p>\n		', 1000, 128, 'liaomu', '#include<iostream>\nusing namespace std;\nint r[] = {0, 0, 1, -1};\nint c[] = {1, -1, 0, 0};\n\nint maxi(int a, int b) {\n	if(a > b) return a;\n	return b;\n}\n\nint dfs(char graph[][100], int row, int col, int maxRow, int maxCol) {\n	if(row < 0 || row >= maxRow) return 0;\n	if(col < 0 || col >= maxCol) return 0;\n	if(graph[row][col] != \'*\') return 0;\n\n	graph[row][col] = \'#\';\n	int ret = 1;\n\n	for(int i=0; i<4; i++) ret += dfs(graph, row+r[i], col+c[i], maxRow, maxCol);\n\n	return ret;\n}\n\nint main(void) {\n	int row, col;\n	while(cin >> col >> row) {\n		int answer = 0;\n		char graph[1100][100];\n		for(int i=0; i<row; i++)\n			for(int j=0; j<col; j++) cin >> graph[i][j];\n		for(int i=0; i<row; i++) {\n			for(int j=0; j<col; j++) {\n				if(graph[i][j] == \'*\') {\n					answer = maxi(answer, dfs(graph, i, j, row, col));\n				}\n			}\n		}\n		cout << answer << endl;\n	}\n}\n', NULL, 'Low', 'd15282e076fff70194d8544bb04a4a37', '2021-06-09 23:26:29', 0, 1);
+INSERT INTO `problem` VALUES (15, 2, 'Prime Path', '<p>The ministers of the cabinet were quite upset by the message from the  Chief of Security stating that they would all have to change the  four-digit room numbers on their offices. <br />\n&mdash; It is a matter of security to change such things every now and  then, to keep the enemy in the dark. <br />\n&mdash; But look, I have chosen my number 1033 for good reasons. I am the  Prime minister, you know! <br />\n&mdash; I know, so therefore your new number 8179 is also a prime. You  will just have to paste four new digits over the four old ones on your  office door. <br />\n&mdash; No, it&rsquo;s not that simple. Suppose that I change the first digit to  an 8, then the number will read 8033 which is not a prime! <br />\n&mdash; I see, being the prime minister you cannot stand having a  non-prime number on your door even for a few seconds. <br />\n&mdash; Correct! So I must invent a scheme for going from 1033 to 8179 by a  path of prime numbers where only one digit is changed from one prime to  the next prime. <br />\n<br />\nNow, the minister of finance, who had been eavesdropping,  intervened. <br />\n&mdash; No unnecessary expenditure, please! I happen to know that the  price of a digit is one pound. <br />\n&mdash; Hmm, in that case I need a computer program to minimize the cost.  You don\'t know some very cheap software gurus, do you? <br />\n&mdash; In fact, I do. You see, there is this programming contest going  on... Help the prime minister to find the cheapest prime path between  any two given four-digit primes! The first digit must be nonzero, of  course. Here is a solution in the case above. </p>\n<blockquote>1033<br />\n1733<br />\n3733<br />\n3739<br />\n3779<br />\n8779<br />\n8179</blockquote>\n<p>The  cost of this solution is 6 pounds. Note that the digit 1 which got  pasted over in step 2 can not be reused in the last step &ndash; a new 1 must  be purchased.</p>', '<p>One line with a positive number: the number of test cases (at most 100).  Then for each test case, one line with two numbers separated by a  blank. Both numbers are four-digit primes (without leading zeros).</p>', '<p>One line for each case, either with a number stating the minimal cost or containing the word Impossible.</p>', 1000, 128, 'liaomu', '#include<iostream>\n#include<cstdio>\n#include<queue>\n\n#define INTMAX 2147483647\n\nusing namespace std;\n\nvoid play(int num, int goal, int visited[], bool isPrime[]) {\n	int x, y;\n	char strNum[5];\n	queue <int> que;\n	que.push(num);\n	visited[num] = 0;\n	while(!que.empty()) {\n		x = que.front();\n		que.pop();\n		if(x == goal) return;\n		for(int i=0; i<4; i++) {\n			for(int j=0; j<=9; j++) {\n				sprintf(strNum, \"%d\", x);\n				strNum[i] = j + \'0\';\n				sscanf(strNum, \"%d\", &y);\n				if(y < 1000) continue;\n				if(isPrime[y] == false) continue;\n				if(visited[x]+1 < visited[y]) { visited[y] = visited[x] + 1; que.push(y); }\n			}\n		}\n	}\n}\n\nint main(void) {\n	bool isPrime[10000];\n	isPrime[0] = isPrime[1] = false;\n	for(int i=2; i<10000; i++) isPrime[i] = true;\n	for(int i=2; i<5000; i++) {\n		if(isPrime[i] == false) continue;\n		for(int j=2; i*j<10000; j++) isPrime[i*j] = false;\n	}\n\n	int tcase, num, goal, answer;\n	int visited[10000];\n\n	cin >> tcase;\n	while(tcase--) {\n		cin >> num >> goal;\n		for(int i=0; i<10000; i++) visited[i] = INTMAX;\n		play(num, goal, visited, isPrime);\n		cout << visited[goal] << endl;\n	}\n	return 0;\n}', NULL, 'Low', 'ffacfbb989c428d6019860681b65c32d', '2021-06-09 23:26:29', 0, 1);
+INSERT INTO `problem` VALUES (16, 2, 'Maze Problem', '<p>Given a maze, find a shortest path from start to goal.</p>', '<p>Input consists serveral test cases. </p>\n<p>First line of the input contains number of test case T.</p>\n<p>For each test case the first line contains two integers N , M ( 1 &lt;= N, M &lt;= 100 ).</p>\n<p>Each of the following N lines contain M characters. Each character means a cell of the map.</p>\n<p>Here is the definition for chracter.</p>\n<p>&nbsp;</p>\n<p>Constraint:</p>\n<ul>\n	<li>For a character in the map:\n	<ul>\n		<li>\'S\' : start cell</li>\n		<li>\'E\' : goal cell</li>\n		<li>\'-\' : empty cell</li>\n		<li>\'#\' :  obstacle cell</li>\n	</ul>\n	</li>\n	<li>no two start cell exists.</li>\n	<li>no two goal cell exists.</li>\n</ul>', '<p>For each test case print one line containing shortest path. If there exists no path from start to goal, print -1.</p>', 1000, 128, 'liaomu', '#include<iostream>\n#include<queue>\n#include<utility>\n#include<set>\nusing namespace std;\n\nint maxRow, maxCol;\npair <int, int> start;\npair <int, int> end;\nint sr, sc, er, ec;\nint r[] = {0, 0, 1, -1};\nint c[] = {1, -1, 0, 0};\nchar graph[110][110];\n\nint bfs() {\n	set < pair <int, int> > s;\n	queue < pair <int, int> > que;\n	queue < int > move;\n	pair < int, int > posi;\n	pair < int, int > step[4];\n	que.push(start);\n	move.push(0);\n	int visited = 0;\n	int moving;\n	while(1) {\n		if(que.empty()) return -1;\n		posi = que.front();\n		moving = move.front();\n		//cout << posi.first << \' \' << posi.second << \' \' << moving << endl;\n		que.pop();\n		move.pop();\n		if(graph[posi.first][posi.second] == \'E\') return moving;\n		visited = moving+1;\n		for(int i=0; i<4; i++) step[i] = posi;\n		step[0].first++;\n		step[1].first--;\n		step[2].second++;\n		step[3].second--;\n		for(int i=0; i<4; i++) {\n			if(step[i].first < 0 || step[i].first >= maxRow) continue;\n			if(step[i].second < 0 || step[i].second >= maxRow) continue;\n			if(s.find(step[i]) != s.end()) continue;\n			if(graph[step[i].first][step[i].second] == \'#\') continue;\n			que.push(step[i]);\n			move.push(visited);\n			s.insert(step[i]);\n		}\n	}\n	return -1;\n}\n\nint main(void) {\n	int tcase;\n	cin >> tcase;\n	while(tcase--) {\n		cin >> maxRow >> maxCol;\n		for(int i=0; i<maxRow; i++) {\n			for(int j=0; j<maxCol; j++) {\n				cin >> graph[i][j];\n				if(graph[i][j] == \'S\') { start.first = i; start.second = j; }\n				if(graph[i][j] == \'E\') { end.first = i; end.second = j; }\n			}\n		}\n		cout << bfs() << endl;\n	}\n}', NULL, 'Low', '630be3f5d87d4a4819e09f39811b6734', '2021-06-09 23:26:29', 0, 1);
+COMMIT;
 
 -- ----------------------------
 -- Table structure for problem_language
 -- ----------------------------
 DROP TABLE IF EXISTS `problem_language`;
-CREATE TABLE `problem_language`  (
-  `problem_language_id` int(20) NOT NULL AUTO_INCREMENT COMMENT '题目 语言 id',
-  `problem_id` bigint(20) NOT NULL COMMENT '题目id',
-  `language_id` int(20) NOT NULL COMMENT '语言id',
+CREATE TABLE `problem_language` (
+  `problem_language_id` int NOT NULL AUTO_INCREMENT COMMENT '题目 语言 id',
+  `problem_id` bigint NOT NULL COMMENT '题目id',
+  `language_id` int NOT NULL COMMENT '语言id',
   PRIMARY KEY (`problem_language_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 18 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of problem_language
 -- ----------------------------
-INSERT INTO `problem_language` VALUES (25, 8, 1);
-INSERT INTO `problem_language` VALUES (26, 8, 3);
-INSERT INTO `problem_language` VALUES (27, 8, 4);
-INSERT INTO `problem_language` VALUES (28, 8, 5);
-INSERT INTO `problem_language` VALUES (29, 1, 1);
-INSERT INTO `problem_language` VALUES (30, 1, 3);
+BEGIN;
+INSERT INTO `problem_language` VALUES (2, 2, 1);
+INSERT INTO `problem_language` VALUES (3, 3, 1);
+INSERT INTO `problem_language` VALUES (4, 4, 3);
+INSERT INTO `problem_language` VALUES (5, 5, 1);
+INSERT INTO `problem_language` VALUES (6, 6, 1);
+INSERT INTO `problem_language` VALUES (7, 7, 3);
+INSERT INTO `problem_language` VALUES (8, 8, 1);
+INSERT INTO `problem_language` VALUES (9, 1, 3);
+COMMIT;
 
 -- ----------------------------
 -- Table structure for problem_tag
 -- ----------------------------
 DROP TABLE IF EXISTS `problem_tag`;
-CREATE TABLE `problem_tag`  (
-  `problem_tag_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '问题标签关系主键',
-  `problem_id` bigint(20) NOT NULL COMMENT '问题id',
-  `tag_id` bigint(20) NOT NULL COMMENT '标签id',
+CREATE TABLE `problem_tag` (
+  `problem_tag_id` bigint NOT NULL AUTO_INCREMENT COMMENT '问题标签关系主键',
+  `problem_id` bigint NOT NULL COMMENT '问题id',
+  `tag_id` bigint NOT NULL COMMENT '标签id',
   PRIMARY KEY (`problem_tag_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 5 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of problem_tag
 -- ----------------------------
-INSERT INTO `problem_tag` VALUES (8, 8, 8);
-INSERT INTO `problem_tag` VALUES (9, 8, 9);
-INSERT INTO `problem_tag` VALUES (10, 1, 1);
-INSERT INTO `problem_tag` VALUES (11, 1, 2);
+BEGIN;
+INSERT INTO `problem_tag` VALUES (1, 1, 1);
+INSERT INTO `problem_tag` VALUES (2, 14, 2);
+INSERT INTO `problem_tag` VALUES (3, 14, 3);
+INSERT INTO `problem_tag` VALUES (4, 15, 4);
+INSERT INTO `problem_tag` VALUES (5, 15, 3);
+INSERT INTO `problem_tag` VALUES (6, 16, 4);
+INSERT INTO `problem_tag` VALUES (7, 16, 3);
+COMMIT;
 
 -- ----------------------------
 -- Table structure for sample
 -- ----------------------------
 DROP TABLE IF EXISTS `sample`;
-CREATE TABLE `sample`  (
-  `sample_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '样例id',
-  `problem_id` bigint(20) NOT NULL COMMENT '题目id',
-  `sample_input` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '样例输入',
-  `sample_output` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '样例输出',
-  `is_deleted` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否删除',
+CREATE TABLE `sample` (
+  `sample_id` bigint NOT NULL AUTO_INCREMENT COMMENT '样例id',
+  `problem_id` bigint NOT NULL COMMENT '题目id',
+  `sample_input` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '样例输入',
+  `sample_output` varchar(5120) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '样例输出',
+  `is_deleted` tinyint(1) unsigned zerofill NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`sample_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of sample
 -- ----------------------------
-INSERT INTO `sample` VALUES (17, 8, '1 2', '4', 0);
-INSERT INTO `sample` VALUES (18, 1, '1 2', '3', 0);
+BEGIN;
+INSERT INTO `sample` VALUES (2, 2, '123456789012345678901234567890\n753951684269875454652589568545854758545824', '1100011101110100100001111111101101100001101110011111000001110111001001110001111110000101011010010\n10001010011110101010001101001000100100100000101001011010001010101001000100111101011001110001000111110010001000101101111110110110100110100000', 0);
+INSERT INTO `sample` VALUES (3, 3, '1\n2\n3\n4\n5\n6\n', 'YES\n', 0);
+INSERT INTO `sample` VALUES (4, 4, '123.45\n123\n10005\n10', '壹佰贰拾叁元肆角伍分\n壹佰贰拾叁元整\n壹万零伍元整\n拾元整', 0);
+INSERT INTO `sample` VALUES (5, 5, '1 2\n3 4', '4 6', 0);
+INSERT INTO `sample` VALUES (6, 6, '1 1\n1 1', '0 2', 0);
+INSERT INTO `sample` VALUES (7, 7, '2 3\n1 2\n1 1\n2 2\n1 1\n2 0\n', '3 2\n2 1\n2 0', 0);
+INSERT INTO `sample` VALUES (8, 8, '', '19880101\n19880111\n19880117\n19880129\n19880221\n……', 0);
+INSERT INTO `sample` VALUES (9, 9, '6\n1 2 1\n2 1 4\n2 4 3\n3 2 1\n4 1 5\n4 3 2\n2\n3 Triangulum\n1 1\n3 1\n2 4\n4 Cancer\n1 3\n4 3\n6 1\n7 5\n\n0', 'Map #1\n\nTriangulum occurs 2 time(s) in the map.\nBrightest occurrence: (1,2) (4,1) (4,3)\n\nCancer occurs 0 time(s) in the map.\n-----', 0);
+INSERT INTO `sample` VALUES (10, 10, '1\n9 4 3\n8 5 2\n7 6 1', 'Test #1\n308', 0);
+INSERT INTO `sample` VALUES (11, 11, '2 1\n1 2 27\n3 3\n1 2 5\n1 3 5\n2 3 5\n0 0', 'System #1\nThe last domino falls after 27.0 seconds, at key domino 2.\n\nSystem #2\nThe last domino falls after 7.5 seconds, between key dominoes 2 and 3.', 0);
+INSERT INTO `sample` VALUES (12, 12, '2 16.0\n3 -4\n-3 -4\n1 18.0\n5 -12\n0 0', 'Pendulum #1\nLength of periodic orbit = 87.66\n\nPendulum #2\nLength of periodic orbit = 31.42', 0);
+INSERT INTO `sample` VALUES (13, 13, '1\n2 1\nEENNWNENWWWSSSES.', 'Bitmap #1\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n................................\n.XXX............................\nX...X...........................\nX..X............................\nX...X...........................\n.X..X...........................\n..XX............................', 0);
+INSERT INTO `sample` VALUES (14, 1, '2	18270477699\n1	10149800116\n0	19906559817\n1	16209018105\n1	16804212234\n2	19289130583\n1	17982711123\n0	10897630486\n1	11860787674\n0	15192777554\n', '15192777554 11860787674 19289130583\n10897630486 17982711123 18270477699\n19906559817 16804212234 0\n0 16209018105 0\n0 10149800116 0\n0 0 0\n0 0 0\n0 0 0\n0 0 0\n0 0 0\n', 0);
+INSERT INTO `sample` VALUES (15, 14, '10 5\n..*.....**\n.**..*****\n.*...*....\n..****.***\n..****.***\n', '16', 0);
+INSERT INTO `sample` VALUES (16, 15, '3\n1033 8179\n1373 8017\n1033 1033\n', '6\n7\n0\n', 0);
+INSERT INTO `sample` VALUES (17, 16, '1\n5 5\nS-###\n-----\n##---\nE#---\n---##', '9', 0);
+COMMIT;
 
 -- ----------------------------
 -- Table structure for tag
 -- ----------------------------
 DROP TABLE IF EXISTS `tag`;
-CREATE TABLE `tag`  (
-  `tag_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'Tag ID',
+CREATE TABLE `tag` (
+  `tag_id` bigint NOT NULL AUTO_INCREMENT COMMENT 'Tag ID',
   `tag_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '标签名称',
-  `tag_description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '标签描述',
-  `is_deleted` tinyint(1) UNSIGNED ZEROFILL NOT NULL DEFAULT 0 COMMENT '是否删除',
+  `tag_description` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci DEFAULT NULL COMMENT '标签描述',
+  `is_deleted` tinyint(1) unsigned zerofill NOT NULL DEFAULT '0' COMMENT '是否删除',
   PRIMARY KEY (`tag_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 8 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of tag
 -- ----------------------------
-INSERT INTO `tag` VALUES (1, '水题', '水', 0);
-INSERT INTO `tag` VALUES (2, '测试', '测试', 0);
-INSERT INTO `tag` VALUES (5, 'Easy', 'Easy', 0);
-INSERT INTO `tag` VALUES (6, 'Low', 'Low', 0);
-INSERT INTO `tag` VALUES (7, 'Mid', 'Mid', 0);
-INSERT INTO `tag` VALUES (8, 'High', 'High', 0);
-INSERT INTO `tag` VALUES (9, 'Tag1', 'Tag1', 0);
+BEGIN;
+INSERT INTO `tag` VALUES (1, 'Easy', 'Easy', 0);
+INSERT INTO `tag` VALUES (2, 'DFS', 'DFS', 0);
+INSERT INTO `tag` VALUES (3, 'Graph', 'Graph', 0);
+INSERT INTO `tag` VALUES (4, 'BFS', 'BFS', 0);
+COMMIT;
 
 -- ----------------------------
 -- Table structure for website_info
 -- ----------------------------
 DROP TABLE IF EXISTS `website_info`;
-CREATE TABLE `website_info`  (
+CREATE TABLE `website_info` (
   `website_base_url` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '网站基本url',
   `website_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '网站名字',
   `website_name_shortcut` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '网站简称',
   `website_footer` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '页脚',
   `website_author` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT 'LiaoMu' COMMENT '网站作者',
-  `allow_registry` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否允许注册',
-  `submission_list_show_all` tinyint(1) UNSIGNED NOT NULL DEFAULT 1 COMMENT '是否显示全部题目提交'
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+  `allow_registry` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '是否允许注册',
+  `submission_list_show_all` tinyint unsigned NOT NULL DEFAULT '1' COMMENT '是否显示全部题目提交',
+  PRIMARY KEY (`website_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of website_info
 -- ----------------------------
-INSERT INTO `website_info` VALUES ('www.nciaeoj.com', 'NCIAE Online Judge', 'NCIAE-OJ', 'Code and Code,Born for More', 'LiaoMu', 1, 1);
+BEGIN;
+INSERT INTO `website_info` VALUES ('www.nciaeoj.com', 'NCIAE Online Judge', 'NCIAE-OJ', 'Code and Code,Born for More!', 'LiaoMu', 1, 1);
+COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
